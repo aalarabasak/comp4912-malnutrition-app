@@ -10,11 +10,11 @@ class WelcomeScreen extends StatelessWidget {
     //scaffold iskelet
     return Scaffold(
       body: SafeArea(
-        // Center: ekranın ortasına hizalar.
+        
         child : Padding(padding: const EdgeInsets.symmetric(horizontal: 40.0),
         child: Center(
           // Column : alt alta dizeceğimizi söyler.
-          child: Column(
+          child: Column(// Center: ekranın ortasına hizalar.
             // mainAxisAlignment... dikey olarak ortalamak için.
             mainAxisAlignment: MainAxisAlignment.center, 
             children: [
