@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'signup_screen.dart';
 
 class SelectRoleScreen extends StatelessWidget{
   const SelectRoleScreen ({super.key});
@@ -45,7 +46,10 @@ class SelectRoleScreen extends StatelessWidget{
                                   padding: const EdgeInsets.symmetric(vertical: 68),
                                   textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
                        onPressed: (){
-                          //will be updated
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context)=> const SignUpScreen()),
+                          );
                        },
                        child: Text('Field Worker'),
                 )
@@ -61,7 +65,10 @@ class SelectRoleScreen extends StatelessWidget{
                                   padding: const EdgeInsets.symmetric(vertical: 68),
                                   textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
                        onPressed: (){
-                          //will be updated
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context)=> const SignUpScreen()),
+                          );
                        },
                        child: Text('Nutrition Officer'),
                 )
@@ -77,7 +84,10 @@ class SelectRoleScreen extends StatelessWidget{
                                   padding: const EdgeInsets.symmetric(vertical: 68),
                                   textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
                        onPressed: (){
-                          //will be updated
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context)=> const SignUpScreen()),
+                          );
                        },
                        child: Text('Camp Manager'),
                 )

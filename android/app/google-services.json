@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "47233059473",
+    "project_id": "malnutrition-app-9e174",
+    "storage_bucket": "malnutrition-app-9e174.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:47233059473:android:a95192bd32a4d811c0cd30",
+        "android_client_info": {
+          "package_name": "com.example.malnutrition_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_SEizk5-rqC74L1yxLTIKD2JDllg8Mvk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

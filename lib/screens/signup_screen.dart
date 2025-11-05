@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/password_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -12,6 +13,12 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen>{
 
   final _formkey = GlobalKey<FormState>();
+
+  //controllers for firebase connection 
+  final _emailcontroller = TextEditingController();
+  final _usernamecontroller = TextEditingController();
+  final _passwordcontroller = TextEditingController();
+
 
   @override
   Widget build(BuildContext context){
@@ -46,9 +53,10 @@ class _SignUpScreenState extends State<SignUpScreen>{
               prefixIcon: Icon(Icons.email_outlined),
               border: OutlineInputBorder(),
               ),
+              controller: _emailcontroller,
               validator: (value){
                 if(value == null || value.isEmpty){
-                  return 'Please enter your email';
+                  return 'This field is required.';
                 }
                 return null;
               },
@@ -62,9 +70,10 @@ class _SignUpScreenState extends State<SignUpScreen>{
               prefixIcon: Icon(Icons.person_outline),
               border: OutlineInputBorder(),
             ),
+            controller: _usernamecontroller,
             validator: (value){
               if(value == null || value.isEmpty){
-                return "Please enter your username";
+                return "This field is required.";
               }
               return null;
             },
@@ -74,9 +83,10 @@ class _SignUpScreenState extends State<SignUpScreen>{
 
             //4th element
             PasswordToggleField(
+              controller: _passwordcontroller,
               validator: (value){
                 if(value == null || value.isEmpty){
-                  return 'Please enter password';
+                  return 'This field is required.';
                 }
                 if(value.length < 8){
                   return 'Password should be at least 8 characters';
@@ -93,44 +103,76 @@ class _SignUpScreenState extends State<SignUpScreen>{
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 54, 136, 203),
                                   foregroundColor: Colors.white),
-                onPressed: (){
-                  //will be updated
-
+                onPressed: () async{ 
+                  //Source for validation pattern in this onPressed() method:
+                  //https://docs.flutter.dev/cookbook/forms/validation
                   if(_formkey.currentState!.validate()){
-                    print('Form is valid');
+                    showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator()));
+                  
+                  //I used this link as a reference of try-catch block for firebase authentication
+                  //https://firebase.google.com/docs/auth/flutter/password-auth
+                  try{
+                    // Create user in Firebase
+                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    email: _emailcontroller.text.trim(),
+                    password: _passwordcontroller.text.trim(),);
+
+                    // Hide loading indicator
+                    if (context.mounted) Navigator.pop(context);
+
+                    if(context.mounted){
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Account created successfully.'),
+                        backgroundColor: Colors.green,
+                        ) 
+                      );
+                    }
+
+                    //check if user is still on sign up screen
+                    if (!context.mounted) return; //this is for safety
+                    Navigator.of(context).popUntil((route) => route.isFirst); //if account created successfully, back to welcome screen.
+
+                  } on FirebaseAuthException catch (err){
+
+                    // Hide loading indicator
+                    if (context.mounted) Navigator.pop(context);
+
+                    //these are for firebase special errors.
+                    String errormessage = "An error occurred. Please try again.";
+                    if (err.code == 'email-already-in-use') {
+                      errormessage = 'This email is already in use.';
+                    } 
+                    else if (err.code == 'invalid-email') {
+                      errormessage = 'The email address is invalid.';
+                    }
+                    
+                    
+                    if(context.mounted){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(errormessage),
+                        backgroundColor: Colors.red,
+                        ) 
+                      );
+                    }                 
                   }
+                  } //end of if block
                 },
                 child: Text('SIGN UP'),
               ),
             )
-
-
           ],
-
-
         ),
-        
         
         ),
 
-
-
       ),
-      
-      
+        
       ),
-      
-      
-      
+          
       ),
-
-
 
     );
 
-
-
   }
-
 
 }

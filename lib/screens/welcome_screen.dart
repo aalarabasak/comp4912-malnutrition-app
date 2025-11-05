@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
-
+import 'select_role_screen.dart';
+import 'login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -15,7 +16,7 @@ class WelcomeScreen extends StatelessWidget {
         child: Center(
           // Column : alt alta dizeceğimizi söyler.
           child: Column(// Center: ekranın ortasına hizalar.
-            // mainAxisAlignment... dikey olarak ortalamak için.
+            // mainAxisAlignment dikey olarak ortalamak için.
             mainAxisAlignment: MainAxisAlignment.center, 
             children: [
               //1.eleman fotoğraf
@@ -47,7 +48,11 @@ class WelcomeScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 54, 136, 203),
                             foregroundColor: Colors.white),
                 onPressed: () {
-                  //will be updated
+                  //I used Flutter’s official website as a reference for this navigation code:
+                  //https://docs.flutter.dev/cookbook/navigation/navigation-basics
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()));
                 },
                 child: Text('SIGN IN'),
               ),
@@ -62,7 +67,12 @@ class WelcomeScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 54, 136, 203), 
                           foregroundColor: Colors.white,),
                 onPressed: () {
-                  // will be updated
+                  //I used Flutter’s official website as a reference for this navigation code:
+                  //https://docs.flutter.dev/cookbook/navigation/navigation-basics
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const SelectRoleScreen())
+                  );
                 },
                 child: Text('SIGN UP'),
               ),

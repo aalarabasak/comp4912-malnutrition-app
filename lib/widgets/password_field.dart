@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 class PasswordToggleField extends StatefulWidget {
 
   final String? Function(String?)? validator;
-  const PasswordToggleField({super.key,this.validator});
+  final TextEditingController? controller;
+  const PasswordToggleField({
+    super.key,
+    this.validator, 
+    this.controller});
 
   @override
   _PasswordToggleFieldState createState() => _PasswordToggleFieldState();
@@ -20,7 +24,7 @@ class _PasswordToggleFieldState extends State<PasswordToggleField> {
     return TextFormField( 
       obscureText: isPasswordHidden, 
       validator: widget.validator,
-
+      controller: widget.controller,
       decoration: InputDecoration(
         labelText: 'Password',
         

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/password_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget{
   const LoginScreen({super.key});
@@ -11,6 +12,10 @@ class LoginScreen extends StatefulWidget{
 
 class _LoginScreenState extends State<LoginScreen>{
   final _formkey = GlobalKey<FormState>();
+
+  //controllers for firebase connection 
+  final _emailcontroller = TextEditingController();
+  final _passwordcontroller = TextEditingController();
 
   @override
   Widget build(BuildContext context){
@@ -56,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen>{
               //3rd element
               TextFormField(
                 decoration: InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email), border: OutlineInputBorder(),),
+                controller: _emailcontroller,
                 validator: (value){
                   if(value == null || value.isEmpty){
                     return 'This field is required.';
@@ -68,6 +74,7 @@ class _LoginScreenState extends State<LoginScreen>{
 
               //4th element
               PasswordToggleField(
+                controller: _passwordcontroller,
                 validator: (value){
                   if(value == null || value.isEmpty){
                     return 'This field is required.';
@@ -83,15 +90,59 @@ class _LoginScreenState extends State<LoginScreen>{
                 width: double.infinity,
                 child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 54, 136, 203),
                                   foregroundColor: Colors.white),
-                       onPressed: (){
-                          //will be updated
-
+                       onPressed: () async{
+                        //Source for validation pattern in this onPressed() method:
+                        //https://docs.flutter.dev/cookbook/forms/validation
                           if(_formkey.currentState!.validate()){
-                            print('Form is valid');
-                          }
-                       },
+                            showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator(),));
+
+                            //I used this link as a reference of try-catch block for firebase authentication
+                            //https://firebase.google.com/docs/auth/flutter/password-auth
+                            try{
+                              // Create user in Firebase
+                              await FirebaseAuth.instance.signInWithEmailAndPassword(
+                              email: _emailcontroller.text.trim(),
+                              password: _passwordcontroller.text.trim(),);
+
+                              // hide loading sign
+                              if(context.mounted){
+                                Navigator.pop(context);
+                              }
+
+                              print("LOGIN SUCCESSFUL!");
+
+                            }on FirebaseAuthException catch (err){
+
+                              // hide loading sign
+                              if(context.mounted){
+                                Navigator.pop(context);
+                              }
+
+                              //print("FIREBASE HATASI: ${err.code}"); //for debug
+
+                              // Source for error codes:
+                              // https://firebase.google.com/docs/auth/admin/errors
+
+                              String errormessage = "Login failed. Please try again.";
+                              if (err.code == 'invalid-credential') {
+                                errormessage = 'Invalid email or password.';
+                              } 
+                              else if (err.code == 'invalid-email') {
+                                errormessage = 'This email address is invalid.';
+                              } 
+                              
+                              if(context.mounted){
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text(errormessage),
+                                  backgroundColor: Colors.red,
+                                ) 
+                                 );
+                              }
+                          } // end of try-on
+                       }// end of if
+                      },
                        child: Text('LOGIN'),
-                )
+                ),
               ),
 
               SizedBox(height: 10),
