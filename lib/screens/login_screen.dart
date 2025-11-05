@@ -147,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen>{
 
               SizedBox(height: 10),
 
-              TextButton(
+              /*TextButton(
                 onPressed: () {
                   //will be updated
                 },
@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen>{
                   style: TextStyle(color: const Color.fromARGB(255, 118, 118, 118)), 
                 ),
               ),
-
+              */
               
             ],
           ),

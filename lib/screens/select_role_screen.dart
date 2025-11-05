@@ -48,7 +48,7 @@ class SelectRoleScreen extends StatelessWidget{
                        onPressed: (){
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context)=> const SignUpScreen()),
+                            MaterialPageRoute(builder: (context)=> const SignUpScreen(selectedrole: 'Field Worker')),
                           );
                        },
                        child: Text('Field Worker'),
@@ -67,7 +67,7 @@ class SelectRoleScreen extends StatelessWidget{
                        onPressed: (){
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context)=> const SignUpScreen()),
+                            MaterialPageRoute(builder: (context)=> const SignUpScreen(selectedrole: 'Nutrition Officer')),
                           );
                        },
                        child: Text('Nutrition Officer'),
@@ -86,7 +86,7 @@ class SelectRoleScreen extends StatelessWidget{
                        onPressed: (){
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context)=> const SignUpScreen()),
+                            MaterialPageRoute(builder: (context)=> const SignUpScreen(selectedrole: 'Camp Manager')),
                           );
                        },
                        child: Text('Camp Manager'),

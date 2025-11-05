@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import '../widgets/password_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+
+  final String selectedrole; //to keep the role of the user 
+
+  const SignUpScreen({super.key, required this.selectedrole});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -113,9 +117,20 @@ class _SignUpScreenState extends State<SignUpScreen>{
                   //https://firebase.google.com/docs/auth/flutter/password-auth
                   try{
                     // Create user in Firebase
-                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    UserCredential usercredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
                     email: _emailcontroller.text.trim(),
                     password: _passwordcontroller.text.trim(),);
+
+                    // Source for saving data to Cloud Firestore:
+                    //https://firebase.google.com/docs/firestore/manage-data/add-data#set_a_document
+                    await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(usercredential.user!.uid)
+                      .set({
+                        'email':_emailcontroller.text.trim(),
+                        'role': widget.selectedrole,
+                        'username': _usernamecontroller.text.trim(),
+                        'createdat': FieldValue.serverTimestamp(),});
 
                     // Hide loading indicator
                     if (context.mounted) Navigator.pop(context);
