@@ -31,14 +31,14 @@ class _LoginScreenState extends State<LoginScreen>{
     else if(role == 'Nutrition Officer'){
       screen = const NutritionOfficerHome();
     }
-    
+
     else {
       screen = const CampManagerHome();
     }
 
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => screen),
        // (Route<dynamic> route) => false, ); // erases all history
-      (Route<dynamic> route) => route.isFirst, ); //keep the welcome screen, not deleted
+      (Route<dynamic> route) => route.isFirst, ); //keep the WelcomeScreen to allow clean logout later.
   }
 
 
@@ -133,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen>{
                               if(context.mounted){
                                 Navigator.pop(context);
 
-                                //read the role from firestore and navigate accordingly for login functionality
+                                //read the role from firestore and navigate accordingly after successful login 
                                 String uid = usercredential.user!.uid;
 
                                 DocumentSnapshot userdocument = await FirebaseFirestore.instance

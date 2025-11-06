@@ -8,12 +8,12 @@ class CampManagerHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(appBar: AppBar(
       leading: IconButton(
-          icon: const Icon(Icons.logout), //back to welcome screen
+          icon: const Icon(Icons.logout), //logout sign
           onPressed: () {
-           
+           // this allows the demo to quickly return to the Welcome screen.
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-              (route) => false,
+              (route) => false, // Erases ALL history Login, SelectRole, Dashboard
             );
           },
         ),
