@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../widgets/password_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'FieldWorkerHome.dart';
+import 'CampManagerHome.dart';
+import 'NutritionOfficerHome.dart';
 
 class LoginScreen extends StatefulWidget{
   const LoginScreen({super.key});
@@ -16,6 +20,27 @@ class _LoginScreenState extends State<LoginScreen>{
   //controllers for firebase connection 
   final _emailcontroller = TextEditingController();
   final _passwordcontroller = TextEditingController();
+
+  void _navigateToRelatedHome(BuildContext context, String role){
+    Widget screen;
+
+    if(role == 'Field Worker'){
+      screen = const FieldWorkerHome();
+    }
+
+    else if(role == 'Nutrition Officer'){
+      screen = const NutritionOfficerHome();
+    }
+    
+    else {
+      screen = const CampManagerHome();
+    }
+
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => screen),
+       // (Route<dynamic> route) => false, ); // erases all history
+      (Route<dynamic> route) => route.isFirst, ); //keep the welcome screen, not deleted
+  }
+
 
   @override
   Widget build(BuildContext context){
@@ -100,17 +125,29 @@ class _LoginScreenState extends State<LoginScreen>{
                             //https://firebase.google.com/docs/auth/flutter/password-auth
                             try{
                               // Create user in Firebase
-                              await FirebaseAuth.instance.signInWithEmailAndPassword(
+                             UserCredential usercredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
                               email: _emailcontroller.text.trim(),
                               password: _passwordcontroller.text.trim(),);
 
                               // hide loading sign
                               if(context.mounted){
                                 Navigator.pop(context);
+
+                                //read the role from firestore and navigate accordingly for login functionality
+                                String uid = usercredential.user!.uid;
+
+                                DocumentSnapshot userdocument = await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(uid)
+                                  .get();
+
+                                String role = userdocument.get('role');
+                                _navigateToRelatedHome(context, role);
                               }
 
                               print("LOGIN SUCCESSFUL!");
-
+                              
+                              
                             }on FirebaseAuthException catch (err){
 
                               // hide loading sign
@@ -118,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen>{
                                 Navigator.pop(context);
                               }
 
-                              //print("FIREBASE HATASI: ${err.code}"); //for debug
+                              //print("FIREBASE ERROR: ${err.code}"); //for debug
 
                               // Source for error codes:
                               // https://firebase.google.com/docs/auth/admin/errors

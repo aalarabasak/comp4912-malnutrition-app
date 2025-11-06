@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'select_role_screen.dart';
 import 'login_screen.dart';
+import 'guest_user_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -83,7 +84,10 @@ class WelcomeScreen extends StatelessWidget {
               // 6. eleman Guest User Butonu
               TextButton(
                 onPressed: () {
-                  //will be updated
+                  Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context)=> const GuestDashboard()),
+                  );
                 },
                 child: Text(
                   'Continue as a Guest User',
