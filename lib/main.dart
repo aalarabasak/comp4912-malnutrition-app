@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:malnutrition_app/screens/add_child_screen.dart';
 import 'screens/welcome_screen.dart'; 
 //import 'screens/login_screen.dart';
 //import 'screens/select_role_screen.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       
-      home: const WelcomeScreen(), 
+      home: const AddChildScreen(), 
     );
   }
 }
