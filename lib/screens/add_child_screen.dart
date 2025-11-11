@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../widgets/date_picker_field.dart';
 
@@ -17,11 +18,23 @@ class _AddChildScreenState extends State <AddChildScreen> {
   String? _selectedcampblock;
   bool _hasdisability = false;
   
+  //This is where I create the remote control for the DatePickerField.
   final _datecontroller = TextEditingController();
+  //for firebase connection
+  final _childIDcontroller = TextEditingController();
+  final _fullNamecontroller = TextEditingController();
+  final _caregivercontroller= TextEditingController();
+  final _disability_explanationController = TextEditingController();
 
+
+  //cleaning function
   @override
   void dispose() {
-    _datecontroller.dispose();
+    _datecontroller.dispose();//Destroy the remote if the screen is turned off.
+    _childIDcontroller.dispose();
+    _fullNamecontroller.dispose();
+    _caregivercontroller.dispose();
+    _disability_explanationController.dispose();
     super.dispose();
   }
   
@@ -47,7 +60,9 @@ class _AddChildScreenState extends State <AddChildScreen> {
             const SizedBox(height: 30),
 
             //2nd element
-            TextFormField(decoration: InputDecoration(
+            TextFormField(
+              controller: _childIDcontroller,
+              decoration: InputDecoration(
               labelText: 'Child ID',
               border: OutlineInputBorder(),
             ),
@@ -61,8 +76,10 @@ class _AddChildScreenState extends State <AddChildScreen> {
             const SizedBox(height: 16),
 
             //3rd element
-            TextFormField(decoration: InputDecoration(
-              labelText: 'Name',
+            TextFormField(
+              controller: _fullNamecontroller,
+              decoration: InputDecoration(
+              labelText: 'Full Name',
               border: OutlineInputBorder(),
             ),
             validator: (value) {
@@ -75,20 +92,6 @@ class _AddChildScreenState extends State <AddChildScreen> {
             const SizedBox(height: 16),
 
             //4th element
-            TextFormField(decoration: InputDecoration(
-              labelText: 'Surname',
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-              if(value == null || value.isEmpty){
-                return 'This field is required.';
-              }
-              return null;
-            },),
-
-            const SizedBox(height: 16),
-
-            //5th element
             DropdownButtonFormField <String>(
               initialValue: _selectedgender,
               decoration: const InputDecoration(
@@ -106,7 +109,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                      return 'Please select a gender.';
+                      return 'This field is required.';
                     }
                     return null;
               },
@@ -115,13 +118,13 @@ class _AddChildScreenState extends State <AddChildScreen> {
             const SizedBox(height: 16),
 
 
-            //6th element date picker
+            //5th element date picker
             DatePickerField(
               controller: _datecontroller, 
               labelText: 'Date of Birth', 
               validator: (value){
                 if(value == null || value.isEmpty){
-                  return 'Please select a date of birth.';
+                  return 'This field is required.';
                 }
                 return null;
               }
@@ -129,8 +132,10 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
               const SizedBox(height: 16),
 
-            //7th element
-            TextFormField(decoration: InputDecoration(
+            //6th element
+            TextFormField(
+              controller: _caregivercontroller,
+              decoration: InputDecoration(
               labelText: 'Caregiver Name',
               border: OutlineInputBorder(),
             ),
@@ -143,7 +148,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
             const SizedBox(height: 16),
 
-            //8th element
+            //7th element
             DropdownButtonFormField <String>(
               initialValue: _selectedcampblock,
               decoration: const InputDecoration(
@@ -162,7 +167,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                      return 'Please select a camp block.';
+                      return 'This field is required.';
                     }
                     return null;
               },
@@ -170,7 +175,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
               const SizedBox(height: 16),
 
-              //9 th element
+              //8 th element
               CheckboxListTile(
                 title: const Text('Has Disability'),
                 value: _hasdisability, 
@@ -188,7 +193,8 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
                 //if child has disability, the explanation code is below.
                 if(_hasdisability)
-                  TextFormField(decoration: InputDecoration(
+                  TextFormField(controller: _disability_explanationController,
+                    decoration: InputDecoration(
                     labelText: 'If yes, explain..',
                     //border: OutlineInputBorder(),
                   ),
@@ -196,25 +202,96 @@ class _AddChildScreenState extends State <AddChildScreen> {
                
               const SizedBox(height: 16),
 
+              //I used row-expanded-elevatedbutton idea from this link
+              //https://stackoverflow.com/questions/71197549/how-to-create-a-row-with-2-buttons-that-take-up-the-entire-row-placed-at-the-b
+              Row(
+                children: [
+                  //Cancel button
+                  Expanded(child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 176, 174, 174),
+                      foregroundColor: Colors.black, 
+                      padding: const EdgeInsets.symmetric(vertical: 25),//height of button
+                      textStyle: const TextStyle( fontSize: 15, fontWeight: FontWeight.bold)
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      //closes the current screen and returns  to the previous screen.
+                    },
+                    child: const Text('Cancel'),
+                    )
+                  ),
 
+                  const SizedBox(width: 20),//space btw two buttons
 
-              
-                
+                  //Save button 
+                  Expanded(child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 25),//height of button
+                      textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)
+                    ),
+                    onPressed: () async{
+                      // This command runs all 'validator' functions.
+                      bool isValid = _formkey.currentState!.validate();
 
-                
+                      //if everything is okay->>
+                      if(isValid){
+                        //shows loading signs after user completely filled the form
+                        showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator(),));
 
+                        // Source for saving and preparing data to Cloud Firestore:
+                        //https://firebase.google.com/docs/firestore/manage-data/add-data#set_a_document
+                        try{
+                          Map<String, dynamic> childdata = {
+                            'childID': _childIDcontroller.text.trim(),
+                            'fullName': _fullNamecontroller.text.trim(),
+                            'gender': _selectedgender,
+                            'dateofBirth' : _datecontroller.text.trim(),
+                            'caregiverName': _caregivercontroller.text.trim(),
+                            'campBlock': _selectedcampblock,
+                            'hasDisability': _hasdisability,
+                            'disabilityExplanation': _hasdisability ? _disability_explanationController.text.trim(): null,
+                            'createdAt': FieldValue.serverTimestamp(),
+                          };
 
+                          //add data to firestore
+                          await FirebaseFirestore.instance.collection('children').add(childdata);
 
+                          //if thr saving process is successful ->>
+                          if(context.mounted){
+                            Navigator.pop(context); //close loading sign
 
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text('Child registered successfully.'),
+                              backgroundColor: Colors.green,),
+                            );
 
+                            Navigator.pop(context); //close add child screen, backs to the child list screen(fieldworker_home)
+                          }
 
+                        } catch (err){
 
+                          if(context.mounted){
+                            Navigator.pop(context); //close loading sign
 
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('Failed to save child.'),
+                              backgroundColor: Colors.red,),
+                            );
+                          }
+                        }
 
+                      }
+                    },
+                    child: Text('Save Child'),
+                   )
+                  )
+                ],
+              ),
 
-
-
-
+              const SizedBox(height: 30),
 
           ],
         )

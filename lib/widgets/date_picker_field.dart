@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class DatePickerField extends StatelessWidget{
 
 //The selected date will be written to this controller as a formatted string.
-final TextEditingController controller;
+// This controller passes the selected date value back up to the parent widget.
+final TextEditingController controller; 
 final String labelText;
 
 // Validation function that checks the input and returns an error message or nothing.
@@ -30,7 +31,7 @@ final FormFieldValidator<String> validator;
       
       //I got this piece of code from the link below:
       //https://api.flutter.dev/flutter/material/showDatePicker.html
-      onTap: () async{
+      onTap: () async{//Show Flutter's ready calendar (showDatePicker).
         DateTime? selecteddate = await showDatePicker(
           context: context,
           initialDate:DateTime.now(),
