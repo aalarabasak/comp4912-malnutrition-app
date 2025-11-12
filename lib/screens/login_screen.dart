@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../widgets/password_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'FieldWorkerHome.dart';
+import 'field_worker_home.dart';
 import 'CampManagerHome.dart';
 import 'NutritionOfficerHome.dart';
 
