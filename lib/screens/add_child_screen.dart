@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../widgets/date_picker_field.dart';
+import 'dart:math';
 
 class AddChildScreen extends StatefulWidget{
   const AddChildScreen({super.key});
@@ -26,6 +27,24 @@ class _AddChildScreenState extends State <AddChildScreen> {
   final _caregivercontroller= TextEditingController();
   final _disability_explanationController = TextEditingController();
 
+  String generateNewchildID(){
+    final random = Random();
+    // Generate 8 random digits (00000000 to 99999999)
+    String id = '';
+    for(int i = 0; i < 8; i++){
+      id += random.nextInt(10).toString();
+    }
+    return id;
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    // set the Child ID when screen initializes
+    final newID = generateNewchildID();
+    _childIDcontroller.text = newID;
+
+  }
 
   //cleaning function
   @override
@@ -63,16 +82,15 @@ class _AddChildScreenState extends State <AddChildScreen> {
             //2nd element
             TextFormField(
               controller: _childIDcontroller,
+              readOnly: true,
+              enableInteractiveSelection: false, //prevents crashing due to appearing on long-press or double-tap
               decoration: InputDecoration(
-              labelText: 'Child ID',
+              prefixText: 'Child ID: ',
               border: OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.grey[100],
             ),
-            validator: (value){
-              if(value == null || value.isEmpty){
-                return 'This field is required.';
-              }
-              return null;
-            },),
+           ),
 
             const SizedBox(height: 16),
 
@@ -245,8 +263,21 @@ class _AddChildScreenState extends State <AddChildScreen> {
                         // Source for saving and preparing data to Cloud Firestore:
                         //https://firebase.google.com/docs/firestore/manage-data/add-data#set_a_document
                         try{
+
+                          String childID = _childIDcontroller.text.trim(); // to make sure ID is unique, first I need to get it
+                          final check = await FirebaseFirestore.instance //Look firestore if it exists, search
+                            .collection('children')
+                            .where('childID', isEqualTo: childID)
+                            .get();
+                          
+                          // If ID exists, generate a new one
+                          if(check.docs.isNotEmpty){
+                            childID = generateNewchildID();
+                            _childIDcontroller.text = childID;
+                          }
+                          
                           Map<String, dynamic> childdata = {
-                            'childID': _childIDcontroller.text.trim(),
+                            'childID': childID,
                             'fullName': _fullNamecontroller.text.trim(),
                             'gender': _selectedgender,
                             'dateofBirth' : _datecontroller.text.trim(),
