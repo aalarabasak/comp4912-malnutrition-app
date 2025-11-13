@@ -4,6 +4,7 @@ import 'add_child_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'welcome_screen.dart';
+import 'child_profile_screen.dart';
 
 class FieldWorkerHome extends StatefulWidget{
   const FieldWorkerHome({super.key});
@@ -14,6 +15,17 @@ class FieldWorkerHome extends StatefulWidget{
 }
 
 class _FieldWorkerHomeState extends State<FieldWorkerHome>{
+
+  final searchcontroller = TextEditingController(); //A controller to read and manage the text in the search textfield
+
+  String searchquery ="";//A  variable to store the current search query entered by the user.
+
+  @override
+  void dispose(){
+    searchcontroller.dispose();
+    super.dispose();
+
+  }
 
   String calculateAge(String birthdatestring){
 
@@ -55,8 +67,8 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
       title: Icon(Icons.monitor_heart_outlined, color: Colors.black),
       centerTitle: true,
       backgroundColor: Colors.transparent,
+      automaticallyImplyLeading: false, //avoid the presence of back button
       actions: [
-        //Padding(padding: const EdgeInsets.symmetric(horizontal: 40.0)),
         Padding(padding: const EdgeInsets.only(right: 40.0),
          child:ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
@@ -64,9 +76,9 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
             foregroundColor: Colors.black87,
             textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
           ),
-          onPressed: () async{
+          onPressed: () async{ //it means it is a method needs waiting -> async
             
-            await FirebaseAuth.instance.signOut();
+            await FirebaseAuth.instance.signOut(); //log out using firebase auth
 
             if(context.mounted){
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const WelcomeScreen()),
@@ -117,25 +129,33 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
 
           //search bar
           TextFormField(
+            controller: searchcontroller,
             decoration: InputDecoration(
-              labelText: 'Search Child by Name of ID',
+              labelText: 'Search Child by Name',
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(),
             ),
+            onChanged: (value) { //tells Flutter to rebuild the screen because our search query changed.
+              setState(() {
+                searchquery = value.toLowerCase();// Store the query in lowercase for easier matching
+              });
+            },
+
           ),
 
           const SizedBox(height: 20),
 
           //list titles (or name of the columns)
           const Row(
-            children: [
+            children: [ //expanded-> it takes up the remaininng horizontal space
+            //flex-> shows how the space can be shared
               Expanded( flex: 3 ,child: Text('Name', style: TextStyle(fontWeight: FontWeight.bold),)),
               Expanded( flex: 2 ,child: Text('Age', style: TextStyle(fontWeight: FontWeight.bold),)),
               Expanded( flex: 2 ,child: Text('Risk Status', style: TextStyle(fontWeight: FontWeight.bold),)),             
             ],
           ),
 
-          const Divider(thickness: 1, color: Colors.black87,),
+          const Divider(thickness: 1, color: Colors.black87,), //horizontal line that separates titles from datas
 
           //child list datas
           Expanded(//It takes up all the remaining vertical space.
@@ -143,7 +163,7 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
               stream: FirebaseFirestore.instance
                 .collection('children')
                 .orderBy('createdAt', descending: true)
-                .snapshots(), //provides live streaming
+                .snapshots(), //provides live streaming, if new data comes to the firebase, immediately is shown in list screen.
 
               builder: (context, snapshot) {
                 if(snapshot.hasError){
@@ -156,12 +176,39 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
                   return Center(child: CircularProgressIndicator(),);
                 }
 
-                return ListView.builder(
+                final allchildren = snapshot.data!.docs; // Get all documents from the snapshot, firestore
 
-                  itemCount: snapshot.data!.docs.length,
+                final List<DocumentSnapshot> filteredlist; //prepare a empty list for now
 
+                if(searchquery.isEmpty){
+                  filteredlist = allchildren; //show the all children as a list
+                } 
+                else{
+                  filteredlist = allchildren.where((doc){
+                    Map<String, dynamic> childdata = doc.data() as Map<String, dynamic>;
+
+                    String fullName = childdata['fullName'];//get fullname 
+
+                    // Check if name  starts with the search query
+                    bool name_matches = fullName.toLowerCase().startsWith(searchquery); //case-sensitive logic
+
+                    return name_matches;//Add to list if it is matched
+                  }).toList(); //convert  filtered results as a list
+                }
+
+
+
+                return ListView.builder( //if the data comes successfullt, then execute below lines
+
+                  //Tells the list to create rows based on the number of  documents of the filtered list
+                  itemCount: filteredlist.length,
+
+                  //it shows how the each row of the list will be drawn
                   itemBuilder: (context, index) {
-                    var childdoc= snapshot.data!.docs[index];
+
+                    
+                    var childdoc= filteredlist[index];//get child from list
+                    //this maps converts the data to usable format
                     Map<String, dynamic> childData = childdoc.data() as Map<String, dynamic>;
 
                     String name = childData['fullName'];
@@ -172,7 +219,8 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
                     String risk = "-";//will be updated later!!!!!!!
 
                     return ListTile(
-                      contentPadding: EdgeInsets.zero,
+                      //This ensures that the row's content aligns perfectly with the headings above.
+                      contentPadding: EdgeInsets.zero, 
                       title: Row(
                         
                         children: [
@@ -183,7 +231,10 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
                         ],
                       ),
                       onTap: () {
-                        //will be added later
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context)=> ChildProfileScreen(childId: childdoc.id)));
+
                         print("Tıklanan çocuk: $name");
                       },
                     );

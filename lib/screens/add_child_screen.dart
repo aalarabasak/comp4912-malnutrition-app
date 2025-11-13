@@ -45,6 +45,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
         centerTitle: true,
 
       backgroundColor: Colors.transparent, 
+      automaticallyImplyLeading: false, //avoid the presence of back button
     ),
     body: SafeArea(child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40.0),
