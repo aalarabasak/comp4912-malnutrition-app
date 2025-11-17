@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:malnutrition_app/screens/add_test_results_screen.dart';
 import '../utils(helpers)/formatting_helpers.dart';
 
 class ChildProfileScreen extends StatefulWidget{
@@ -189,7 +190,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                           textStyle: TextStyle(fontWeight: FontWeight.bold)),
 
                         onPressed:() {
-                          //will be updated!!!!!!!
+                          Navigator.push(context, MaterialPageRoute(builder: (context) =>  AddTestResultsScreen(childid: widget.childId)));
                         },
 
                         icon:  Icon(Icons.text_snippet),
