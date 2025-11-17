@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:malnutrition_app/screens/field_worker_home.dart';
 import 'screens/welcome_screen.dart'; 
-//import 'screens/login_screen.dart';
-//import 'screens/select_role_screen.dart';
-//import 'screens/signup_screen.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -34,8 +30,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       
-      //home: const WelcomeScreen(),
-      home: const FieldWorkerHome(), 
+      home: const WelcomeScreen(),
+      //home: const FieldWorkerHome(), 
     );
   }
 }
