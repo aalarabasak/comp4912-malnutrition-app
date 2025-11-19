@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:malnutrition_app/screens/add_test_results_screen.dart';
+import 'package:malnutrition_app/screens/scan_barcode_screen.dart';
 import '../utils(helpers)/formatting_helpers.dart';
+
 
 class ChildProfileScreen extends StatefulWidget{
 
@@ -64,6 +66,47 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
         ],
       ),
     );
+  }
+
+  //this is for add meal button's dialog page
+  void showAddMealOptions(BuildContext context){
+    showDialog(
+      context: context, 
+      builder: (BuildContext dialogcontext){
+        return AlertDialog(
+          title: Text('Please choose how you want to add the meal.',
+            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),),
+          content: Column(
+            mainAxisSize: MainAxisSize.min, //Adjusts window size according to content
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.qr_code_scanner),
+                title: Text('Add Packaged Food'),
+                onTap: () {
+                  Navigator.of(dialogcontext).pop();// first close the dialog
+                  //after that, direct to the barcode screen
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> const ScanBarcodeScreen()));
+
+
+                },
+
+              ),
+
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text('Add Unpackaged Food'),
+                onTap: () {
+                  Navigator.of(dialogcontext).pop();//close for now, will be updated!!!!!
+                },
+              )
+
+            ],
+          ),
+
+        );
+
+      }
+      );
   }
 
   @override
@@ -211,7 +254,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                           textStyle: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         onPressed: () {
-                          //will be updated!!!!!!!
+                          showAddMealOptions(context);
                         },
                         label: Text('Add Meal'),
                         icon: Icon(Icons.medication_liquid_rounded),
