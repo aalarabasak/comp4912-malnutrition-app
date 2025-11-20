@@ -58,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen>{
 
 
       body: SafeArea(
+        child:SingleChildScrollView(
         child : Padding(padding: const EdgeInsets.symmetric(horizontal: 40.0),
         child: Center(
           child: Form(key: _formkey,
@@ -202,6 +203,7 @@ class _LoginScreenState extends State<LoginScreen>{
 
       ),
 
+    )
     )
       )
     );
