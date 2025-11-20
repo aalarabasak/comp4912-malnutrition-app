@@ -51,6 +51,7 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>{
       if(barcode_value != null && barcode_value.isNotEmpty){ //isnotempty looks at if the string has characters or not 
                                                             // if it is like this " " , this cannot be accepted.
         _timer?.cancel();
+        print('DEBUG: Successfully Scanned ID: $barcode_value');
         controller.stop(); //stop the scanner because barcode is detected
 
         //navigate to the confirmation page
