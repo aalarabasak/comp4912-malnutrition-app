@@ -35,7 +35,7 @@ final FormFieldValidator<String> validator;
         DateTime? selecteddate = await showDatePicker(
           context: context,
           initialDate:DateTime.now(),
-          firstDate: DateTime(DateTime.now().year - 100),
+          firstDate: DateTime(DateTime.now().year - 10),
           lastDate: DateTime.now(),
         );
 
