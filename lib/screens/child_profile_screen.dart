@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:malnutrition_app/screens/add_test_results_screen.dart';
 import 'package:malnutrition_app/screens/scan_barcode_screen.dart';
 import '../utils(helpers)/formatting_helpers.dart';
-
+import '../widgets/cards/latest_measurement_card.dart';
+import '../widgets/info_display_widgets.dart';
 
 class ChildProfileScreen extends StatefulWidget{
 
@@ -21,52 +22,6 @@ class ChildProfileScreen extends StatefulWidget{
 }
   
 class _ChildProfileScreenState extends State<ChildProfileScreen> {
-
-//this is for 1st information card of the child, it is a helper function
-  Widget buildinformationrow(String label, String value){
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0), //Add vertical spacing between rows
-      child: Row(
-        children: [
-          //e.g. "age: "
-          Text('$label: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87 ),),
-
-          //the value e.g. "3"
-          Expanded( //Take remaining space, wrap if long
-            child: Text(value, style: TextStyle(fontSize: 15, color: Colors.black87),))
-        ],
-
-      ),
-      );
-  }
-
-//this is for risk status, measurements, nutrition summary, recent activities cards.
-  Widget buildCards(String title, String text){
-
-    return Container(
-      width: double.infinity,//Cover the entire screen
-      margin: EdgeInsets.only(top: 15.0), //put space btw cards
-      padding: EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[400]!),
-        borderRadius: BorderRadius.circular(10.0),
-        color: const Color.fromARGB(255, 178, 190, 194)
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //title like risk status
-          Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-
-          const SizedBox(height: 10),
-
-          //contents
-          Text(text, style: TextStyle(fontSize: 15, color: Colors.black54),)
-        ],
-      ),
-    );
-  }
 
   //this is for add meal button's dialog page
   void showAddMealOptions(BuildContext context){
@@ -108,6 +63,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
       }
       );
   }
+
 
   @override
   Widget build(BuildContext context){
@@ -205,9 +161,8 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   "-",),
                 
                 //measurements info card
-                buildCards(
-                  "Measurements", 
-                  "-"),
+                LatestMeasurementCard(childId: widget.childId),
+                  
 
                 //Nutrition summary info card
                 buildCards(
