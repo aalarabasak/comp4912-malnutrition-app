@@ -93,7 +93,8 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
       if(!context.mounted)return;
       
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Meal added successfully.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Meal added successfully.'),
+        backgroundColor: Colors.green,));
 
       Navigator.of(context).pop(); //closes this confirmation screen and backs to child's profile page
       
