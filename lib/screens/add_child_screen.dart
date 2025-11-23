@@ -25,7 +25,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
   final _childIDcontroller = TextEditingController();
   final _fullNamecontroller = TextEditingController();
   final _caregivercontroller= TextEditingController();
-  final _disability_explanationController = TextEditingController();
+  final _disabilityexplanationController = TextEditingController();
 
   String generateNewchildID(){
     final random = Random();
@@ -53,7 +53,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
     _childIDcontroller.dispose();
     _fullNamecontroller.dispose();
     _caregivercontroller.dispose();
-    _disability_explanationController.dispose();
+    _disabilityexplanationController.dispose();
     super.dispose();
   }
   
@@ -212,7 +212,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
                 //if child has disability, the explanation code is below.
                 if(_hasdisability)
-                  TextFormField(controller: _disability_explanationController,
+                  TextFormField(controller: _disabilityexplanationController,
                     decoration: InputDecoration(
                     labelText: 'If yes, explain..',
                     //border: OutlineInputBorder(),
@@ -284,7 +284,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
                             'caregiverName': _caregivercontroller.text.trim(),
                             'campBlock': _selectedcampblock,
                             'hasDisability': _hasdisability,
-                            'disabilityExplanation': _hasdisability ? _disability_explanationController.text.trim(): null,
+                            'disabilityExplanation': _hasdisability ? _disabilityexplanationController.text.trim(): null,
                             'createdAt': FieldValue.serverTimestamp(),
                           };
 

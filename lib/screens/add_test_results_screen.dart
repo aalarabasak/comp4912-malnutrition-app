@@ -197,25 +197,25 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                         try{
 
                           // take the user inputs
-                          String muac_text = muacController.text.trim();
-                          String weight_text = weightController.text.trim();
-                          String height_text = heightController.text.trim();
+                          String muactext = muacController.text.trim();
+                          String weighttext = weightController.text.trim();
+                          String heighttext = heightController.text.trim();
 
                           
                           // (,) ->> (.) should be in international format
-                          muac_text = muac_text.replaceAll(',', '.');
-                          weight_text = weight_text.replaceAll(',', '.');
-                          height_text = height_text.replaceAll(',', '.');
+                          muactext = muactext.replaceAll(',', '.');
+                          weighttext = weighttext.replaceAll(',', '.');
+                          heighttext = heighttext.replaceAll(',', '.');
 
 
 
                           //Prepare the data map
-                          Map<String, dynamic> measurement_data = {
+                          Map<String, dynamic> measurementdata = {
                             // Try to parse numbers if they are not suitable then it is arranged to  0.0 
                             //the suitable format: '112.0', or, '112.5'
-                            'muac': double.tryParse(muac_text) ?? 0.0,
-                            'weight': double.tryParse(weight_text) ?? 0.0,
-                            'height': double.tryParse(height_text) ?? 0.0,
+                            'muac': double.tryParse(muactext) ?? 0.0,
+                            'weight': double.tryParse(weighttext) ?? 0.0,
+                            'height': double.tryParse(heighttext) ?? 0.0,
                             'edema': selectedEdemaOption,
                             'dateofMeasurement': dateController.text.trim(),
                             'notes': optionalNotesController.text.trim(),
@@ -226,7 +226,7 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                           .collection('children')
                           .doc(widget.childid)// Use the ID from the previous screen
                           .collection('measurements')// Create a new subcollection
-                          .add(measurement_data);// Add new  data
+                          .add(measurementdata);// Add new  data
 
                           //if the process successful
                           if(context.mounted){

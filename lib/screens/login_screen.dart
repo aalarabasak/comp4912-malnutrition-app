@@ -146,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen>{
                                 _navigateToRelatedHome(context, role);
                               }
 
-                              print("LOGIN SUCCESSFUL!");
+                              debugPrint("LOGIN SUCCESSFUL!");
                               
                               
                             }on FirebaseAuthException catch (err){

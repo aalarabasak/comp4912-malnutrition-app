@@ -5,7 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class MealConfirmationScreenPackaged extends StatefulWidget {
 
   final String barcodeId; //takes barcode id as a parameter  
-  const MealConfirmationScreenPackaged({super.key, required this.barcodeId});
+  final String childid;
+  const MealConfirmationScreenPackaged({super.key, required this.barcodeId, required this.childid});
 
   @override
   State<MealConfirmationScreenPackaged> createState() => _MealConfirmationPackagedState();
@@ -15,9 +16,9 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
   bool isloading =true;
   Map <String, dynamic>? productdata;
-  String? error_message;
-  double portion_count = 1.0;
-  String? portion_error;
+  String? errorMessage;
+  double portioncount = 1.0;
+  String? portionerror;
 
   @override
   void initState(){
@@ -39,26 +40,78 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
       }
       else{
         setState(() {
-          error_message = "Product not found.";
+          errorMessage = "Product not found.";
           isloading = false;
         });
       }
   }
 
-  void update_portion(double change){
+  void updateportion(double change){
     setState(() {
-      final newCount = portion_count + change;
+      final newCount = portioncount + change;
       if(newCount >= 0.1){
-        portion_count = newCount;
-        portion_error = null;
+        portioncount = newCount;
+        portionerror = null;
       }
       else if(newCount < 0.1){
-        portion_error = 'Portion must be at least 0.5';
+        portionerror = 'Portion must be at least 0.5';
       }
     });
   }
 
-  Widget build_information_row(String label, String value){
+  Future <void> registerMealtoChild()async{
+    final data = productdata!;
+    final portion = portioncount;
+
+    //calculation of nutritional values based on the portion
+    final totalKcal = data['kcal'] * portion;
+    final totalProtein = data['proteinG'] * portion;
+    final totalCarbs = data['carbsG'] * portion;
+    final totalFat = data['fatG'] * portion;
+
+    //Create a map of meal data to record
+    final mealdata = {
+      'date': DateTime.now().toIso8601String(),
+      'mealTime': 'Snack', //by default ??????
+      'productName': data['name'], //it is directly taken 
+      'barcodeId': widget.barcodeId,
+      'portionSize': portion,
+      'totalKcal': totalKcal,
+      'totalProteinG': totalProtein,
+      'totalCarbsG': totalCarbs,
+      'totalFatG': totalFat,
+    };
+
+    //firebase registration
+    try{
+      //Add a new document to the child's  subcollection as mealintakes
+      await FirebaseFirestore.instance
+        .collection('children')// go to main collection children
+        .doc(widget.childid)//find the related child
+        .collection('mealIntakes')//create subcollection
+        .add(mealdata);// fill the data
+
+      if(!context.mounted)return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Meal added successfully.')));
+
+      Navigator.of(context).pop(); //closes this confirmation screen and backs to child's profile page
+      
+                                 
+    }catch(error){
+      debugPrint("Firebase Registration Error: $error");
+
+      if(!context.mounted)return;
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to save data.'),
+          backgroundColor: Colors.red,));
+      
+    }
+
+
+  }
+
+  Widget buildInformationrow(String label, String value){
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0), //Add vertical spacing between rows
@@ -86,13 +139,13 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
     }
 
     //if there is a error
-    if(error_message != null){
+    if(errorMessage != null){
       return Scaffold(
         appBar: AppBar(title: Text('Error!'),),
         body: Center(
           child: Padding(
             padding: EdgeInsets.all(16.0),
-            child: Text(error_message!, style: TextStyle(color: Colors.red),),
+            child: Text(errorMessage!, style: TextStyle(color: Colors.red),),
           ),
         ),
       );
@@ -127,9 +180,9 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
                 children: [
                   Text('Product Details', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
                   const SizedBox(height: 5,),
-                  build_information_row("Name", '${productdata!['name']}'),
-                  build_information_row("Lot No", '${productdata!['lotNo']}'),
-                  build_information_row("Expiry Date", '${productdata!['expiryDate']}'),
+                  buildInformationrow("Name", '${productdata!['name']}'),
+                  buildInformationrow("Lot No", '${productdata!['lotNo']}'),
+                  buildInformationrow("Expiry Date", '${productdata!['expiryDate']}'),
                 ],
               ),
             ),
@@ -195,25 +248,25 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
                     children: [
                       //- portion size button
                       IconButton(
-                        onPressed:() => update_portion(-0.5), 
+                        onPressed:() => updateportion(-0.5), 
                         icon: Icon(Icons.remove_circle, size: 40, color: Colors.red,)),
 
 
                       //number of packets that is selected by the user
-                      Text('${portion_count.toStringAsFixed(1)} packets', 
+                      Text('${portioncount.toStringAsFixed(1)} packets', 
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
 
 
                       //+ portion size button
-                      IconButton(onPressed:() => update_portion(0.5), 
+                      IconButton(onPressed:() => updateportion(0.5), 
                       icon: Icon(Icons.add_circle, size: 40, color: Colors.green,)),
                     ],
                   ),
 
                   //error message
-                  if(portion_error != null)
+                  if(portionerror != null)
                     Center(
-                      child: Text(portion_error!, style: TextStyle(color: Colors.red),),
+                      child: Text(portionerror!, style: TextStyle(color: Colors.red),),
                     ),
                     
                    ],
@@ -249,9 +302,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
                             padding: const EdgeInsets.symmetric(vertical: 25),
                             textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                           ),
-                          onPressed:() {
-                            //will be updated!!!!!
-                          }, 
+                          onPressed:() => registerMealtoChild(), 
                           child: Text('Save Meal') )),
                     ],
                   ),

@@ -202,7 +202,7 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
                           context,
                           MaterialPageRoute(builder: (context)=> ChildProfileScreen(childId: childdoc.id)));
 
-                        print("Tıklanan çocuk: $name");
+                        debugPrint("Tıklanan çocuk: $name");
                       },
                     );
                  

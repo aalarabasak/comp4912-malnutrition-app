@@ -23,7 +23,7 @@ class ChildProfileScreen extends StatefulWidget{
 class _ChildProfileScreenState extends State<ChildProfileScreen> {
 
 //this is for 1st information card of the child, it is a helper function
-  Widget build_information_row(String label, String value){
+  Widget buildinformationrow(String label, String value){
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0), //Add vertical spacing between rows
@@ -85,7 +85,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                 onTap: () {
                   Navigator.of(dialogcontext).pop();// first close the dialog
                   //after that, direct to the barcode screen
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> const ScanBarcodeScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>  ScanBarcodeScreen(childId: widget.childId )));
 
 
                 },
@@ -142,15 +142,15 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
           String age = calculateAge(temp);
 
           String caregiver = childdata['caregiverName'];
-          String childid_fromDB = childdata['childID'];
-          String camp_block = childdata['campBlock'];
+          String childidfromDB = childdata['childID'];
+          String campblock = childdata['campBlock'];
           String gender = childdata['gender'];
 
           bool hasDisability = childdata['hasDisability'];
-          String disability_explanation = '';
+          String disabilityexplanation = '';
 
           if(hasDisability){
-             disability_explanation = childdata['disabilityExplanation'];
+             disabilityexplanation = childdata['disabilityExplanation'];
           }
 
           return SafeArea(
@@ -185,15 +185,15 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      build_information_row("Age", age ),
-                      build_information_row("Gender", gender),
-                      build_information_row("ID", childid_fromDB),
-                      build_information_row("Camp Block", camp_block),
-                      build_information_row("Caregiver", caregiver),
-                      build_information_row("Has Disability", hasDisability ? "Yes" : "No"),
+                      buildinformationrow("Age", age ),
+                      buildinformationrow("Gender", gender),
+                      buildinformationrow("ID", childidfromDB),
+                      buildinformationrow("Camp Block", campblock),
+                      buildinformationrow("Caregiver", caregiver),
+                      buildinformationrow("Has Disability", hasDisability ? "Yes" : "No"),
 
                       if(hasDisability)
-                        build_information_row("Explanation " , disability_explanation),
+                        buildinformationrow("Explanation " , disabilityexplanation),
                     
                     ],
                   ) ,

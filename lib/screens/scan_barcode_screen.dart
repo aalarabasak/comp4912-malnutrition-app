@@ -8,7 +8,8 @@ import 'dart:async'; //for timer
 
 
 class ScanBarcodeScreen extends StatefulWidget{
-  const ScanBarcodeScreen({super.key});
+  final String childId;
+  const ScanBarcodeScreen({super.key, required this.childId});
 
   @override
   State<ScanBarcodeScreen> createState() => _ScanBarcodeScreenState();
@@ -51,12 +52,12 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>{
       if(barcode_value != null && barcode_value.isNotEmpty){ //isnotempty looks at if the string has characters or not 
                                                             // if it is like this " " , this cannot be accepted.
         _timer?.cancel();
-        print('DEBUG: Successfully Scanned ID: $barcode_value');
+        debugPrint('DEBUG: Successfully Scanned ID: $barcode_value');
         controller.stop(); //stop the scanner because barcode is detected
 
         //navigate to the confirmation page
          Navigator.pushReplacement(context, MaterialPageRoute(
-        builder: (context) => MealConfirmationScreenPackaged(barcodeId: barcode_value)));
+        builder: (context) => MealConfirmationScreenPackaged(barcodeId: barcode_value, childid: widget.childId,)));
       }
       else{
         showError(); //show error because barcode could not be recognized. 
