@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/info_display_widgets.dart';
 
 class MealConfirmationScreenPackaged extends StatefulWidget {
 
@@ -112,23 +113,6 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
   }
 
-  Widget buildInformationrow(String label, String value){
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0), //Add vertical spacing between rows
-      child: Row(
-        children: [
-          //e.g. "age: "
-          Text('$label: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87 ),),
-
-          //the value e.g. "3"
-          Expanded( //Take remaining space, wrap if long
-            child: Text(value, style: TextStyle(fontSize: 15, color: Colors.black87),))
-        ],
-
-      ),
-      );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,9 +165,9 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
                 children: [
                   Text('Product Details', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
                   const SizedBox(height: 5,),
-                  buildInformationrow("Name", '${productdata!['name']}'),
-                  buildInformationrow("Lot No", '${productdata!['lotNo']}'),
-                  buildInformationrow("Expiry Date", '${productdata!['expiryDate']}'),
+                  buildinformationrow("Name", '${productdata!['name']}'),
+                  buildinformationrow("Lot No", '${productdata!['lotNo']}'),
+                  buildinformationrow("Expiry Date", '${productdata!['expiryDate']}'),
                 ],
               ),
             ),

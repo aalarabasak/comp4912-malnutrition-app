@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:malnutrition_app/screens/add_test_results_screen.dart';
 import 'package:malnutrition_app/screens/scan_barcode_screen.dart';
+import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import '../utils(helpers)/formatting_helpers.dart';
 import '../widgets/cards/latest_measurement_card.dart';
 import '../widgets/info_display_widgets.dart';
@@ -110,7 +111,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
           }
 
           return SafeArea(
-            child: Padding(padding: const EdgeInsets.symmetric(horizontal: 40.0),
+            child: Padding(padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: ListView(
 
               children: [ //lots of elements from top the down
@@ -156,9 +157,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                 ),
 
                 //Risk status info card
-                buildCards(
-                  "Risk Status", 
-                  "-",),
+                RiskStatusCard(childId: widget.childId),
                 
                 //measurements info card
                 LatestMeasurementCard(childId: widget.childId),

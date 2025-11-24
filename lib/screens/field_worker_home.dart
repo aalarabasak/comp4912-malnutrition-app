@@ -36,7 +36,7 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false, //avoid the presence of back button
       actions: [
-        Padding(padding: const EdgeInsets.only(right: 40.0),
+        Padding(padding: const EdgeInsets.only(right: 30.0),
          child:ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(255, 203, 202, 202),
@@ -62,7 +62,7 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
     ),
     
     body: SafeArea(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 40.0),
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, // Aligns all children horizontally to the left side.
         children: [
