@@ -31,3 +31,15 @@ String calculateAge(String birthdatestring){
       return "$age years";
 }
 
+//used in risk_status_card.dart
+DateTime parseDateString(String datestring){
+    List <String> parts = datestring.split('/');
+
+    int day = int.parse(parts[0]);
+    int month = int.parse(parts[1]);
+    int year = int.parse(parts[2]);
+
+    return DateTime(year, month, day);
+  
+}
+

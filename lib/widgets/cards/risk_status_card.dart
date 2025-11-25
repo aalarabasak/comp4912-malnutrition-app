@@ -4,11 +4,57 @@ import 'package:malnutrition_app/screens/risk_status_history_screen.dart';
 import 'package:malnutrition_app/utils/risk_calculator.dart';
 import 'package:malnutrition_app/widgets/info_display_widgets.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:malnutrition_app/utils/formatting_helpers.dart';
 
 class RiskStatusCard extends StatelessWidget{
   final String childId;//need the child's ID to get specific data
 
   const RiskStatusCard({super.key, required this.childId});
+
+  bool checkWeightLoss(List <QueryDocumentSnapshot> docs, DateTime latestdate, double currentweight){
+
+    if (currentweight <= 0) return false; 
+
+    double? pastweight;
+
+    for(var doc in docs){
+      var data = doc.data() as Map<String, dynamic>;
+
+      //takes the data of measurement from list docs
+      String datestring = data['dateofMeasurement'].toString();
+      
+      DateTime testdate = parseDateString(datestring);
+      int daysdiff = latestdate.difference(testdate).inDays;//// Find the difference in days between two dates
+
+      if(daysdiff >= 21 && daysdiff <= 35){//Search 21 to 35 days about 1 month
+        pastweight = double.tryParse(data['weight'].toString());
+
+        if(pastweight != null && pastweight >0){
+          //If the weight was entered on that date -> use it as a reference and finish t
+          break;
+        }
+
+      }
+
+    }
+    //If past weight is found check the 5% rule
+    if(pastweight != null && pastweight>0){
+      double percentage = (pastweight-currentweight)/pastweight; //apply formula
+      if(percentage >= 0.05){//if it is 0.05 or greater , make it true
+        return true;// Risk detected
+      }
+    }
+    return false;//no risk
+  }
+
+  //it is for updating currentRiskStatus field in child's unique document if weight loss detected.
+  void updateRiskStatusInFirestore(Map <String,dynamic> riskresult) async{
+    FirebaseFirestore.instance.collection('children').doc(childId)
+    .update({
+      'currentRiskStatus':riskresult['textStatus'],
+      'lastRiskUpdate':FieldValue.serverTimestamp(),
+    });
+  }
 
   @override
   Widget build(BuildContext context){
@@ -18,7 +64,7 @@ class RiskStatusCard extends StatelessWidget{
       .doc(childId)
       .collection('measurements')
       .orderBy('recordedAt', descending: true)// Get the latest date first
-      .limit(1)//need the most recent record
+      .limit(30)//pull the last 30 records to scan the history
       .snapshots(),
 
       builder:(context, snapshot) {
@@ -27,17 +73,33 @@ class RiskStatusCard extends StatelessWidget{
         }
 
         // Extract data from the document
-        var data = snapshot.data!.docs.first.data();// The ! tells Dart that I am sure data is not null here
+        // The ! tells Dart that I am sure data is not null here
+        var latestdoc = snapshot.data!.docs.first;
+        var data = latestdoc.data();
 
         double muac = double.tryParse(data['muac'].toString()) ?? 0;
+        double currentweight = double.tryParse(data['weight'].toString()) ?? 0;
         String edema = data['edema'];
-
-        //get the values for UI
-        var result = RiskCalculator.calculateRisk(muac, edema);
-        double gaugevalue = result['gaugevalue'];
         
 
-
+        String latestDateString = data['dateofMeasurement'].toString();// Parse the date of the last measurement -reference point for comparison
+        DateTime latestdate = parseDateString(latestDateString);
+        //run weight loss analysis function
+        bool weightlossdetected =checkWeightLoss(snapshot.data!.docs, latestdate, currentweight);
+        
+        //call for calculator
+        //get the values for UI
+        var result = RiskCalculator.calculateRisk(muac, edema, weightLossDetected: weightlossdetected);       
+        double gaugevalue = result['gaugevalue'];
+        
+        if(weightlossdetected){
+          //if weightloss risk is detected, then I need to update the currentriskstatus field of the child
+          //if it not detected, No updates for nothing
+          updateRiskStatusInFirestore(result);//update child's status
+        }
+        
+ 
+        //UI PART
         return GestureDetector(// Make the card clickable
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: childId)));
