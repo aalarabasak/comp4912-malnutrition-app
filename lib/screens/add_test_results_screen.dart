@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:malnutrition_app/utils/risk_calculator.dart';
 import '../widgets/date_picker_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -207,7 +208,14 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                           weighttext = weighttext.replaceAll(',', '.');
                           heighttext = heighttext.replaceAll(',', '.');
 
+                          //risk calculation part
+                          double muacvalue = double.tryParse(muactext) ?? 0.0;
+                          String edemavalue = selectedEdemaOption ?? 'No';
+                          var riskresult = RiskCalculator.calculateRisk(muacvalue, edemavalue);
 
+                          String calculatedStatus = riskresult['textStatus'];//???
+                          String riskReason = riskresult['reason'];
+                          //end of risk calc
 
                           //Prepare the data map
                           Map<String, dynamic> measurementdata = {
@@ -220,6 +228,9 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                             'dateofMeasurement': dateController.text.trim(),
                             'notes': optionalNotesController.text.trim(),
                             'recordedAt': FieldValue.serverTimestamp(),
+                            //for risk status variables->>
+                            'calculatedRiskStatus':calculatedStatus,
+                            'riskReason':riskReason,
                           };
 
                           await FirebaseFirestore.instance
@@ -227,6 +238,13 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                           .doc(widget.childid)// Use the ID from the previous screen
                           .collection('measurements')// Create a new subcollection
                           .add(measurementdata);// Add new  data
+
+                          //updating risk status based on new measurement data
+                          await FirebaseFirestore.instance.collection('children').doc(widget.childid)
+                          .update({
+                            'currentRiskStatus': calculatedStatus,
+                            'lastRiskUpdate': FieldValue.serverTimestamp(),
+                          });
 
                           //if the process successful
                           if(context.mounted){

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:malnutrition_app/screens/add_test_results_screen.dart';
 import 'package:malnutrition_app/screens/scan_barcode_screen.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
-import '../utils(helpers)/formatting_helpers.dart';
+import '../utils/formatting_helpers.dart';
 import '../widgets/cards/latest_measurement_card.dart';
 import '../widgets/info_display_widgets.dart';
 
