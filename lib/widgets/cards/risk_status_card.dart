@@ -16,8 +16,8 @@ class RiskStatusCard extends StatelessWidget{
     
     var data = latestdoc.data() as Map<String, dynamic>;
     
-    String textStatus = data['calculatedRiskStatus'];
-    String reason = data['riskReason'];
+    String textStatus = data['calculatedRiskStatus'] ?? 'Healthy';
+    String reason = data['riskReason'] ?? 'No previous risk data available';
 
     var resultGaugeDetails = RiskCalculator.calculateGaugeValueandColor(textStatus);
   
