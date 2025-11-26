@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:malnutrition_app/utils/formatting_helpers.dart';
 import 'package:malnutrition_app/utils/risk_calculator.dart';
 import '../widgets/date_picker_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -211,7 +212,22 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                           //risk calculation part
                           double muacvalue = double.tryParse(muactext) ?? 0.0;
                           String edemavalue = selectedEdemaOption ?? 'No';
-                          var riskresult = RiskCalculator.calculateRisk(muacvalue, edemavalue);
+                          double currentweight =double.tryParse(weighttext) ?? 0.0;
+                          DateTime currentdate = parseDateString(dateController.text.trim());
+                          
+                          //Get past records last 30 from firestore just one time
+                          var historySnapshot = await FirebaseFirestore.instance
+                          .collection('children')
+                          .doc(widget.childid)
+                          .collection('measurements')
+                          .orderBy('recordedAt', descending: true)
+                          .limit(30).get(); //get is not like snapshot(), it is just one time reading from firestore
+                          
+                          //ask for weight loss using the static calculator
+                          bool isweightLossDetected = RiskCalculator.checkWeightLoss(historySnapshot.docs, currentdate, currentweight);
+                          
+                          //Make risk calculation with these information
+                          var riskresult = RiskCalculator.calculateRisk(muacvalue, edemavalue, weightLossDetected:isweightLossDetected);
 
                           String calculatedStatus = riskresult['textStatus'];//???
                           String riskReason = riskresult['reason'];
@@ -221,8 +237,8 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                           Map<String, dynamic> measurementdata = {
                             // Try to parse numbers if they are not suitable then it is arranged to  0.0 
                             //the suitable format: '112.0', or, '112.5'
-                            'muac': double.tryParse(muactext) ?? 0.0,
-                            'weight': double.tryParse(weighttext) ?? 0.0,
+                            'muac': muacvalue,
+                            'weight': currentweight,
                             'height': double.tryParse(heighttext) ?? 0.0,
                             'edema': selectedEdemaOption,
                             'dateofMeasurement': dateController.text.trim(),

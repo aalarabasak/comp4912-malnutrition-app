@@ -1,5 +1,5 @@
 
-
+//used in child_profile_screen.dart, 
 String calculateAge(String birthdatestring){
 
       final parts = birthdatestring.split('/');
@@ -31,7 +31,7 @@ String calculateAge(String birthdatestring){
       return "$age years";
 }
 
-//used in risk_status_card.dart
+//used in risk_status_card.dart, risk_calculator.dart
 DateTime parseDateString(String datestring){
     List <String> parts = datestring.split('/');
 

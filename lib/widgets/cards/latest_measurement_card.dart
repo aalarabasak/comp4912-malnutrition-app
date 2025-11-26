@@ -3,55 +3,25 @@ import 'package:flutter/material.dart';
 import '../../screens/measurements_history_screen.dart'; 
 import '../info_display_widgets.dart'; // Import helper widgets for displaying rows and cards ( buildCards, buildRichText)
 
-// This class is a StatelessWidget because its state depends only on the childId and the Firebase data stream
-class LatestMeasurementCard extends StatelessWidget{
-  final String childId;
 
-  const LatestMeasurementCard({super.key,required this.childId});
+class LatestMeasurementCard extends StatelessWidget{// This class is a StatelessWidget that receives data instead of fetching it
+  final QueryDocumentSnapshot latestDoc; // Receiving just a single document is enough
+  final String childId; //need for navigation
+
+  const LatestMeasurementCard({super.key,required this.latestDoc,required this.childId,});
 
   @override
   Widget build(BuildContext context){
-    return StreamBuilder <QuerySnapshot>(
-      // StreamBuilder listens to real-time data from firebase and rebuilds the widget when data changes
-    stream: FirebaseFirestore.instance
-    .collection('children') //go to children collection
-    .doc(childId) //go to specific child
-    .collection('measurements') //go to measurements subcollection
-    .orderBy('recordedAt', descending: true) //Sort by date, newest to oldest
-    .limit(1)//give the latest measurement results
-    .snapshots(), 
+    
+    // Convert the Firestore document data into a readable Map structure.
+    Map<String, dynamic> measurementdata = latestDoc.data() as Map<String, dynamic>;
 
-    builder:(context, snapshot) {
-      // this function decides what to display based on the stream's status ,snapshot
-      if(snapshot.hasError){
-        return buildCards("Measurements", "Error loading data");
-      }
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return buildCards("Measurements", "Loading...");
-      }
-
-      //check if no data exists
-      if(!snapshot.hasData || snapshot.data!.docs.isEmpty){
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: childId)));
-          },
-          child: buildCards("Measurements", "No measurements yet."),
-        );      
-      }
-
-      //success case below
-
-      var latestDocument = snapshot.data!.docs.first;
-      // Convert the Firestore document data into a readable Map structure.
-      Map <String, dynamic> measurementdata = latestDocument.data() as Map <String,dynamic>;
-
-      String muac = measurementdata['muac'].toString();
-      String weight = measurementdata['weight'].toString();
-      String height = measurementdata['height'].toString();
-      String edema = measurementdata['edema'].toString();
-      String date = measurementdata['dateofMeasurement'];
-      String notes = measurementdata['notes'];
+    String muac = measurementdata['muac'].toString();
+    String weight = measurementdata['weight'].toString();
+    String height = measurementdata['height'].toString();
+    String edema = measurementdata['edema'].toString();
+    String date = measurementdata['dateofMeasurement'].toString();
+    String notes = measurementdata['notes']?.toString() ?? '';
 
       //display part
       return GestureDetector(
@@ -94,13 +64,7 @@ class LatestMeasurementCard extends StatelessWidget{
 
             ],
           ),
-
-
         ),
       );
-
-    },
-
-    );
   }
 }

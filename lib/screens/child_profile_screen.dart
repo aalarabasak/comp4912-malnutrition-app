@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:malnutrition_app/screens/add_test_results_screen.dart';
 import 'package:malnutrition_app/screens/scan_barcode_screen.dart';
+import 'package:malnutrition_app/screens/measurements_history_screen.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import '../utils/formatting_helpers.dart';
 import '../widgets/cards/latest_measurement_card.dart';
@@ -110,142 +111,173 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
              disabilityexplanation = childdata['disabilityExplanation'];
           }
 
-          return SafeArea(
-            child: Padding(padding: const EdgeInsets.symmetric(horizontal: 30.0),
-            child: ListView(
+          // measurements StreamBuilder inside the child data StreamBuilder
+          return StreamBuilder<QuerySnapshot>(
+            //  Fetch once for both cards -latest measurement card and risk status card
+            stream: FirebaseFirestore.instance
+                .collection('children')
+                .doc(widget.childId)
+                .collection('measurements')
+                .orderBy('recordedAt', descending: true)
+                .limit(1)
+                .snapshots(), // getting the last record
 
-              children: [ //lots of elements from top the down
-                //Header row , Name of the child + icon 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [ //there are two elements in this row
-                    //name of the child
-                    Expanded(child: Text(name, style: TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.w600 ),)),
+            builder: (context, measurementsSnapshot) {
+              // error and loading checks for measurements
+              if (measurementsSnapshot.hasError) {
+                return Center(child: Text("Error loading measurements"));
+              }
+              if (measurementsSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                    //ICON
-                    Icon(Icons.person, size: 60, color: const Color.fromARGB(255, 110, 109, 109), ),
-                  ],
-                ),//End of header row
+              var docs = measurementsSnapshot.data?.docs ?? [];//get the data
 
-                const SizedBox(height: 5),
+              return SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: ListView(
+                    children: [ //lots of elements from top the down
+                      //Header row : name of child + profile icon 
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [ //there are two elements in this row
+                          //name of the child
+                          Expanded(child: Text(name, style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w600 ),)),
 
-                //child's personal information
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 155, 211, 237),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                          //profile icon
+                          Icon(Icons.person, size: 60, color: const Color.fromARGB(255, 110, 109, 109), ),
+                        ],
+                      ),
 
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      buildinformationrow("Age", age ),
-                      buildinformationrow("Gender", gender),
-                      buildinformationrow("ID", childidfromDB),
-                      buildinformationrow("Camp Block", campblock),
-                      buildinformationrow("Caregiver", caregiver),
-                      buildinformationrow("Has Disability", hasDisability ? "Yes" : "No"),
+                      const SizedBox(height: 5),
 
-                      if(hasDisability)
-                        buildinformationrow("Explanation " , disabilityexplanation),
-                    
-                    ],
-                  ) ,
-                ),
+                      //child's personal information
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 155, 211, 237),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
 
-                //Risk status info card
-                RiskStatusCard(childId: widget.childId),
-                
-                //measurements info card
-                LatestMeasurementCard(childId: widget.childId),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildinformationrow("Age", age ),
+                            buildinformationrow("Gender", gender),
+                            buildinformationrow("ID", childidfromDB),
+                            buildinformationrow("Camp Block", campblock),
+                            buildinformationrow("Caregiver", caregiver),
+                            buildinformationrow("Has Disability", hasDisability ? "Yes" : "No"),
+
+                            if(hasDisability)
+                              buildinformationrow("Explanation " , disabilityexplanation),
+                          
+                          ],
+                        ) ,
+                      ),
+
+                      //give the last data to card for showing the latest risk result
+                      if(docs.isNotEmpty)
+                        RiskStatusCard(latestdoc: docs.first, childId: widget.childId)
+                      else
+                        buildCards("Risk Status: ", "No available data"),
+                      
+                      //give the last data to card for showing the latest measurement result
+                      if(docs.isNotEmpty)
+                        LatestMeasurementCard(latestDoc: docs.first, childId: widget.childId)
+                      else
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: widget.childId)));
+                          },
+                          child: buildCards("Measurements", "No measurements yet."),
+                        ),
                   
 
-                //Nutrition summary info card
-                buildCards(
-                  "Nutrition Summary", 
-                  "-"),
+                      //Nutrition summary info card
+                      buildCards(
+                        "Nutrition Summary", 
+                        "-"),
 
-                //recent activities info card
-                buildCards(
-                  "Recent Activities", 
-                  "-"),
+                      //recent activities info card
+                      buildCards(
+                        "Recent Activities", 
+                        "-"),
 
-                const SizedBox(height: 10,),
+                      const SizedBox(height: 10,),
 
-                Row(
-                  children: [
-                    //add test results button
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 229, 142, 171),
-                          foregroundColor: Colors.black,
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          textStyle: TextStyle(fontWeight: FontWeight.bold)),
+                      Row(
+                        children: [
+                          //add test results button
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                                foregroundColor: Colors.black,
+                                padding: EdgeInsets.symmetric(vertical: 20),
+                                textStyle: TextStyle(fontWeight: FontWeight.bold)),
 
-                        onPressed:() {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) =>  AddTestResultsScreen(childid: widget.childId)));
-                        },
+                              onPressed:() {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) =>  AddTestResultsScreen(childid: widget.childId)));
+                              },
 
-                        icon:  Icon(Icons.text_snippet),
-                        label: Text('Add Test Results'),
-                        
-                      )
-                    ),
+                              icon:  Icon(Icons.text_snippet),
+                              label: Text('Add Test Results'),
+                              
+                            )
+                          ),
 
-                    const SizedBox(width: 15), // Space between buttons
+                          const SizedBox(width: 15), // Space between buttons
 
-                  //add meal button
-                    Expanded(
-                      child: ElevatedButton.icon(
+                        //add meal button
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                                foregroundColor: Colors.black,
+                                padding: EdgeInsets.symmetric(vertical: 20),
+                                textStyle: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              onPressed: () {
+                                showAddMealOptions(context);
+                              },
+                              label: Text('Add Meal'),
+                              icon: Icon(Icons.medication_liquid_rounded),
+                            ),
+                          ),
+                        ],                  
+                      ),
+                      
+                      const SizedBox(height: 10,),
+
+                      //View AI feedback button
+                      Center(
+                      child:ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color.fromARGB(255, 229, 142, 171),
                           foregroundColor: Colors.black,
                           padding: EdgeInsets.symmetric(vertical: 20),
                           textStyle: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        onPressed: () {
-                          showAddMealOptions(context);
+                        onPressed:() {
+                          //will be updated !!!!!!!
                         },
-                        label: Text('Add Meal'),
-                        icon: Icon(Icons.medication_liquid_rounded),
-                      ),
+                        label: Text('View AI Feedback'),
+                        icon: Icon(Icons.search_sharp),
+                      )
                     ),
-                  ],                  
-                ),
-                
-                const SizedBox(height: 10,),
-
-                //View AI feedback button
-                Center(
-                child:ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 229, 142, 171),
-                    foregroundColor: Colors.black,
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    textStyle: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  onPressed:() {
-                    //will be updated !!!!!!!
-                  },
-                  label: Text('View AI Feedback'),
-                  icon: Icon(Icons.search_sharp),
-                )
-              ),
 
              
 
-             ],
-            
-            ),
-            
-            
-            
-            ),
-            );
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
 
         },
         
