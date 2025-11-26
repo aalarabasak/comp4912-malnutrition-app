@@ -6,6 +6,7 @@ class DatePickerField extends StatelessWidget{
 // This controller passes the selected date value back up to the parent widget.
 final TextEditingController controller; 
 final String labelText;
+final DateTime firstDate;
 
 // Validation function that checks the input and returns an error message or nothing.
 final FormFieldValidator<String> validator; 
@@ -14,6 +15,7 @@ final FormFieldValidator<String> validator;
     required this.controller,
     required this.labelText,
     required this.validator,
+    required this.firstDate,
   });
 
   @override
@@ -35,7 +37,7 @@ final FormFieldValidator<String> validator;
         DateTime? selecteddate = await showDatePicker(
           context: context,
           initialDate:DateTime.now(),
-          firstDate: DateTime(DateTime.now().year - 10),
+          firstDate: firstDate,
           lastDate: DateTime.now(),
         );
 

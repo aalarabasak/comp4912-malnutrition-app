@@ -66,6 +66,7 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                 }
                 return null;
               },
+              firstDate: DateTime.now().subtract(Duration(days: 60)),
             ),
 
             const SizedBox(height: 16,),

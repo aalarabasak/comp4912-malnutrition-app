@@ -146,7 +146,8 @@ class _AddChildScreenState extends State <AddChildScreen> {
                   return 'This field is required.';
                 }
                 return null;
-              }
+              },
+              firstDate: DateTime(DateTime.now().year - 10),
               ),
 
               const SizedBox(height: 16),
