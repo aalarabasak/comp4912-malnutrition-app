@@ -12,10 +12,7 @@ class ChildProfileScreen extends StatefulWidget{
 
   final String childId;
 
-  const ChildProfileScreen({
-    super.key,
-    required this.childId
-  });
+  const ChildProfileScreen({super.key,required this.childId});
 
   @override
   State<ChildProfileScreen> createState() => _ChildProfileScreenState();
@@ -75,6 +72,87 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
         centerTitle: true ,
         
       backgroundColor: Colors.transparent, 
+      actions: [
+        //View AI feedback button
+        Padding(padding: const EdgeInsets.only(right: 30.0),
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 151, 156, 195),
+            foregroundColor: Colors.black,
+            padding: EdgeInsets.symmetric(vertical: 8),
+            textStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+          onPressed:() {
+            //will be updated !!!!!!!
+          }, 
+          label: Text('View AI Feedback'),
+          icon: Icon(Icons.psychology, size: 20,),),
+        )
+      ],
+      ),
+
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 12.0),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(247, 241, 241, 241),
+          boxShadow:[
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            )
+          ]
+        ),
+        child: SafeArea(
+          child: Row(
+            children: [
+                  //add test results button
+                  Expanded(
+                              child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                                foregroundColor: Colors.black,
+                                padding: EdgeInsets.symmetric(vertical: 18),
+                                textStyle: TextStyle(fontWeight: FontWeight.bold),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                )),
+
+                              onPressed:() {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) =>  AddTestResultsScreen(childid: widget.childId)));
+                              },
+
+                              icon:  Icon(Icons.text_snippet),
+                              label: Text('Add Test Results'),
+                              
+                            )
+                          ),
+
+                          const SizedBox(width: 20), // Space between buttons
+
+                        //add meal button
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                                foregroundColor: Colors.black,
+                                padding: EdgeInsets.symmetric(vertical: 18),
+                                textStyle: TextStyle(fontWeight: FontWeight.bold),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                )
+                              ),
+                              onPressed: () {
+                                showAddMealOptions(context);
+                              },
+                              label: Text('Add Meal'),
+                              icon: Icon(Icons.medication_liquid_rounded),
+                            ),
+                          ),
+                        ], 
+          ),
+        ),
       ),
 
       body: StreamBuilder<DocumentSnapshot> (
@@ -207,71 +285,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                         "Recent Activities", 
                         "-"),
 
-                      const SizedBox(height: 10,),
-
-                      Row(
-                        children: [
-                          //add test results button
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
-                                foregroundColor: Colors.black,
-                                padding: EdgeInsets.symmetric(vertical: 20),
-                                textStyle: TextStyle(fontWeight: FontWeight.bold)),
-
-                              onPressed:() {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) =>  AddTestResultsScreen(childid: widget.childId)));
-                              },
-
-                              icon:  Icon(Icons.text_snippet),
-                              label: Text('Add Test Results'),
-                              
-                            )
-                          ),
-
-                          const SizedBox(width: 15), // Space between buttons
-
-                        //add meal button
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
-                                foregroundColor: Colors.black,
-                                padding: EdgeInsets.symmetric(vertical: 20),
-                                textStyle: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              onPressed: () {
-                                showAddMealOptions(context);
-                              },
-                              label: Text('Add Meal'),
-                              icon: Icon(Icons.medication_liquid_rounded),
-                            ),
-                          ),
-                        ],                  
-                      ),
-                      
-                      const SizedBox(height: 10,),
-
-                      //View AI feedback button
-                      Center(
-                      child:ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 229, 142, 171),
-                          foregroundColor: Colors.black,
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          textStyle: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        onPressed:() {
-                          //will be updated !!!!!!!
-                        },
-                        label: Text('View AI Feedback'),
-                        icon: Icon(Icons.search_sharp),
-                      )
-                    ),
-
-             
-
+                      const SizedBox(height: 20,),                    
                     ],
                   ),
                 ),
