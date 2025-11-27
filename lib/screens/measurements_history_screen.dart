@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:malnutrition_app/widgets/charts/muac_chart.dart';
+import 'package:malnutrition_app/widgets/charts/statistic_card.dart';
+import 'package:malnutrition_app/widgets/charts/weight_chart.dart';
+import 'package:malnutrition_app/widgets/charts/height_chart.dart';
 
 enum MeasurementType {muac, weight, height, edema }//a simple enum to manage measurement types
 
@@ -77,24 +81,148 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
               const SizedBox(height: 30),
 
               Expanded(
-                child: Center(
+                child: SingleChildScrollView(//made it scrollable
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.bar_chart, size: 80, color: Colors.grey.withOpacity(0.3)),
-                      const SizedBox(height: 10),
-                      Text(
+                      //if muac is chosen then show the graph
+                    if(selectedtype == MeasurementType.muac)...[
+                      MuacChart(),
+                      const SizedBox(height: 25,),
 
-                        "${selectedtype.name.toUpperCase()} Chart Area",
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey.withOpacity(0.5),
-                            fontWeight: FontWeight.w600),
-                      ),
-                      const Text(
-                        "(We will build this in Step 2)",
-                        style: TextStyle(color: Colors.grey),
-                      ),
+                      //cards
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                        child: GridView.count(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 20,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          childAspectRatio: 1.1,
+                          children: [
+                            StatisticCard(
+                              title: "Current Status", 
+                              icon: Icons.monitor_heart_outlined, 
+                              themecolor: Colors.blue, 
+                              value: "128 mm"),
+
+                            StatisticCard(
+                              title: "Average", 
+                              icon: Icons.analytics_outlined, 
+                              themecolor: Colors.orange, 
+                              value: "119 mm"),
+
+                            StatisticCard(
+                              title: "Lowest Record", 
+                              icon: Icons.arrow_downward, 
+                              themecolor: Colors.red, 
+                              value: "112 mm"),
+
+                            StatisticCard(
+                              title: "Highest Record", 
+                              icon: Icons.arrow_upward, 
+                              themecolor: Colors.green, 
+                              value: "130 mm"),
+                            
+                          ],
+                        ),
+                      )
+                      
+
+                    ]
+                    else if(selectedtype == MeasurementType.weight)...[
+                      WeightChart(),
+                      const SizedBox(height: 25,),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                        child: GridView.count(
+                          crossAxisCount: 2,
+                          crossAxisSpacing:10 ,
+                          mainAxisSpacing:20 ,
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          childAspectRatio: 1.1,
+                          children: [
+                            StatisticCard(
+                              title: "Current Weight", 
+                              icon: Icons.monitor_heart_outlined, 
+                              themecolor: Colors.blue, 
+                              value: "12.5 kg"),
+
+                            StatisticCard(
+                              title: "Change (Last 30d)", 
+                              icon: Icons.trending_up, 
+                              themecolor: Colors.green, 
+                              value: '+0.5 kg'),
+                            
+                            StatisticCard(
+                              title: "Lowest Record", 
+                              icon: Icons.arrow_downward, 
+                              themecolor: Colors.red, 
+                              value: "11.5 kg"),
+
+                            StatisticCard(
+                              title: "Highest Record", 
+                              icon: Icons.arrow_upward, 
+                              themecolor: Colors.blue, 
+                              value: "12.5 kg"),
+                          ],
+                          ),
+                      )
+                    ]
+                    else if(selectedtype == MeasurementType.height)...[
+                      HeightChart(),
+                      const SizedBox(height: 25,),
+
+                       Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                        child: GridView.count(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 20,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          childAspectRatio: 1.1,
+                          children: [
+                            StatisticCard(
+                              title: "Current Height", 
+                              icon: Icons.height, 
+                              themecolor: Colors.blue, 
+                              value: "92.0 cm"),
+
+                            StatisticCard(
+                              title: "Total Growth", 
+                              icon: Icons.trending_up, 
+                              themecolor: Colors.orange, 
+                              value: "+4.0 cm"),
+
+                            StatisticCard(
+                              title: "Starting Height", 
+                              icon: Icons.start, 
+                              themecolor: Colors.purple, 
+                              value: "88.0 cm"),
+
+                            StatisticCard(
+                              title: "Highest Record", 
+                              icon: Icons.arrow_upward, 
+                              themecolor: Colors.green, 
+                              value: "92.0 cm"),
+                            
+                          ],
+                        ),
+                      )
+                    ]
+                    else
+                      Container(
+                      height: 250,
+                      margin: const EdgeInsets.all(20),
+                      color: Colors.grey[200],
+                      child: Center(child: Text("${selectedtype.name} Graph Coming Soon")),
+                    ),
+
+                    
+                    
                     ],
                   ),
                 )
