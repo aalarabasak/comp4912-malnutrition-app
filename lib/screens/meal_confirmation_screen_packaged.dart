@@ -73,7 +73,6 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
     //Create a map of meal data to record
     final mealdata = {
       'date': DateTime.now().toIso8601String(),
-      'mealTime': 'Snack', //by default ??????
       'productName': data['name'], //it is directly taken 
       'barcodeId': widget.barcodeId,
       'portionSize': portion,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:malnutrition_app/screens/add_test_results_screen.dart';
 import 'package:malnutrition_app/screens/scan_barcode_screen.dart';
 import 'package:malnutrition_app/screens/measurements_history_screen.dart';
+import 'package:malnutrition_app/widgets/ai_feedback_button.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import '../utils/formatting_helpers.dart';
 import '../widgets/cards/latest_measurement_card.dart';
@@ -72,6 +73,16 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
         centerTitle: true ,
         
       backgroundColor: Colors.transparent, 
+      actions: [
+        //View AI feedback button
+        Padding(padding: const EdgeInsets.only(right: 30.0),
+        child: AiFeedbackButton(
+          onPressed:() {
+            //will be updated!!!!!!!
+            print("ai button is presseed");
+          },)
+        )
+      ],
       ),
 
       bottomNavigationBar: Container(

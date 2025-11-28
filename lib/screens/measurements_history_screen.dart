@@ -4,7 +4,7 @@ import 'package:malnutrition_app/widgets/charts/statistic_card.dart';
 import 'package:malnutrition_app/widgets/charts/weight_chart.dart';
 import 'package:malnutrition_app/widgets/charts/height_chart.dart';
 
-enum MeasurementType {muac, weight, height, edema }//a simple enum to manage measurement types
+enum MeasurementType {muac, weight, height }//a simple enum to manage measurement types
 
 class MeasurementsHistoryScreen extends StatefulWidget{
   final String childid;
@@ -48,10 +48,6 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                   ButtonSegment<MeasurementType>(
                     value: MeasurementType.height,
                     label: Text('Height'),
-                  ),
-                  ButtonSegment<MeasurementType>(
-                    value: MeasurementType.edema,
-                    label: Text('Edema'),
                   )
                   
                 ],
@@ -213,13 +209,7 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                         ),
                       )
                     ]
-                    else
-                      Container(
-                      height: 250,
-                      margin: const EdgeInsets.all(20),
-                      color: Colors.grey[200],
-                      child: Center(child: Text("${selectedtype.name} Graph Coming Soon")),
-                    ),
+                    
 
                     
                     
