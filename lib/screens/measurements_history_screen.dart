@@ -1,4 +1,8 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';//Only required for printing to the screen(formatting)
+import 'package:malnutrition_app/utils/formatting_helpers.dart';
 import 'package:malnutrition_app/widgets/charts/muac_chart.dart';
 import 'package:malnutrition_app/widgets/charts/statistic_card.dart';
 import 'package:malnutrition_app/widgets/charts/weight_chart.dart';
@@ -77,12 +81,62 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
               const SizedBox(height: 30),
 
               Expanded(
-                child: SingleChildScrollView(//made it scrollable
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                  .collection('children')
+                  .doc(widget.childid)
+                  .collection('measurements')
+                  .snapshots() , 
+
+                  builder:(context, snapshot) {
+                    if(snapshot.hasError)return const Center(child: Text("Error loading data"));
+
+                    if(snapshot.connectionState == ConnectionState.waiting){
+                      return const Center(child: CircularProgressIndicator(),);
+                    }
+
+                    final docs = snapshot.data!.docs;//get the data from firebase
+
+                    if(docs.isEmpty){
+                      return const Center(child: Text("No measurements found."));
+                    }
+
+                    List<Map<String,dynamic>> processeddata = [];//Empty basket where put the processed data.
+
+                    for(var doc in docs){
+
+                      Map<String,dynamic> data = doc.data() as Map<String,dynamic>;//take raw data
+
+                      DateTime measurementDate = parseDateString(data['dateofMeasurement']); //convert the date from string to datetime
+
+                      data['parseddate'] = measurementDate;//Add new, smart date to data
+                      processeddata.add(data);//add
+
+                    }
+                    //sort the date from old to new
+                    processeddata.sort((a, b) => (a['parseddate']as DateTime).compareTo(b['parseddate'] as DateTime),);
+                    //prepare the lists
+                    List<FlSpot> muacspots= [];
+                    List<String> datalabels=[];
+
+                    for(int i = 0; i<processeddata.length; i++){
+
+                      var data = processeddata[i];//get the data
+
+                      //eg. Nov 26-  used intl package because I want to format the date not read it
+                      String label = DateFormat("MMM d").format(data['parseddate']);                     
+                      datalabels.add(label);
+
+                      double val = double.tryParse(data['muac'].toString()) ?? 0;
+                      muacspots.add(FlSpot(i.toDouble(), val));
+                    }
+ 
+                return SingleChildScrollView(//made it scrollable
                   child: Column(
                     children: [
                       //if muac is chosen then show the graph
                     if(selectedtype == MeasurementType.muac)...[
-                      MuacChart(),
+                      MuacChart(spots: muacspots, dates: datalabels),
                       const SizedBox(height: 25,),
 
                       //cards
@@ -215,7 +269,9 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                     
                     ],
                   ),
-                )
+                );
+                },
+              )
               )
             ],
           ),

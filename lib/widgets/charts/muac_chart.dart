@@ -2,36 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class MuacChart extends StatelessWidget{
-  const MuacChart({super.key});
 
-  //!!!replace with real data later
-  List<FlSpot> get _dummyData{
-    return[
-      FlSpot(0, 120.0),  // x = 0, y =120.0
-      FlSpot(1, 118.0),  // x = 1, y =118.0
-      FlSpot(2, 115.0),  
-      FlSpot(3, 112.0),  // x = 3 , y = 112.0(in red zone)
-      FlSpot(4, 116.0),  
-      FlSpot(5, 125.0),  // x = 5, y= 125.0(in green zone)
-      FlSpot(6, 128.0),  
-    ];
-  }
-
-
-//replace with real data later
-List<String>get _dummyDates{
-  return[
-     'Jan 1',
-      'Jan 15',
-      'Feb 1',
-      'Feb 15',
-      'Mar 1',
-      'Mar 15',
-      'Apr 1',
-  ];
-}
+  final List<FlSpot> spots;
+  final List<String> dates;
+  const MuacChart({
+    super.key,
+    required this.dates,
+    required this.spots,
+    });
 
 Widget build(BuildContext context){
+  if(spots.isEmpty){
+    return const Center(child: Text("No MUAC data available yet."));
+  }
   return Container(
     padding: const EdgeInsets.all(8.0), //8units of space from the inside
     decoration: BoxDecoration(
@@ -115,13 +98,13 @@ Widget build(BuildContext context){
                     reservedSize: 35,//put 35 units space for text at the bottom
                     getTitlesWidget: (value, meta) {
                       final i =value.toInt();
-                      if(i >= 0 && i < _dummyDates.length){
+                      if(i >= 0 && i < dates.length){
                         // Check if this is a whole number (not a decimal)
                       if (value == value.toInt().toDouble()) { //Prevents double writing on the x-axis
                         return Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
-                            _dummyDates[i],
+                            dates[i],
                             style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 10,
@@ -162,7 +145,7 @@ Widget build(BuildContext context){
 
             lineBarsData: [
               LineChartBarData(
-                spots: _dummyData,
+                spots: spots,
                 isCurved: true,//let the lines be smooth
                 color: Colors.black87,
                 barWidth: 3,
@@ -177,7 +160,7 @@ Widget build(BuildContext context){
             maxY: 145,
             // Min and max values for X-axis
             minX: -0.5,
-            maxX: _dummyData.length - 0.5,
+            maxX: spots.length - 0.5,
 
             
 
