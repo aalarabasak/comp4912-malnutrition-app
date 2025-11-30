@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:math';
 
 class MuacChart extends StatelessWidget{
 
@@ -16,7 +17,40 @@ Widget build(BuildContext context){
     return const Center(child: Text("No MUAC data available yet."));
   }
 
-  
+  // --- 1. Y EKSENİ İÇİN SABİT TUVAL (CORE CANVAS) MANTIĞI ---
+    
+    // Verilerin en düşük ve en yüksek değerlerini bul
+    double dataMin = spots.map((e) => e.y).reduce(min);
+    double dataMax = spots.map((e) => e.y).reduce(max);
+
+    // MUAC için "Standart Görünüm Çerçevesi" belirliyoruz.
+    // Bu aralık (90 - 150), veri ne kadar az veya dar aralıkta olursa olsun 
+    // DAİMA ekranda görünecek. Böylece renkli bölgeler kaybolmayacak.
+    double coreMin = 100.0; 
+    double coreMax = 140.0; 
+
+    // Eğer veriler bu çerçevenin dışına taşıyorsa (Örn: çocuk 160mm ise),
+    // çerçeveyi veriye göre genişletiyoruz. Padding ekleyerek (±5 birim) 
+    // çizginin kenara yapışmasını önlüyoruz.
+    double viewMin = min(coreMin, dataMin - 5);
+    double viewMax = max(coreMax, dataMax + 5);
+
+    // SNAP TO GRID (IZGARAYA HİZALAMA)
+    // Y ekseni çizgilerinin ve etiketlerinin her zaman 10'un katları 
+    // (90, 100, 110...) olmasını sağlıyoruz. Temiz bir görüntü verir.
+    double interval = 10;
+    double minY = (viewMin / interval).floor() * interval;
+    double maxY = (viewMax / interval).ceil() * interval;
+
+    // MUAC değeri negatif olamaz.
+    if (minY < 0) minY = 0;
+
+    // --- 2. X EKSENİ OPTİMİZASYONU ---
+    // Tarihler üst üste binmesin diye dinamik aralık
+    double xInterval = 1;
+    if (dates.length > 8) {
+      xInterval = (dates.length / 5).ceilToDouble();
+    }
 
   return Container(
     padding: const EdgeInsets.all(8.0), //8units of space from the inside
@@ -31,16 +65,15 @@ Widget build(BuildContext context){
         )
       ],     
     ),
-    child: AspectRatio(
+    child: Column(
+      mainAxisSize: MainAxisSize.min, //take up as much space as the content
+      children: [
+        //chart part
+     AspectRatio(
       aspectRatio: 1.5,//width/height ratio is 1.5
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 16.0),
-        child: ClipRRect(//rounded corner crop tool
-          borderRadius: BorderRadius.circular(16.0),
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: LineChart( LineChartData(//actual graphic starts here
+        child:  LineChart( LineChartData(//actual graphic starts here
 
               borderData: FlBorderData(//remove top and right border lines
                 show: true,
@@ -56,7 +89,7 @@ Widget build(BuildContext context){
               rangeAnnotations: RangeAnnotations(
                 horizontalRangeAnnotations: [
                   HorizontalRangeAnnotation(// red zone high Risk 
-                    y1: 100, y2: 114.9,
+                    y1: minY, y2: 114.9,
                     color: Colors.red.withOpacity(0.2),
                   ),
 
@@ -66,7 +99,7 @@ Widget build(BuildContext context){
                   ),
 
                   HorizontalRangeAnnotation(// green zone no Risk 
-                    y1: 125, y2: 145,
+                    y1: 125, y2: maxY,
                     color: Colors.green.withOpacity(0.2),
                   ),
 
@@ -77,7 +110,7 @@ Widget build(BuildContext context){
               gridData: FlGridData(
                 show: true,
                 drawVerticalLine: false,
-                horizontalInterval: 10,//Draw a line every 10 units
+                horizontalInterval: interval,//fixed interval - 10units
                 getDrawingHorizontalLine: (value) {
                   return FlLine(
                     color: Colors.grey.withOpacity(0.2), strokeWidth: 1,
@@ -91,14 +124,14 @@ Widget build(BuildContext context){
                 //dont show titles top and right
                 rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
 
-                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false, 
-                  reservedSize: 30//increased space at top for Y-axis label visibility
+                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false
                 ),                ),
 
                 bottomTitles:AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 35,//put 35 units space for text at the bottom
+                    interval: xInterval, //x axis dynamic interval
                     getTitlesWidget: (value, meta) {
                       final i =value.toInt();
                       if(i >= 0 && i < dates.length){
@@ -127,20 +160,19 @@ Widget build(BuildContext context){
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: 40,
-                  interval: 10,
+                  interval: interval,
                   getTitlesWidget: (value, meta) {
-                    // Show values 100, 110, 120, 130, 140 
-                    if (value == 100 || value == 110 || value == 120 || 
-                        value == 130 || value == 140) {
-                      return Text(
-                        value.toInt().toString(),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                        ),
-                      );
-                    }
-                    return const Text('');
+                    // Sadece tam sayıları göster (90, 100, 110...)
+                        if (value % 1 == 0) {
+                          return Text(
+                            value.toInt().toString(),
+                            style: const TextStyle(
+                              color: Colors.grey, 
+                              fontSize: 10
+                            ),
+                          );
+                        }
+                        return const Text("");
                   },
                 ),
               ),
@@ -153,17 +185,17 @@ Widget build(BuildContext context){
                 color: Colors.black87,
                 barWidth: 3,
                 isStrokeCapRound: true,
-
+                dotData: FlDotData(show: true)
 
               ),
             ],
 
             // Min and max values for Y-axis
-            minY: 100,
-            maxY: 145,
+            minY: minY,
+            maxY: maxY,
             // Min and max values for X-axis
             minX: -0.5,
-            maxX: spots.length - 0.5,
+            maxX: spots.length.toDouble() - 0.5,
 
             
 
@@ -173,10 +205,36 @@ Widget build(BuildContext context){
             ),
               
             ),
-          ),
-        ),
+          
       ),
     ),
+
+
+
+    Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        buildlegend(Colors.red.withOpacity(0.4), "High Risk"),
+        const SizedBox(width: 12),
+        buildlegend(Colors.amber.withOpacity(0.4), "Moderate"),
+        const SizedBox(width: 12),
+        buildlegend( Colors.green.withOpacity(0.4), "No Risk"),
+      ],
+    )
+    ],
+    ),
+  );
+}
+
+Widget buildlegend(Color color, String text){
+  return Row(
+    children: [
+      Container(//the color container indicator
+        width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.rectangle),
+      ),
+      const SizedBox(width: 4),
+      Text(text, style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w500),) //text
+    ],
   );
 }
 }
