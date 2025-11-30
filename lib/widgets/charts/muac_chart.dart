@@ -15,6 +15,9 @@ Widget build(BuildContext context){
   if(spots.isEmpty){
     return const Center(child: Text("No MUAC data available yet."));
   }
+
+  
+
   return Container(
     padding: const EdgeInsets.all(8.0), //8units of space from the inside
     decoration: BoxDecoration(
@@ -31,7 +34,7 @@ Widget build(BuildContext context){
     child: AspectRatio(
       aspectRatio: 1.5,//width/height ratio is 1.5
       child: Padding(
-        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 16.0),
         child: ClipRRect(//rounded corner crop tool
           borderRadius: BorderRadius.circular(16.0),
           child: Container(
