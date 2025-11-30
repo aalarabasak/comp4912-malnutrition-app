@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:math';//for min and max calculations
 
 class HeightChart extends StatelessWidget{
 
@@ -13,8 +14,44 @@ class HeightChart extends StatelessWidget{
       return const Center(child: Text("No height data available yet."));
     }
 
-    double minY = spots.map((e) => e.y).reduce((curr, next) => curr < next ? curr : next) - 2; // 2 cm altı
-    double maxY = spots.map((e) => e.y).reduce((curr, next) => curr > next ? curr : next) + 2; // 2 cm üstü
+    // --- 1. Y EKSENİ DİNAMİK VE TEMİZ HESAPLAMA (SNAP TO GRID) ---
+    // Boy verileri genelde 50cm - 120cm vb. aralığında olur.
+
+    double rawMinY = spots.map((e) => e.y).reduce(min);
+    double rawMaxY = spots.map((e) => e.y).reduce(max);
+    double range = rawMaxY - rawMinY;
+
+    // Adım A: Aralığı (Interval) veri genişliğine göre seç
+    double yInterval;
+    if (range >= 20) {
+      yInterval = 5; // Fark çoksa 5'er 5'er (Örn: 100, 105, 110)
+    } else if (range >= 10) {
+      yInterval = 2; // Orta farkta 2'şer
+    } else if (range >= 2) {
+      yInterval = 1; // Az farkta 1'er
+    } else {
+      yInterval = 0.5; // Çok hassas farkta 0.5
+    }
+
+    // Adım B: Min ve Max değerlerini seçilen aralığın TAM KATLARINA yuvarla
+    // (rawMinY - yInterval * 0.5) diyerek alt tarafta sıkışmayı önlüyoruz.
+    double minY = ((rawMinY - (yInterval * 0.5)) / yInterval).floor() * yInterval;
+    double maxY = ((rawMaxY + (yInterval * 0.5)) / yInterval).ceil() * yInterval;
+
+    if (minY < 0) minY = 0;
+
+    // Tek veri veya dümdüz çizgi durumunda manuel aralık
+    if (minY == maxY) {
+      minY -= yInterval;
+      maxY += yInterval;
+      if (minY < 0) minY = 0;
+    }
+
+    // --- 2. X EKSENİ OPTİMİZASYONU ---
+    double xInterval = 1;
+    if (dates.length > 8) {
+      xInterval = (dates.length / 5).ceilToDouble();
+    }
 
     const Color maincolor = Colors.teal;//the theme color of the chart
 
@@ -35,12 +72,7 @@ class HeightChart extends StatelessWidget{
         aspectRatio: 1.5,//width/height ratio is 1.5
         child: Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: ClipRRect(//rounded corner crop tool
-            borderRadius: BorderRadius.circular(16.0),
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: LineChart( LineChartData(//actual graphic starts here
+          child:  LineChart( LineChartData(//actual graphic starts here
 
                 borderData: FlBorderData(//remove top and right border lines
                   show: true,
@@ -56,7 +88,7 @@ class HeightChart extends StatelessWidget{
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  horizontalInterval: 1,//Draw a line every 1 unit
+                  horizontalInterval: yInterval,//calculated interval
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
                       color: Colors.grey.withOpacity(0.2), strokeWidth: 1,
@@ -78,6 +110,7 @@ class HeightChart extends StatelessWidget{
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 35,//put 35 units space for text at the bottom
+                      interval: xInterval, //calculated interval
                       getTitlesWidget: (value, meta) {
                         final i =value.toInt();
                         if(i >= 0 && i < dates.length){
@@ -105,14 +138,17 @@ class HeightChart extends StatelessWidget{
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 40,
-                    interval: 1,//show numbers in 1 cm intervals
+                    interval: yInterval, //calculated interval
                     getTitlesWidget: (value, meta) {
+                       if (value % 1 == 0) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: const TextStyle(color: Colors.grey, fontSize: 10),
+                        );
+                      }
                       return Text(
-                        value.toStringAsFixed(1), 
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                        ),
+                        value.toStringAsFixed(1),
+                        style: const TextStyle(color: Colors.grey, fontSize: 10),
                       );
                     },
                   ),
@@ -126,7 +162,7 @@ class HeightChart extends StatelessWidget{
                 color: maincolor, // line color
                 barWidth: 3,
                 isStrokeCapRound: true,
-
+                dotData: FlDotData(show: true),
                 belowBarData: BarAreaData(
                   show: true,
                   gradient: LinearGradient(
@@ -142,17 +178,16 @@ class HeightChart extends StatelessWidget{
             ],
 
             // Min and max values for Y-axis
-            minY: minY < 0 ? 0 : minY,
+            minY: minY,
             maxY: maxY,
             // Min and max values for X-axis with padding
             minX: -0.5,
-            maxX: spots.length - 0.5,
+            maxX: spots.length.toDouble() - 0.5,
 
             ),
               
             ),
-          ),
-        ),
+          
       ),
     ),
   );
