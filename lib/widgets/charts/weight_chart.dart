@@ -1,34 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-//!!!replace with real data later
-  List<FlSpot> get _dummyData {
-    return [
-      FlSpot(0, 11.5),  // x = 0, y = 11.5 kg (Başlangıç)
-      FlSpot(1, 11.8),  // x = 1, y = 11.8 kg
-      FlSpot(2, 12.0),  // x = 2, y = 12.0 kg
-      FlSpot(3, 11.7),  // x = 3, y = 11.7 kg (Kilo kaybı - Uyarı!)
-      FlSpot(4, 11.9),  // x = 4, y = 11.9 kg (Toparlanma başlıyor)
-      FlSpot(5, 12.4),  // x = 5, y = 12.4 kg
-      FlSpot(6, 12.8),  // x = 6, y = 12.8 kg (Sağlıklı büyüme trendi)
-    ];
-  }
-
-//replace with real data later
-List<String>get _dummyDates{
-  return[
-     'Jan 1',
-      'Jan 15',
-      'Feb 1',
-      'Feb 15',
-      'Mar 1',
-      'Mar 15',
-      'Apr 1',
-  ];
-}
 
 class WeightChart extends StatelessWidget{
-  const WeightChart({super.key});
+
+  final List<FlSpot> spots;
+  final List<String> dates;
+
+  const WeightChart({super.key, required this.dates, required this.spots});
 
   Widget build(BuildContext context){
     return Container(
@@ -90,11 +69,11 @@ class WeightChart extends StatelessWidget{
                     getTitlesWidget: (value, meta) {
                       final i = value.toInt();
 
-                      if(i>=0 && i < _dummyDates.length){
+                      if(i>=0 && i < dates.length){
                         if(value == value.toInt().toDouble()){//Prevents double writing on the x-axis
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_dummyDates[i], style: TextStyle(color: Colors.grey, fontSize: 10, ),
+                            child: Text(dates[i], style: TextStyle(color: Colors.grey, fontSize: 10, ),
                             textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,),
                           );
@@ -127,7 +106,7 @@ class WeightChart extends StatelessWidget{
 
                 lineBarsData: [
                   LineChartBarData(
-                    spots: _dummyData,
+                    spots: spots,
                     isCurved: true,
                     color: const Color(0xFF2196F3), // line color                
                     barWidth: 3,

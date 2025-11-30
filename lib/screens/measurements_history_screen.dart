@@ -1,8 +1,6 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';//Only required for printing to the screen(formatting)
-import 'package:malnutrition_app/utils/formatting_helpers.dart';
+import 'package:malnutrition_app/utils/measurement_historydata_processor.dart';
 import 'package:malnutrition_app/widgets/charts/muac_chart.dart';
 import 'package:malnutrition_app/widgets/charts/statistic_card.dart';
 import 'package:malnutrition_app/widgets/charts/weight_chart.dart';
@@ -101,42 +99,26 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                       return const Center(child: Text("No measurements found."));
                     }
 
-                    List<Map<String,dynamic>> processeddata = [];//Empty basket where put the processed data.
+                    //process preparation all measurement data using the service
+                    final processedData = MeasurementDataProcessor.processMeasurements(docs);
+                    
+                    //get prepared data for access
+                    final muacspots = processedData.muacSpots;
+                    final weightspots = processedData.weightSpots;
+                    final heightspots = processedData.heightSpots;
+                    final datelabels = processedData.dateLabels;
+                    
+                    //get statistics for stat cards
+                    final muacStats = processedData.muacStats;
+                    final weightStats = processedData.weightStats;
+                    final heightStats = processedData.heightStats;
 
-                    for(var doc in docs){
-
-                      Map<String,dynamic> data = doc.data() as Map<String,dynamic>;//take raw data
-
-                      DateTime measurementDate = parseDateString(data['dateofMeasurement']); //convert the date from string to datetime
-
-                      data['parseddate'] = measurementDate;//Add new, smart date to data
-                      processeddata.add(data);//add
-
-                    }
-                    //sort the date from old to new
-                    processeddata.sort((a, b) => (a['parseddate']as DateTime).compareTo(b['parseddate'] as DateTime),);
-                    //prepare the lists
-                    List<FlSpot> muacspots= [];
-                    List<String> datalabels=[];
-
-                    for(int i = 0; i<processeddata.length; i++){
-
-                      var data = processeddata[i];//get the data
-
-                      //eg. Nov 26-  used intl package because I want to format the date not read it
-                      String label = DateFormat("MMM d").format(data['parseddate']);                     
-                      datalabels.add(label);
-
-                      double val = double.tryParse(data['muac'].toString()) ?? 0;
-                      muacspots.add(FlSpot(i.toDouble(), val));
-                    }
- 
                 return SingleChildScrollView(//made it scrollable
                   child: Column(
                     children: [
                       //if muac is chosen then show the graph
                     if(selectedtype == MeasurementType.muac)...[
-                      MuacChart(spots: muacspots, dates: datalabels),
+                      MuacChart(spots: muacspots, dates: datelabels),
                       const SizedBox(height: 25,),
 
                       //cards
@@ -154,25 +136,25 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                               title: "Current Status", 
                               icon: Icons.monitor_heart_outlined, 
                               themecolor: Colors.blue, 
-                              value: "128 mm"),
+                              value: muacStats.current),
 
                             StatisticCard(
                               title: "Average", 
                               icon: Icons.analytics_outlined, 
                               themecolor: Colors.orange, 
-                              value: "119 mm"),
+                              value: muacStats.average),
 
                             StatisticCard(
                               title: "Lowest Record", 
                               icon: Icons.arrow_downward, 
                               themecolor: Colors.red, 
-                              value: "112 mm"),
+                              value: muacStats.min),
 
                             StatisticCard(
                               title: "Highest Record", 
                               icon: Icons.arrow_upward, 
                               themecolor: Colors.green, 
-                              value: "130 mm"),
+                              value: muacStats.max),
                             
                           ],
                         ),
@@ -181,7 +163,7 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
 
                     ]
                     else if(selectedtype == MeasurementType.weight)...[
-                      WeightChart(),
+                      WeightChart(spots: weightspots, dates: datelabels),
                       const SizedBox(height: 25,),
 
                       Padding(
@@ -198,31 +180,31 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                               title: "Current Weight", 
                               icon: Icons.monitor_heart_outlined, 
                               themecolor: Colors.blue, 
-                              value: "12.5 kg"),
+                              value: weightStats.current),
 
                             StatisticCard(
-                              title: "Change (Last 30d)", 
+                              title: "Total Change", //to show difference btw the last and the first record
                               icon: Icons.trending_up, 
                               themecolor: Colors.green, 
-                              value: '+0.5 kg'),
+                              value: weightStats.change),
                             
                             StatisticCard(
                               title: "Lowest Record", 
                               icon: Icons.arrow_downward, 
                               themecolor: Colors.red, 
-                              value: "11.5 kg"),
+                              value: weightStats.min),
 
                             StatisticCard(
                               title: "Highest Record", 
                               icon: Icons.arrow_upward, 
                               themecolor: Colors.blue, 
-                              value: "12.5 kg"),
+                              value: weightStats.max),
                           ],
                           ),
                       )
                     ]
                     else if(selectedtype == MeasurementType.height)...[
-                      HeightChart(),
+                      HeightChart(spots: heightspots, dates: datelabels),
                       const SizedBox(height: 25,),
 
                        Padding(
@@ -239,25 +221,25 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                               title: "Current Height", 
                               icon: Icons.height, 
                               themecolor: Colors.blue, 
-                              value: "92.0 cm"),
+                              value: heightStats.current),
 
                             StatisticCard(
                               title: "Total Growth", 
                               icon: Icons.trending_up, 
                               themecolor: Colors.orange, 
-                              value: "+4.0 cm"),
+                              value: heightStats.totalGrowth),
 
                             StatisticCard(
-                              title: "Starting Height", 
-                              icon: Icons.start, 
+                              title: "Avg. Growth Rate", 
+                              icon: Icons.speed, 
                               themecolor: Colors.purple, 
-                              value: "88.0 cm"),
+                              value: heightStats.avgGrowthRate),
 
                             StatisticCard(
                               title: "Highest Record", 
                               icon: Icons.arrow_upward, 
                               themecolor: Colors.green, 
-                              value: "92.0 cm"),
+                              value: heightStats.max),
                             
                           ],
                         ),

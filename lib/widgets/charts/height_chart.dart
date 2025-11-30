@@ -1,36 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-//!!!replace with real data later
-  List<FlSpot> get _dummyData {
-    return const [
-      FlSpot(0, 88.0), // Başlangıç
-      FlSpot(1, 88.5),
-      FlSpot(2, 89.2),
-      FlSpot(3, 90.0),
-      FlSpot(4, 90.8),
-      FlSpot(5, 91.5),
-      FlSpot(6, 92.0), // Güncel
-    ];
-  }
-
-//replace with real data later
-List<String>get _dummyDates{
-  return[
-     'Jan 1',
-      'Jan 15',
-      'Feb 1',
-      'Feb 15',
-      'Mar 1',
-      'Mar 15',
-      'Apr 1',
-  ];
-}
 
 class HeightChart extends StatelessWidget{
-  const HeightChart({super.key});
+
+  final List<FlSpot> spots;
+  final List<String> dates;
+
+  const HeightChart({super.key, required this.dates, required this.spots});
 
   Widget build(BuildContext context){
+
+    double minY = spots.map((e) => e.y).reduce((curr, next) => curr < next ? curr : next) - 2; // 2 cm altı
+    double maxY = spots.map((e) => e.y).reduce((curr, next) => curr > next ? curr : next) + 2; // 2 cm üstü
 
     const Color maincolor = Colors.teal;//the theme color of the chart
 
@@ -93,11 +75,11 @@ class HeightChart extends StatelessWidget{
                     getTitlesWidget: (value, meta) {
                       final i = value.toInt();
 
-                      if(i>=0 && i < _dummyDates.length){
+                      if(i>=0 && i < dates.length){
                         if(value == value.toInt().toDouble()){//Prevents double writing on the x-axis
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(_dummyDates[i], style: TextStyle(color: Colors.grey, fontSize: 10, ),
+                            child: Text(dates[i], style: TextStyle(color: Colors.grey, fontSize: 10, ),
                             textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,),
                           );
@@ -130,7 +112,7 @@ class HeightChart extends StatelessWidget{
 
                 lineBarsData: [
                   LineChartBarData(
-                    spots: _dummyData,
+                    spots: spots,
                     isCurved: true,
                     color: maincolor, // line color                
                     barWidth: 3,
@@ -151,10 +133,10 @@ class HeightChart extends StatelessWidget{
                   )
                 ],
               //graphic limits
-              minY: 87, //slightly below the lowest data
-              maxY: 93,//slightly above the highest data
+              minY: minY < 0 ? 0 : minY, 
+              maxY: maxY,
               minX: 0,
-              maxX: 6,
+              maxX: spots.isNotEmpty ? (spots.length - 1).toDouble() : 0,
 
               )
             ),
