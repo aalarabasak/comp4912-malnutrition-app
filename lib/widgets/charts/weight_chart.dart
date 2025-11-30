@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:math';//for min-max operations
 
 class WeightChart extends StatelessWidget{
 
@@ -12,6 +13,54 @@ class WeightChart extends StatelessWidget{
     if(spots.isEmpty){
       return const Center(child: Text("No weight data available yet."));
     }
+
+    // --- 1. Y EKSENİ DİNAMİK VE TEMİZ HESAPLAMA (SNAP TO GRID) ---
+    
+    // Ham verilerin en küçüğünü ve en büyüğünü bul
+    double rawMinY = spots.map((e) => e.y).reduce(min);
+    double rawMaxY = spots.map((e) => e.y).reduce(max);
+    
+    // Veri aralığını hesapla (Range)
+    double range = rawMaxY - rawMinY;
+
+    // Adım 1: Aralığa göre en mantıklı adım sayısını (interval) belirle
+    // Bu, sayıların üst üste binmesini engeller.
+    double yInterval;
+    if (range >= 20) {
+      yInterval = 5; // Fark çoksa 5'er 5'er git (20, 25, 30...)
+    } else if (range >= 10) {
+      yInterval = 2; // Orta farkta 2'şer git (12, 14, 16...)
+    } else if (range >= 2) {
+      yInterval = 1; // Az farkta 1'er git (13, 14, 15...)
+    } else {
+      yInterval = 0.5; // Çok hassas farkta 0.5 git (13.5, 14.0...)
+    }
+
+    // Adım 2: Min ve Max değerlerini seçilen aralığın TAM KATLARINA yuvarla.
+    // Bu matematiksel işlem "13.5" gibi ara değerlerde başlamayı engeller,
+    // grafiği en yakın tam aralığa (örneğin 13.0 veya 12.0) çeker.
+    // (yInterval * 0.5) payı bırakarak çizginin tavana/tabana yapışmasını önlüyoruz.
+    double minY = ((rawMinY - (yInterval * 0.5)) / yInterval).floor() * yInterval; 
+    double maxY = ((rawMaxY + (yInterval * 0.5)) / yInterval).ceil() * yInterval;
+
+    // Kilo negatif olamayacağı için 0 kontrolü
+    if (minY < 0) minY = 0;
+
+    // Eğer tek bir veri varsa veya değerler aynıysa (Düz çizgi durumu),
+    // manuel olarak alt ve üst sınır oluştur.
+    if (minY == maxY) {
+      minY -= yInterval;
+      maxY += yInterval;
+      if (minY < 0) minY = 0;
+    }
+
+    // --- 2. X EKSENİ OPTİMİZASYONU ---
+    double xInterval = 1;
+    if (dates.length > 8) {
+      // Eğer çok fazla tarih varsa, tarihleri atlayarak göster (çakışmayı önler)
+      xInterval = (dates.length / 5).ceilToDouble();
+    }
+
     return Container(
       padding: const EdgeInsets.all(8.0), //8units of space from the inside
       decoration: BoxDecoration(
@@ -28,13 +77,8 @@ class WeightChart extends StatelessWidget{
       child: AspectRatio(
         aspectRatio: 1.5,//width/height ratio is 1.5
         child: Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: ClipRRect(//rounded corner crop tool
-            borderRadius: BorderRadius.circular(16.0),
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: LineChart( LineChartData(//actual graphic starts here
+          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 16.0),
+          child:  LineChart( LineChartData(//actual graphic starts here
 
                 borderData: FlBorderData(//remove top and right border lines
                   show: true,
@@ -50,7 +94,7 @@ class WeightChart extends StatelessWidget{
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  horizontalInterval: 0.5,//Draw a line every 0.5 units
+                  horizontalInterval: yInterval, //calculated interval
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
                       color: Colors.grey.withOpacity(0.2), strokeWidth: 1,
@@ -71,7 +115,8 @@ class WeightChart extends StatelessWidget{
                   bottomTitles:AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize: 35,//put 35 units space for text at the bottom
+                      reservedSize: 30,//put 30 units space for text at the bottom
+                      interval: xInterval,
                       getTitlesWidget: (value, meta) {
                         final i =value.toInt();
                         if(i >= 0 && i < dates.length){
@@ -86,7 +131,6 @@ class WeightChart extends StatelessWidget{
                                 fontSize: 10,
                               ),
                               textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           );
                         }
@@ -100,14 +144,19 @@ class WeightChart extends StatelessWidget{
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 40,
-                    interval: 0.5,
+                    interval: yInterval, //calculated interval
                     getTitlesWidget: (value, meta) {
+                       // Eğer sayı tam sayı ise (14.0 gibi), ".0" kısmını at.
+                      if (value % 1 == 0) {
+                        return Text(
+                          value.toInt().toString(),
+                          style: const TextStyle(color: Colors.grey, fontSize: 10),
+                        );
+                      }
+                      // Değilse ondalıklı göster (14.5)
                       return Text(
-                        value.toStringAsFixed(1), // eg 11.0, 11.5, 12.0
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                        ),
+                        value.toStringAsFixed(1),
+                        style: const TextStyle(color: Colors.grey, fontSize: 10),
                       );
                     },
                   ),
@@ -117,11 +166,11 @@ class WeightChart extends StatelessWidget{
             lineBarsData: [
               LineChartBarData(
                 spots: spots,
-                isCurved: true,//let the lines be smooth
+                isCurved: false,
                 color: const Color(0xFF2196F3), // line color
                 barWidth: 3,
                 isStrokeCapRound: true,
-
+                dotData: FlDotData(show: true),
                 belowBarData: BarAreaData(
                   show: true,
                   gradient: LinearGradient(
@@ -137,17 +186,16 @@ class WeightChart extends StatelessWidget{
             ],
 
             // Min and max values for Y-axis
-            minY: 10,
-            maxY: 14,
+            minY: minY,
+            maxY: maxY,
             // Min and max values for X-axis with padding
             minX: -0.5,
-            maxX: spots.length - 0.5,
+            maxX: spots.length.toDouble() - 0.5,
 
             ),
               
             ),
-          ),
-        ),
+          
       ),
     ),
   );
