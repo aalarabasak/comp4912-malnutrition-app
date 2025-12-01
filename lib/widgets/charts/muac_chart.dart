@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'dart:math';
+import 'dart:math';//for min and max
 
 class MuacChart extends StatelessWidget{
 
@@ -12,48 +12,20 @@ class MuacChart extends StatelessWidget{
     required this.spots,
     });
 
-Widget build(BuildContext context){
+@override
+  Widget build(BuildContext context){
   if(spots.isEmpty){
     return const Center(child: Text("No MUAC data available yet."));
   }
-
-  // --- 1. Y EKSENİ İÇİN SABİT TUVAL (CORE CANVAS) MANTIĞI ---
-    
-    // Verilerin en düşük ve en yüksek değerlerini bul
-    double dataMin = spots.map((e) => e.y).reduce(min);
-    double dataMax = spots.map((e) => e.y).reduce(max);
-
-    // MUAC için "Standart Görünüm Çerçevesi" belirliyoruz.
-    // Bu aralık (90 - 150), veri ne kadar az veya dar aralıkta olursa olsun 
-    // DAİMA ekranda görünecek. Böylece renkli bölgeler kaybolmayacak.
-    double coreMin = 100.0; 
-    double coreMax = 140.0; 
-
-    // Eğer veriler bu çerçevenin dışına taşıyorsa (Örn: çocuk 160mm ise),
-    // çerçeveyi veriye göre genişletiyoruz. Padding ekleyerek (±5 birim) 
-    // çizginin kenara yapışmasını önlüyoruz.
-    double viewMin = min(coreMin, dataMin - 5);
-    double viewMax = max(coreMax, dataMax + 5);
-
-    // SNAP TO GRID (IZGARAYA HİZALAMA)
-    // Y ekseni çizgilerinin ve etiketlerinin her zaman 10'un katları 
-    // (90, 100, 110...) olmasını sağlıyoruz. Temiz bir görüntü verir.
-    double interval = 10;
-    double minY = (viewMin / interval).floor() * interval;
-    double maxY = (viewMax / interval).ceil() * interval;
-
-    // MUAC değeri negatif olamaz.
-    if (minY < 0) minY = 0;
-
-    // --- 2. X EKSENİ OPTİMİZASYONU ---
-    // Tarihler üst üste binmesin diye dinamik aralık
-    double xInterval = 1;
-    if (dates.length > 8) {
-      xInterval = (dates.length / 5).ceilToDouble();
-    }
+    //use helper functions at the bottom for dynamic, grid axes.
+    final yscale = calculatemuacscale(spots);
+    final double minY = yscale.minY;//start of Y axis
+    final double maxY = yscale.maxY;//end of Y axis
+    final double yinterval = yscale.interval;
+    final double xinterval = calculatexIntervalmuac(dates.length);//calculate how often to show date labels on X axis
 
   return Container(
-    padding: const EdgeInsets.all(8.0), //8units of space from the inside
+    padding: const EdgeInsets.all(8.0), //8units of space from the inside-Padding inside the white card
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16.0),
@@ -110,7 +82,7 @@ Widget build(BuildContext context){
               gridData: FlGridData(
                 show: true,
                 drawVerticalLine: false,
-                horizontalInterval: interval,//fixed interval - 10units
+                horizontalInterval: yinterval,//fixed interval - 10units
                 getDrawingHorizontalLine: (value) {
                   return FlLine(
                     color: Colors.grey.withOpacity(0.2), strokeWidth: 1,
@@ -131,7 +103,7 @@ Widget build(BuildContext context){
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 35,//put 35 units space for text at the bottom
-                    interval: xInterval, //x axis dynamic interval
+                    interval: xinterval, //x axis dynamic interval
                     getTitlesWidget: (value, meta) {
                       final i =value.toInt();
                       if(i >= 0 && i < dates.length){
@@ -160,9 +132,8 @@ Widget build(BuildContext context){
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: 40,
-                  interval: interval,
-                  getTitlesWidget: (value, meta) {
-                    // Sadece tam sayıları göster (90, 100, 110...)
+                  interval: yinterval,
+                  getTitlesWidget: (value, meta) {//// Only show whole numbers                     
                         if (value % 1 == 0) {
                           return Text(
                             value.toInt().toString(),
@@ -185,7 +156,7 @@ Widget build(BuildContext context){
                 color: Colors.black87,
                 barWidth: 3,
                 isStrokeCapRound: true,
-                dotData: FlDotData(show: true)
+                dotData: FlDotData(show: true)// Show dots on points
 
               ),
             ],
@@ -210,15 +181,14 @@ Widget build(BuildContext context){
     ),
 
 
-
-    Row(
+    Row(//the legend- explanation of colors
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         buildlegend(Colors.red.withOpacity(0.4), "High Risk"),
         const SizedBox(width: 12),
         buildlegend(Colors.amber.withOpacity(0.4), "Moderate"),
         const SizedBox(width: 12),
-        buildlegend( Colors.green.withOpacity(0.4), "No Risk"),
+        buildlegend(Colors.green.withOpacity(0.4), "Normal"),
       ],
     )
     ],
@@ -226,6 +196,7 @@ Widget build(BuildContext context){
   );
 }
 
+//helper widget to create small color box plus text
 Widget buildlegend(Color color, String text){
   return Row(
     children: [
@@ -237,4 +208,34 @@ Widget buildlegend(Color color, String text){
     ],
   );
 }
+
+//to calculate Y-axis range
+({double minY, double maxY, double interval}) calculatemuacscale(List<FlSpot> spots,) {
+
+    //find the min and max y values in the data, map> takes only y values, reduce-> finds min and max
+    final datamin = spots.map((e) => e.y).reduce(min);
+    final datamax = spots.map((e) => e.y).reduce(max);
+
+    // define Standard Range-even if user data is 120-130,  show 100-140 context
+    const double coremin = 100.0;
+    const double coremax = 140.0;
+
+    //if data goes below 100, expand down. If above 140, expand up.
+    final viewmin = min(coremin, datamin - 5);
+    final viewmax = max(coremax, datamax + 5);
+
+    const double interval = 10;
+    var minY = (viewmin / interval).floor() * interval;
+    var maxY = (viewmax / interval).ceil() * interval;
+
+    if (minY < 0) minY = 0;
+
+    return (minY: minY, maxY: maxY, interval: interval);
+  }
+
+  //helper for xaxis intervals
+  double calculatexIntervalmuac(int labelCount) {
+    if (labelCount <= 8) return 1;
+    return (labelCount / 5).ceilToDouble();
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'dart:math';//for min and max calculations
+import 'package:malnutrition_app/utils/chart_utils.dart';
 
 class HeightChart extends StatelessWidget{
 
@@ -9,49 +9,18 @@ class HeightChart extends StatelessWidget{
 
   const HeightChart({super.key, required this.dates, required this.spots});
 
+  @override
   Widget build(BuildContext context){
     if(spots.isEmpty){
       return const Center(child: Text("No height data available yet."));
     }
 
-    // --- 1. Y EKSENİ DİNAMİK VE TEMİZ HESAPLAMA (SNAP TO GRID) ---
-    // Boy verileri genelde 50cm - 120cm vb. aralığında olur.
-
-    double rawMinY = spots.map((e) => e.y).reduce(min);
-    double rawMaxY = spots.map((e) => e.y).reduce(max);
-    double range = rawMaxY - rawMinY;
-
-    // Adım A: Aralığı (Interval) veri genişliğine göre seç
-    double yInterval;
-    if (range >= 20) {
-      yInterval = 5; // Fark çoksa 5'er 5'er (Örn: 100, 105, 110)
-    } else if (range >= 10) {
-      yInterval = 2; // Orta farkta 2'şer
-    } else if (range >= 2) {
-      yInterval = 1; // Az farkta 1'er
-    } else {
-      yInterval = 0.5; // Çok hassas farkta 0.5
-    }
-
-    // Adım B: Min ve Max değerlerini seçilen aralığın TAM KATLARINA yuvarla
-    // (rawMinY - yInterval * 0.5) diyerek alt tarafta sıkışmayı önlüyoruz.
-    double minY = ((rawMinY - (yInterval * 0.5)) / yInterval).floor() * yInterval;
-    double maxY = ((rawMaxY + (yInterval * 0.5)) / yInterval).ceil() * yInterval;
-
-    if (minY < 0) minY = 0;
-
-    // Tek veri veya dümdüz çizgi durumunda manuel aralık
-    if (minY == maxY) {
-      minY -= yInterval;
-      maxY += yInterval;
-      if (minY < 0) minY = 0;
-    }
-
-    // --- 2. X EKSENİ OPTİMİZASYONU ---
-    double xInterval = 1;
-    if (dates.length > 8) {
-      xInterval = (dates.length / 5).ceilToDouble();
-    }
+    //use helpers for dynamic, grid-aligned axes.
+    final yscale = calculatedynamicYBounds(spots);
+    final double minY = yscale.miny;
+    final double maxY = yscale.maxy;
+    final double yinterval = yscale.interval;
+    final double xinterval = calculatedynamicXInterval(dates.length);
 
     const Color maincolor = Colors.teal;//the theme color of the chart
 
@@ -88,7 +57,7 @@ class HeightChart extends StatelessWidget{
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  horizontalInterval: yInterval,//calculated interval
+                  horizontalInterval: yinterval,//calculated interval
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
                       color: Colors.grey.withOpacity(0.2), strokeWidth: 1,
@@ -110,7 +79,7 @@ class HeightChart extends StatelessWidget{
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 35,//put 35 units space for text at the bottom
-                      interval: xInterval, //calculated interval
+                      interval: xinterval, //calculated interval
                       getTitlesWidget: (value, meta) {
                         final i =value.toInt();
                         if(i >= 0 && i < dates.length){
@@ -118,11 +87,7 @@ class HeightChart extends StatelessWidget{
                         if (value == value.toInt().toDouble()) { //Prevents double writing on the x-axis
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Text( dates[i],
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 10,
-                              ),
+                            child: Text( dates[i],style: const TextStyle(color: Colors.grey,fontSize: 10, ),
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -138,16 +103,14 @@ class HeightChart extends StatelessWidget{
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 40,
-                    interval: yInterval, //calculated interval
+                    interval: yinterval, //calculated interval
                     getTitlesWidget: (value, meta) {
-                       if (value % 1 == 0) {
-                        return Text(
-                          value.toInt().toString(),
+                       if (value % 1 == 0) {//if it is an integer-> write it without fractions, otherwise write it with a comma
+                        return Text(value.toInt().toString(),
                           style: const TextStyle(color: Colors.grey, fontSize: 10),
                         );
                       }
-                      return Text(
-                        value.toStringAsFixed(1),
+                      return Text(value.toStringAsFixed(1),
                         style: const TextStyle(color: Colors.grey, fontSize: 10),
                       );
                     },
@@ -162,8 +125,8 @@ class HeightChart extends StatelessWidget{
                 color: maincolor, // line color
                 barWidth: 3,
                 isStrokeCapRound: true,
-                dotData: FlDotData(show: true),
-                belowBarData: BarAreaData(
+                dotData: FlDotData(show: true),//put a circle where the dots are
+                belowBarData: BarAreaData(//painting below the line
                   show: true,
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -183,6 +146,7 @@ class HeightChart extends StatelessWidget{
             // Min and max values for X-axis with padding
             minX: -0.5,
             maxX: spots.length.toDouble() - 0.5,
+            //- + 0.5->prevent the first,last dots from sticking to the glass of the graphic leave some space 
 
             ),
               
