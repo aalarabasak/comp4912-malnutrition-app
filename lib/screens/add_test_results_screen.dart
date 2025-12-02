@@ -66,7 +66,8 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                 }
                 return null;
               },
-              firstDate: DateTime.now().subtract(Duration(days: 90)),
+              //firstDate: DateTime.now().subtract(Duration(days: 90)),
+              firstDate: DateTime(DateTime.now().year - 1),
             ),
 
             const SizedBox(height: 16,),
@@ -227,8 +228,12 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                           //ask for weight loss using the static calculator
                           bool isweightLossDetected = RiskCalculator.checkWeightLoss(historySnapshot.docs, currentdate, currentweight);
                           
+                          // Get the child's current risk status from Firestore
+                          var childDoc = await FirebaseFirestore.instance.collection('children').doc(widget.childid).get();
+                          String? preRiskstatus = childDoc.data()?['currentRiskStatus'] as String?;
+                        
                           //Make risk calculation with these information
-                          var riskresult = RiskCalculator.calculateRisk(muacvalue, edemavalue, weightLossDetected:isweightLossDetected);
+                          var riskresult = RiskCalculator.calculateRisk(muacvalue, edemavalue, weightLossDetected:isweightLossDetected, preRiskstatus: preRiskstatus);
 
                           String calculatedStatus = riskresult['textStatus'];//???
                           String riskReason = riskresult['reason'];

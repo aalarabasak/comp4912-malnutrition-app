@@ -25,7 +25,7 @@ class RiskCalculator {
       'gaugevalue':gaugevalue,
     };
   }
-  static Map<String, dynamic> calculateRisk(double muac, String edema, {bool weightLossDetected = false}){
+  static Map<String, dynamic> calculateRisk(double muac, String edema, {bool weightLossDetected = false, String? preRiskstatus}){
     
     String textStatus;
     String reason;
@@ -56,15 +56,20 @@ class RiskCalculator {
     //3rd rule weight loss detection duration 4 week
     if(weightLossDetected){
       if(textStatus == 'Healthy - No Risk'){
-        textStatus = 'Moderate Risk'; //bump risk from green to yellow
-        reason = 'Weight loss detected (>5%)'; //update the reason
+        if(preRiskstatus == 'Moderate Risk'){
+          //if new MUAC results says healthy but the child was already at Moderate risk,  a bump to High.
+          textStatus = 'High Risk'; //bump risk from yellow to red
+          reason = ' Weight loss detected (>5%)'; //update the reason
+        }
+        else{
+          textStatus = 'Moderate Risk'; //bump risk from green to yellow
+          reason = 'Weight loss detected (>5%)'; //update the reason
+        }
       }
       else if(textStatus == 'Moderate Risk'){
         textStatus = 'High Risk'; //bump risk from yellow to red
-        reason += '+ Weight loss >5%'; //update the reason
+        reason += '+Weight loss >5%'; //update the reason
       }
-
-
     }
 
     return{

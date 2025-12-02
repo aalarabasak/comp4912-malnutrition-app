@@ -17,7 +17,7 @@ class RiskStatisticCard extends StatelessWidget{
   
   Widget build(BuildContext context){
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(17.5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -31,11 +31,12 @@ class RiskStatisticCard extends StatelessWidget{
         ]
       ),
 
+    
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(//icon container
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: themecolor.withOpacity(0.1), 
               borderRadius: BorderRadius.circular(12),
@@ -44,17 +45,23 @@ class RiskStatisticCard extends StatelessWidget{
           ),
 
           const SizedBox(width: 12,),
-          Column(//title and value
+
+          Expanded(//wrap the text column with expanded so it can use remaining space
+            child: Column(
+            //title and value
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: TextStyle(fontSize: 14.5, color: Colors.grey[500], fontWeight: FontWeight.w600),),
+              Text(title, style: TextStyle(fontSize: 15.5, color: Colors.grey[500], fontWeight: FontWeight.w600),),
 
               const SizedBox(height: 4,),
 
-              Text(value, style: TextStyle(fontSize: 16.5, color: Colors.black87, fontWeight: FontWeight.bold),)
+              Text(value, style: TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold),
+                  //maxLines: 2,
+                  overflow: TextOverflow.ellipsis,//??
+                )
             ],
           )
-
+        ),
         ],
 
       ),
