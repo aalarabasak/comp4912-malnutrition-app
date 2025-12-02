@@ -4,11 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:malnutrition_app/utils/formatting_helpers.dart';
+import 'package:malnutrition_app/widgets/charts/risk_statistic_card.dart';
 
 class RiskStatusHistoryScreen extends StatefulWidget{
   final String childid;
   const RiskStatusHistoryScreen({super.key, required this.childid});
 
+  @override
   State<RiskStatusHistoryScreen> createState() => RiskStatusHistoryScreenState();
 }
 
@@ -102,7 +104,6 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
 
                   return SingleChildScrollView(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Chart with tap callback
                         RiskChart(dates: dates, spots: spots,
@@ -115,9 +116,9 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
                         
                         const SizedBox(height: 20),
                         
-                        // Information cards that appear when a point is selected
+                        //information cards that appear when a point is selected
                         if(selectedindex >= 0 && selectedindex < timelinedata.length)
-                          _buildDetailCards(timelinedata[selectedindex])
+                          buildriskDetailCards(timelinedata[selectedindex])
                         else
                           _buildEmptyState(),
                       ],
@@ -134,144 +135,71 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
     );
   }
 
-  // Build detail cards showing risk status and reason
-  Widget _buildDetailCards(Map<String, dynamic> selectedData) {
-    String riskStatus = selectedData['riskstatus'] as String;
-    String reason = selectedData['reason'] as String;
-    DateTime date = selectedData['date'] as DateTime;
+  // Build detail cards showing risk date, status and reason
+  Widget buildriskDetailCards(Map<String, dynamic> selectedData) {
     
-    // Determine color based on risk status
-    Color statusColor;
-    IconData statusIcon;
-    if (riskStatus.contains("High Risk")) {
-      statusColor = Colors.red;
-      statusIcon = Icons.warning_amber_rounded;
-    } else if (riskStatus.contains("Moderate Risk")) {
-      statusColor = Colors.amber;
-      statusIcon = Icons.info_outline_rounded;
-    } else {
-      statusColor = Colors.green;
-      statusIcon = Icons.check_circle_outline;
+    final String riskstatus = selectedData['riskstatus'];
+    final String reason = selectedData['reason'];
+    final DateTime date = selectedData['date'];
+
+    //choose color  icon based on status
+    Color statuscolor;
+    IconData statusicon;
+    if (riskstatus.contains('High Risk')) {
+      statuscolor = Colors.red;
+      statusicon = Icons.warning_amber_rounded;
+    } 
+    else if (riskstatus.contains('Moderate Risk')) {
+      statuscolor = Colors.amber;
+      statusicon = Icons.info_outline_rounded;
+    } 
+    else {
+      statuscolor = Colors.green;
+      statusicon = Icons.check_circle_outline;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2.0),
+      child: GridView.count(
+        crossAxisCount: 1,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        childAspectRatio: 3.5,
+        mainAxisSpacing: 18,
       children: [
-        // Risk Status Card
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              )
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: Icon(statusIcon, color: statusColor, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Risk Status',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      riskStatus,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: statusColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      DateFormat("MMM d, yyyy").format(date),
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        //date measurement card
+        RiskStatisticCard(
+          title: "Date of Measurement", 
+          icon: Icons.date_range_outlined, 
+          themecolor: Colors.indigo[300]!, 
+          value: DateFormat("MMM d, yyyy").format(date),
         ),
-        
-        const SizedBox(height: 12),
-        
-        // Risk Reason Card
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              )
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.description_outlined, 
-                       color: Colors.grey[600], 
-                       size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Risk Reason',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                reason,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                  height: 1.5,
-                ),
-              ),
-            ],
-          ),
+
+        //risk status card
+        RiskStatisticCard(
+          title: "Risk Status", 
+          icon: statusicon, 
+          themecolor: statuscolor, 
+          value: riskstatus
         ),
+
+        RiskStatisticCard(
+          title: "Risk Reason", 
+          icon: Icons.description, 
+          themecolor: Colors.blueGrey, 
+          value: reason,
+        )
+
       ],
+      ),
+
     );
   }
 
-  // Empty state when no point is selected
+  //empty state when no point is selected
   Widget _buildEmptyState() {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -286,16 +214,9 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
       ),
       child: Column(
         children: [
-          Icon(Icons.touch_app_outlined, 
-               color: Colors.grey[400], 
-               size: 48),
+          Icon(Icons.touch_app_outlined, color: Colors.grey[400], size: 48),
           const SizedBox(height: 12),
-          Text(
-            'Tap on a data point to view details',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
+          Text('Tap on a data point to view details',style: TextStyle(fontSize: 14,color: Colors.grey[600],fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
           ),

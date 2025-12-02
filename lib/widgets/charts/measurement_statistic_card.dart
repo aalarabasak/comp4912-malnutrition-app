@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+//used in measurement history dashboard screen 
 
-class StatisticCard extends StatelessWidget{
+class MeasurementStatisticCard extends StatelessWidget{
   final String title;
   final String value;
   final IconData icon;
   final Color themecolor;
 
-  const StatisticCard({
+  const MeasurementStatisticCard({
     super.key, 
     required this.title,
     required this.icon,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:malnutrition_app/screens/add_test_results_screen.dart';
+import 'package:malnutrition_app/screens/risk_status_history_screen.dart';
 import 'package:malnutrition_app/screens/scan_barcode_screen.dart';
 import 'package:malnutrition_app/screens/measurements_history_screen.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
@@ -244,7 +245,13 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                       if(docs.isNotEmpty)
                         RiskStatusCard(latestdoc: docs.first, childId: widget.childId)
                       else
-                        buildCards("Risk Status: ", "No available data"),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
+                          },
+                          child:buildCards("Risk Status: ", "No available data"), 
+                        ),
+ 
                       
                       //give the last data to card for showing the latest measurement result
                       if(docs.isNotEmpty)

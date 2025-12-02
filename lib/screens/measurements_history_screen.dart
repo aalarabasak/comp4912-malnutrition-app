@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:malnutrition_app/utils/measurement_historydata_processor.dart';
 import 'package:malnutrition_app/widgets/charts/muac_chart.dart';
-import 'package:malnutrition_app/widgets/charts/statistic_card.dart';
+import 'package:malnutrition_app/widgets/charts/measurement_statistic_card.dart';
 import 'package:malnutrition_app/widgets/charts/weight_chart.dart';
 import 'package:malnutrition_app/widgets/charts/height_chart.dart';
 
@@ -132,25 +132,25 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                           physics: const NeverScrollableScrollPhysics(),
                           childAspectRatio: 1.1,
                           children: [
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Current Status", 
                               icon: Icons.monitor_heart_outlined, 
                               themecolor: Colors.blue, 
                               value: muacStats.current),
 
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Average", 
                               icon: Icons.analytics_outlined, 
                               themecolor: Colors.orange, 
                               value: muacStats.average),
 
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Lowest Record", 
                               icon: Icons.arrow_downward, 
                               themecolor: Colors.red, 
                               value: muacStats.min),
 
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Highest Record", 
                               icon: Icons.arrow_upward, 
                               themecolor: Colors.green, 
@@ -176,25 +176,25 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                           physics: NeverScrollableScrollPhysics(),
                           childAspectRatio: 1.1,
                           children: [
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Current Weight", 
                               icon: Icons.monitor_heart_outlined, 
                               themecolor: Colors.blue, 
                               value: weightStats.current),
 
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Total Change", //to show difference btw the last and the first record
                               icon: Icons.trending_up, 
                               themecolor: Colors.green, 
                               value: weightStats.change),
                             
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Lowest Record", 
                               icon: Icons.arrow_downward, 
                               themecolor: Colors.red, 
                               value: weightStats.min),
 
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Highest Record", 
                               icon: Icons.arrow_upward, 
                               themecolor: Colors.blue, 
@@ -217,25 +217,25 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                           physics: const NeverScrollableScrollPhysics(),
                           childAspectRatio: 1.1,
                           children: [
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Current Height", 
                               icon: Icons.height, 
                               themecolor: Colors.blue, 
                               value: heightStats.current),
 
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Total Growth", 
                               icon: Icons.trending_up, 
                               themecolor: Colors.orange, 
                               value: heightStats.totalGrowth),
 
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Avg. Growth Rate", 
                               icon: Icons.speed, 
                               themecolor: Colors.purple, 
                               value: heightStats.avgGrowthRate),
 
-                            StatisticCard(
+                            MeasurementStatisticCard(
                               title: "Highest Record", 
                               icon: Icons.arrow_upward, 
                               themecolor: Colors.green, 
