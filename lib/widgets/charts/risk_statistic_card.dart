@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//used in measurement history dashboard screen 
+//used in risk status history dashboard screen 
 
 class RiskStatisticCard extends StatelessWidget{
   final String title;

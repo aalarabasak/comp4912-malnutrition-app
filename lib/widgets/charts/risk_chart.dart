@@ -11,7 +11,7 @@ class RiskChart extends StatelessWidget{
     super.key, 
     required this.dates, 
     required this.spots,
-    this.onPointTapped,//parent screen wants to know when a dot is clicked
+    this.onPointTapped,//parent screen wants to know when a dot is clicked, can be null
   });
 
   @override
@@ -42,10 +42,10 @@ class RiskChart extends StatelessWidget{
           child: LineChart(LineChartData(
             //grid lines
             gridData: FlGridData(
-              show: true,
+              show: true,//show grid lines
               drawVerticalLine: false,
               horizontalInterval: 1, //0-1-2 levels needs only 1 space btw them
-              getDrawingHorizontalLine: (value) {
+              getDrawingHorizontalLine: (value) {//returns how each horizontal line looks
                 return FlLine(
                   color: Colors.grey.withOpacity(0.2), strokeWidth: 1, 
                   dashArray: [4,5] //dashed line
@@ -79,12 +79,13 @@ class RiskChart extends StatelessWidget{
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 30,
-                  interval: 1,
+                  reservedSize: 30,//space for labels
+                  interval: 1,//show a title for each integer x
                   getTitlesWidget: (value, meta) {
-                    final i = value.toInt();
+                    final i = value.toInt();//convert value double to i int 
                     if(i>= 0 && i < dates.length){
                       if (value == value.toInt().toDouble()) { //Prevents double writing on the x-axis
+                      //only show labels at integer positions
                       if (dates.length > 7 && i % 2 != 0) return const Text("");//If there is a lot of data, show it by skipping labels
                       return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
@@ -130,7 +131,7 @@ class RiskChart extends StatelessWidget{
                 isCurved: false,
                 color: Colors.grey.shade400,
                 barWidth: 3,
-                isStrokeCapRound: true,
+                isStrokeCapRound: true,//rounded ends
 
                 //points
                 dotData: FlDotData(
@@ -154,23 +155,25 @@ class RiskChart extends StatelessWidget{
               )
             ],
 
+            //touch handling
             lineTouchData: LineTouchData(
               handleBuiltInTouches: true,//show standard tooltip bubble
-              //detect clicks
+              //detect clicks-called on any touch event.
               touchCallback: (FlTouchEvent event, LineTouchResponse? touchresponse) {
                 // FlTapUpEvent means user lifted their finger finished tap
                 if (event is FlTapUpEvent && touchresponse != null) {
                   
                   // Get the spot that was touched
-                  final spot = touchresponse.lineBarSpots?[0];
+                  final spot = touchresponse.lineBarSpots?[0];//first point that was touched
+                  
                   
                   // Double check nulls
-                  if (spot != null && onPointTapped != null) {
-                    final index = spot.x.toInt();
+                  if (spot != null && onPointTapped != null) {//if spot exists and onPointTapped is not null
+                    final index = spot.x.toInt();//get index from spot.x
                     
-                    //ensure index is valid
-                    if (index >= 0 && index < spots.length) {
-                      onPointTapped!(index);//trigger the parent function
+                    
+                    if (index >= 0 && index < spots.length) {//if index is valid
+                      onPointTapped!(index);//notifies the screen which point was tapped
                     }
                   }
                 }
