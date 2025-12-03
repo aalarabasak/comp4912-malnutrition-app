@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
       child: Row(
         children: [
           //e.g. "age: "
-          Text('$label: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87 ),),
+          Text('$label: ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87 ),),
 
           //the value e.g. "3"
           Expanded( //Take remaining space, wrap if long

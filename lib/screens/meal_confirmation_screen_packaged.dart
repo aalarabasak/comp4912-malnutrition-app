@@ -156,7 +156,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
             Container(
               padding: EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 140, 193, 142),
+                color: const Color.fromARGB(255, 140, 193, 142).withOpacity(0.6),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(
@@ -177,7 +177,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
             Container(
               padding: EdgeInsets.all(15.0),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 234, 184, 110),
+                color: const Color.fromARGB(255, 234, 184, 110).withOpacity(0.6),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(
@@ -215,7 +215,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
             Container(
               padding: EdgeInsets.all(15.0),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 209, 185, 177),
+                color: const Color.fromARGB(255, 209, 185, 177).withOpacity(0.7),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(

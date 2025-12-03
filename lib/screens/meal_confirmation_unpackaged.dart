@@ -134,7 +134,6 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
   @override
   Widget build(BuildContext context) {
 
-    String detectedfood = widget.fooddata['class'] ?? "unknown";//name that comes from api
     double confidence = widget.fooddata['confidence'] ?? 0.0;//confidence score that comes from api
 
     //if it is still in loading phase
@@ -166,19 +165,19 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
         automaticallyImplyLeading: false, //avoid the presence of back button
       ),
       body: SafeArea(
-        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 25.0),
+        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             //title
             Text('Meal Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             //image
             ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(9),
                   child: Image.file(
                     widget.image,
-                    height: 200,
+                    height: 234,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
@@ -190,13 +189,13 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
             Container(
               padding: EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 140, 193, 142),
+                color: const Color.fromARGB(255, 140, 193, 142).withOpacity(0.6),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildinformationrow("Detected Food", detectedfood),
+                  buildinformationrow("Detected Food", nutritiondata!['name']),
                   buildinformationrow("Confidence Score", confidence.toStringAsFixed(2)),
                 ],
               ),
@@ -208,7 +207,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
             Container(
               padding: EdgeInsets.all(15.0),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 234, 184, 110),
+                color: const Color.fromARGB(255, 234, 184, 110).withOpacity(0.6),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(
@@ -246,7 +245,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
             Container(
               padding: EdgeInsets.all(15.0),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 209, 185, 177),
+                color: const Color.fromARGB(255, 209, 185, 177).withOpacity(0.7),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(
@@ -254,7 +253,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
                 children: [
                   //title of the selection
                   const Text('Quantity: ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
 
                   //portion size increse(+), decrease(-) arangement buttons
                   Row(
