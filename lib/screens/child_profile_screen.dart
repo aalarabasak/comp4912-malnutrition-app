@@ -8,6 +8,7 @@ import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import '../utils/formatting_helpers.dart';
 import '../widgets/cards/latest_measurement_card.dart';
 import '../widgets/info_display_widgets.dart';
+import '../utils/food_camera_helper.dart'; 
 
 class ChildProfileScreen extends StatefulWidget{
 
@@ -51,7 +52,9 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                 leading: Icon(Icons.camera_alt),
                 title: Text('Add Unpackaged Food'),
                 onTap: () {
-                  Navigator.of(dialogcontext).pop();//close for now, will be updated!!!!!
+                  Navigator.of(dialogcontext).pop();//// first close the dialog
+                  //after that, direct to camera screen to detect food
+                  FoodCameraHelper().captureandAnalyze(context, widget.childId);
                 },
               )
 

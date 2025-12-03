@@ -46,6 +46,10 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Camera access is required to scan food barcodes.</string>
+	<string>Camera access is required to scan food barcodes and take photos of food.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Photo library access is required to upload food photos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+    <string>Microphone access is required for video recording.</string>
 </dict>
 </plist>
