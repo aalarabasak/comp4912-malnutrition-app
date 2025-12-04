@@ -1,25 +1,57 @@
 import 'package:flutter/material.dart';
+import '../../utils/nutrition_values_calculator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NutritionSummaryCard extends StatelessWidget{
 
-  const NutritionSummaryCard({super.key});
+  final String childID;
+  final double weightkg;//for weekly need calc
+  final String dateofbirthString;//for weekly need calc
+  final String gender;//for weekly need calc
+
+  const NutritionSummaryCard({super.key, required this.childID, required this.dateofbirthString, required this.gender,
+  required this.weightkg});
 
   @override
   Widget build(BuildContext context){
 
-    //mock data
-    double eatenKcal = 1500;
-    double targetKcal = 8400; // Haftalık hedef
-    
-    double eatenProtein = 200;
-    double targetProtein = 210;
-    
-    double eatenCarbs = 600;
-    double targetCarbs = 900;
-    
-    double eatenFat = 100;
-    double targetFat = 250;
 
+    Map<String,double> weeklytargets = NutritionValuesCalculator.calculateweeklytargets(weightkg, dateofbirthString, gender);
+    //calculate the targets based on WHO/FAO standards
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+      .collection('children').doc(childID)
+      .collection('mealIntakes').orderBy('date', descending: true)
+      .snapshots(), 
+      builder:(context, snapshot) {
+        
+      if (!snapshot.hasData) {
+          return const  Center(child: CircularProgressIndicator());
+      }
+
+      var docs = snapshot.data!.docs;//get the all data
+
+      //filter and collect only last 7days
+      double eatenkcal = 0;
+      double eatenprotein =0;
+      double eatencarbs =0;
+      double eatenfat =0;
+
+      DateTime now = DateTime.now();
+      DateTime sevendaysago = now.subtract(const Duration(days: 7));//take 7days before 
+      
+      for(var doc in docs){
+        Map<String, dynamic> mealdata = doc.data() as Map<String, dynamic>;//fill empty mealdata map with doc data
+
+        DateTime mealdate = DateTime.parse(mealdata['date']);//convert string date to datetime
+        if(mealdate.isAfter(sevendaysago) ){//check if the date is within the last 7 days 
+          eatenkcal += mealdata['totalKcal'];
+          eatencarbs += mealdata['totalCarbsG'];
+          eatenprotein += mealdata['totalProteinG'];
+          eatenfat += mealdata['totalFatG'];
+        }
+      }
 
 
 
@@ -54,8 +86,8 @@ class NutritionSummaryCard extends StatelessWidget{
               label: "Calories", 
               icon: Icons.energy_savings_leaf, 
               iconcolor: Colors.orange.shade600, 
-              current: eatenKcal, 
-              target: targetKcal, 
+              current: eatenkcal, 
+              target: weeklytargets['kcal']!, 
               unit: "kcal"),
             const SizedBox(height: 20),
             
@@ -63,8 +95,8 @@ class NutritionSummaryCard extends StatelessWidget{
               label: "Carbs", 
               icon: Icons.bakery_dining_sharp, 
               iconcolor: Colors.amber, 
-              current: eatenCarbs, 
-              target: targetCarbs, 
+              current: eatencarbs, 
+              target: weeklytargets['carbs']!, 
               unit: "g"),
             
             const SizedBox(height: 20),
@@ -73,8 +105,8 @@ class NutritionSummaryCard extends StatelessWidget{
               label: "Protein", 
               icon: Icons.fitness_center,
               iconcolor: Colors.redAccent, 
-              current: eatenProtein, 
-              target: targetProtein, 
+              current: eatenprotein, 
+              target: weeklytargets['protein']!, 
               unit: "g"),
             
             const SizedBox(height: 20),
@@ -83,14 +115,16 @@ class NutritionSummaryCard extends StatelessWidget{
               label:"Fat", 
               icon: Icons.water_drop_rounded, 
               iconcolor: Colors.green, 
-              current: eatenFat, 
-              target: targetFat, 
+              current: eatenfat, 
+              target: weeklytargets['fat']!, 
               unit: "g"),
 
 
           ],
         ),
       ),
+    );
+    }
     );
   }
 

@@ -180,6 +180,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
           // measurements StreamBuilder inside the child data StreamBuilder
           return StreamBuilder<QuerySnapshot>(
             //  Fetch once for both cards -latest measurement card and risk status card
+            //also I need to pass the current latest weight to the nutrition summary card for daily need calc
             stream: FirebaseFirestore.instance
                 .collection('children')
                 .doc(widget.childId)
@@ -270,8 +271,10 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   
 
                       //Nutrition summary info card
-                      NutritionSummaryCard(),
-
+                    
+                        NutritionSummaryCard(childID: widget.childId, dateofbirthString: temp,
+                        gender: gender, weightkg: docs.first['weight'],),
+                      
                       //recent activities info card
                       buildCards(
                         "Recent Activities", 
