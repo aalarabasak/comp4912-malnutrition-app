@@ -183,7 +183,22 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
                     String temp = childData['dateofBirth'];
                     String age = calculateAge(temp);
 
-                    String risk = "-";//will be updated later!!!!!!!
+                    String riskstatus = childData['currentRiskStatus'];//get current status from child's data firebase
+                    String risk ="";
+                    Color riskcolor;
+                    if(riskstatus.contains('High Risk')){
+                      risk = "High"; //status text
+                      riskcolor = Colors.red.shade700;//status color
+                    }
+                    else if(riskstatus.contains('Moderate Risk')){
+                      risk = "Moderate";
+                      riskcolor = Colors.amber.shade700;
+                    }
+                    else{
+                      risk = "Healthy";
+                      riskcolor = Colors.green.shade600;
+                    }
+
 
                     return ListTile(
                       //This ensures that the row's content aligns perfectly with the headings above.
@@ -193,7 +208,7 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
                         children: [
                           Expanded( flex: 3,child:Text(name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),)),
                           Expanded( flex: 2,child: Text(age, style: TextStyle(fontSize: 14),),),
-                          Expanded( flex: 2,child:Text(risk, style: TextStyle(fontSize: 14),) ),
+                          Expanded( flex: 2,child:Text(risk, style: TextStyle(fontSize: 14, color: riskcolor, fontWeight: FontWeight.bold),) ),
                           
                         ],
                       ),
