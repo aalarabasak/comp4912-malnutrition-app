@@ -4,6 +4,7 @@ import 'package:malnutrition_app/screens/add_test_results_screen.dart';
 import 'package:malnutrition_app/screens/risk_status_history_screen.dart';
 import 'package:malnutrition_app/screens/scan_barcode_screen.dart';
 import 'package:malnutrition_app/screens/measurements_history_screen.dart';
+import 'package:malnutrition_app/widgets/cards/nutrition_summary_card.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import '../utils/formatting_helpers.dart';
 import '../widgets/cards/latest_measurement_card.dart';
@@ -79,7 +80,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
       ),
 
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 23.0, vertical: 12.0),
         decoration: BoxDecoration(
           color: const Color.fromARGB(247, 241, 241, 241),
           boxShadow:[
@@ -200,7 +201,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
 
               return SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 23.0),
                   child: ListView(
                     children: [ //lots of elements from top the down
                       //Header row : name of child + profile icon 
@@ -269,9 +270,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   
 
                       //Nutrition summary info card
-                      buildCards(
-                        "Nutrition Summary", 
-                        "-"),
+                      NutritionSummaryCard(),
 
                       //recent activities info card
                       buildCards(

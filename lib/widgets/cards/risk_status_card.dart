@@ -38,6 +38,13 @@ class RiskStatusCard extends StatelessWidget{
         ),
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(""),
+                Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey[400],),
+              ],
+            ),
             // The Radial Gauge Widget
             SizedBox(
               height: 150,

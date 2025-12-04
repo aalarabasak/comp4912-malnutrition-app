@@ -147,7 +147,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
                 }
                 return null;
               },
-              firstDate: DateTime(DateTime.now().year - 10),
+              firstDate: DateTime(DateTime.now().year - 5),
               ),
 
               const SizedBox(height: 16),

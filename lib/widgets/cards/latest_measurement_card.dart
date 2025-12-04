@@ -40,7 +40,14 @@ class LatestMeasurementCard extends StatelessWidget{// This class is a Stateless
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Measurements: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Measurements: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+                  Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey[400],),
+                ],
+              ),
+              
               const SizedBox(height: 5,),
 
               Row(//1st row MUAC-weight side by side
