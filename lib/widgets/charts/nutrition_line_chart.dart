@@ -68,8 +68,8 @@ class NutritionLineChart extends StatelessWidget{
             //limits of the chart
             minY: 0,
             maxY: 1.2,
-            minX: -0.5,
-            maxX: (caloriespots.length - 1).toDouble(),
+            minX: 0.5,
+            maxX: caloriespots.length.toDouble() + 0.4,
 
             titlesData: FlTitlesData(
               topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -80,9 +80,19 @@ class NutritionLineChart extends StatelessWidget{
                   showTitles: true,
                   interval: 1,
                   getTitlesWidget: (value, meta) {
+                    final int xValue = value.toInt();
+                    // Only show labels for valid week positions (x >= 1 and x <= number of data points)
+                    // Data points are at x=1, 2, 3, ..., caloriespots.length
+                    if (xValue < 1 || xValue > caloriespots.length) {
+                      return const SizedBox.shrink();
+                    }
+                    // Only show label if value is close to an integer (within 0.05)
+                    if ((value - xValue).abs() > 0.05) {
+                      return const SizedBox.shrink();
+                    }
                     return Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text('W${value.toInt() + 1}', style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold),
+                      child: Text('W$xValue', style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                     );
                   },
@@ -115,8 +125,8 @@ class NutritionLineChart extends StatelessWidget{
 
             lineBarsData: [
               LineChartBarData(
-                spots: caloriespots.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value)).toList(),
-                //take my calorie list -> add index numbers 0, 1, 2 -> turn them into Chart Dots (x=i, y=calorie) -> give me the list of dots
+                spots: caloriespots.asMap().entries.map((e) => FlSpot((e.key + 1).toDouble(), e.value)).toList(),
+                //shift x positions by +1 so data points start at x=1 instead of x=0
                 isCurved: true,
                 color: Colors.orange,
                 barWidth: 3,
@@ -125,7 +135,8 @@ class NutritionLineChart extends StatelessWidget{
                 belowBarData: BarAreaData(show: false)
               ),
               LineChartBarData(
-                spots: proteinspots.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value)).toList(),
+                spots: proteinspots.asMap().entries.map((e) => FlSpot((e.key + 1).toDouble(), e.value)).toList(),
+                //shift x positions by +1 so data points start at x=1 instead of x=0
                 isCurved: true,
                 color: Colors.redAccent.shade400,
                 barWidth: 3,
@@ -141,7 +152,8 @@ class NutritionLineChart extends StatelessWidget{
               touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
                 if(event is FlTapUpEvent && touchResponse != null && touchResponse.lineBarSpots != null){
                   final spot = touchResponse.lineBarSpots!.first;
-                  final index = spot.x.toInt();//get index from spot.x
+                  // Convert shifted x position back to original index (x=1 -> index=0, x=2 -> index=1, etc.)
+                  final index = spot.x.toInt() - 1;
 
                   if (index >= 0 && index < caloriespots.length) {////if index is valid
                     onPointTapped(index);//notifies the screen which point was tapped
