@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:malnutrition_app/screens/risk_status_history_screen.dart';
+import 'package:malnutrition_app/screens/child-profile-history-screens/risk_status_history_screen.dart';
 import 'package:malnutrition_app/utils/risk_calculator.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
