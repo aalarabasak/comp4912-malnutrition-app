@@ -58,7 +58,7 @@ class NutritionSummaryCard extends StatelessWidget{
 
     return GestureDetector(//make card clickable
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => NutritionHistoryScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => NutritionHistoryScreen(childId: childID,)));
       },
       child: Container(
         width: double.infinity,
@@ -147,7 +147,7 @@ class NutritionSummaryCard extends StatelessWidget{
     if(percent >1.0){
       percent = 1.0;
     }
-    else if(percent<0.0){
+    if(percent<0.0){
       percent = 0.0;
     }
 

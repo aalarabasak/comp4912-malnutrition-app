@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';//for min and max
+import '../info_display_widgets.dart';
 
 class MuacChart extends StatelessWidget{
 
@@ -196,18 +197,6 @@ class MuacChart extends StatelessWidget{
   );
 }
 
-//helper widget to create small color box plus text
-Widget buildlegend(Color color, String text){
-  return Row(
-    children: [
-      Container(//the color container indicator
-        width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.rectangle),
-      ),
-      const SizedBox(width: 4),
-      Text(text, style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w500),) //text
-    ],
-  );
-}
 
 //to calculate Y-axis range
 ({double minY, double maxY, double interval}) calculatemuacscale(List<FlSpot> spots,) {

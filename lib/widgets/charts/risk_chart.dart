@@ -36,7 +36,7 @@ class RiskChart extends StatelessWidget{
 
       ),
       child: AspectRatio(
-        aspectRatio: 1.1, //width/height ratio is 1.6
+        aspectRatio: 1.1, //width/height ratio is 1.1
         child: Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
           child: LineChart(LineChartData(
