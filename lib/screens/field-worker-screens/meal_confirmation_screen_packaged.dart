@@ -1,30 +1,22 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../widgets/info_display_widgets.dart';
-import 'dart:io';
+import '../../widgets/info_display_widgets.dart';
 
-class MealConfirmationUnpackaged extends StatefulWidget {
+class MealConfirmationScreenPackaged extends StatefulWidget {
 
-  final File image;
-  final Map<String,dynamic> fooddata;
+  final String barcodeId; //takes barcode id as a parameter  
   final String childid;
-
-  const MealConfirmationUnpackaged({
-    super.key,  
-    required this.image,
-    required this.fooddata,//data comes from the backend
-    required this.childid
-    });
+  const MealConfirmationScreenPackaged({super.key, required this.barcodeId, required this.childid});
 
   @override
-  State<MealConfirmationUnpackaged> createState() => _MealConfirmationUnpackagedState();
+  State<MealConfirmationScreenPackaged> createState() => _MealConfirmationPackagedState();
 }
 
-class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged>{
+class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackaged>{
 
   bool isloading =true;
-  Map <String, dynamic>? nutritiondata;
+  Map <String, dynamic>? productdata;
   String? errorMessage;
   double portioncount = 1.0;
   String? portionerror;
@@ -35,33 +27,22 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
     getProductData();
   }
 
-  //this method is  and getting product data to the app from firebase
+  //this method is for controlling barcode id and getting product data to the app from firebase
   Future <void> getProductData() async{
+    
+      //fetch document by barcode id from RUTF_products collection from firebase
+      final snapshot = await FirebaseFirestore.instance.collection('RUTF_products').doc(widget.barcodeId).get();
 
-      try{
-        String detectedfood = widget.fooddata['class']?.toString() ?? '';//the name comes from api
-
-        String docid = detectedfood.toLowerCase();//firebase id's are generally lower case
-
-        //get document by detected food name from unpackaged_foods collection from firebase
-        final snapshot = await FirebaseFirestore.instance.collection('unpackaged_foods').doc(docid).get();
-
-        if(snapshot.exists){
-          setState(() {
-            nutritiondata= snapshot.data(); //load data to empty product data map
-            isloading = false;
-          });
-        }
-        else{
-          setState(() {
-            errorMessage = "Product not found.";
-            isloading = false;
-          });
-        }
-      }catch(e){
+      if(snapshot.exists){
         setState(() {
-          errorMessage = "Connection error : $e";
-          isloading=false;
+          productdata= snapshot.data(); //load data to empty product data map
+          isloading = false;
+        });
+      }
+      else{
+        setState(() {
+          errorMessage = "Product not found.";
+          isloading = false;
         });
       }
   }
@@ -69,18 +50,18 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
   void updateportion(double change){
     setState(() {
       final newCount = portioncount + change;
-      if(newCount >= 0.5){
+      if(newCount >= 0.1){
         portioncount = newCount;
         portionerror = null;
       }
-      else{
-        portionerror = 'Portion must be at least 1.0';
+      else if(newCount < 0.1){
+        portionerror = 'Portion must be at least 0.5';
       }
     });
   }
 
   Future <void> registerMealtoChild()async{
-    final data = nutritiondata!;
+    final data = productdata!;
     final portion = portioncount;
 
     //calculation of nutritional values based on the portion
@@ -93,6 +74,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
     final mealdata = {
       'date': DateTime.now().toIso8601String(),
       'productName': data['name'], //it is directly taken 
+      'barcodeId': widget.barcodeId,
       'portionSize': portion,
       'totalKcal': totalKcal,
       'totalProteinG': totalProtein,
@@ -133,9 +115,6 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
 
   @override
   Widget build(BuildContext context) {
-
-    double confidence = widget.fooddata['confidence'] ?? 0.0;//confidence score that comes from api
-
     //if it is still in loading phase
     if(isloading){
       return Scaffold(
@@ -165,27 +144,15 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
         automaticallyImplyLeading: false, //avoid the presence of back button
       ),
       body: SafeArea(
-        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 40.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            //title
             Text('Meal Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-            const SizedBox(height: 15),
-            //image
-            ClipRRect(
-                  borderRadius: BorderRadius.circular(9),
-                  child: Image.file(
-                    widget.image,
-                    height: 234,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-            const SizedBox(height: 15),
-            
 
-            //detected food's details card
+            const SizedBox(height: 45,),
+
+            //Product Details card
             Container(
               padding: EdgeInsets.all(15),
               decoration: BoxDecoration(
@@ -195,13 +162,16 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildinformationrow("Detected Food", nutritiondata!['name']),
-                  buildinformationrow("Confidence Score", confidence.toStringAsFixed(2)),
+                  Text('Product Details', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
+                  const SizedBox(height: 5,),
+                  buildinformationrow("Name", '${productdata!['name']}'),
+                  buildinformationrow("Lot No", '${productdata!['lotNo']}'),
+                  buildinformationrow("Expiry Date", '${productdata!['expiryDate']}'),
                 ],
               ),
             ),
 
-            const SizedBox(height: 15,),
+            const SizedBox(height: 35,),
 
             //nutritional information card
             Container(
@@ -220,8 +190,8 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
                   Row(//1st row of nutritional contents
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Energy: ${nutritiondata!['kcal']} kcal'),
-                      Text('Protein: ${nutritiondata!['proteinG']} g'),
+                      Text('Energy: ${productdata!['kcal']} kcal'),
+                      Text('Protein: ${productdata!['proteinG']} g'),
                     ],
                   ),
         
@@ -229,8 +199,8 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
                   Row( //2nd row of nutritional content
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Carbs: ${nutritiondata!['carbsG']} g'),
-                      Text('Fat: ${nutritiondata!['fatG']} g'),
+                      Text('Carbs: ${productdata!['carbsG']} g'),
+                      Text('Fat: ${productdata!['fatG']} g'),
                     ],
 
                   ),
@@ -239,7 +209,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
               ),
             ),
 
-            const SizedBox(height: 15,),
+            const SizedBox(height: 35,),
 
             //portion size titler
             Container(
@@ -252,8 +222,8 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   //title of the selection
-                  const Text('Quantity: ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
-                  const SizedBox(height: 5),
+                  const Text('Portion Size ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
+                  const SizedBox(height: 10),
 
                   //portion size increse(+), decrease(-) arangement buttons
                   Row(
@@ -262,17 +232,17 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
                     children: [
                       //- portion size button
                       IconButton(
-                        onPressed:() => updateportion(-1.0), 
+                        onPressed:() => updateportion(-0.5), 
                         icon: Icon(Icons.remove_circle, size: 40, color: Colors.red,)),
 
 
                       //number of packets that is selected by the user
-                      Text('${portioncount.toStringAsFixed(1)} ', 
+                      Text('${portioncount.toStringAsFixed(1)} packets', 
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
 
 
                       //+ portion size button
-                      IconButton(onPressed:() => updateportion(1.0), 
+                      IconButton(onPressed:() => updateportion(0.5), 
                       icon: Icon(Icons.add_circle, size: 40, color: Colors.green,)),
                     ],
                   ),
@@ -288,7 +258,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
             ),
 
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 50),
 
                   //buttons Cancel - Save Meal
                   Row(

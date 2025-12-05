@@ -1,15 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:malnutrition_app/screens/add_test_results_screen.dart';
+
+import 'package:malnutrition_app/screens/field-worker-screens/add_test_results_screen.dart';
+import 'package:malnutrition_app/screens/field-worker-screens/scan_barcode_screen.dart';
+
 import 'package:malnutrition_app/screens/child-profile-history-screens/risk_status_history_screen.dart';
-import 'package:malnutrition_app/screens/scan_barcode_screen.dart';
 import 'package:malnutrition_app/screens/child-profile-history-screens/measurements_history_screen.dart';
+
 import 'package:malnutrition_app/widgets/cards/nutrition_summary_card.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
-import '../utils/formatting_helpers.dart';
-import '../widgets/cards/latest_measurement_card.dart';
-import '../widgets/info_display_widgets.dart';
-import '../utils/food_camera_helper.dart'; 
+import '../../widgets/cards/latest_measurement_card.dart';
+
+import '../../widgets/info_display_widgets.dart';
+import '../../utils/formatting_helpers.dart';
+import '../../utils/food_camera_helper.dart'; 
 
 class ChildProfileScreen extends StatefulWidget{
 

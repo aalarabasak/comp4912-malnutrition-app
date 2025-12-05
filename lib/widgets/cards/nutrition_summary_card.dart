@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utils/nutrition_values_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:malnutrition_app/screens/child-profile-history-screens/nutrition_history_screen.dart';
 
 class NutritionSummaryCard extends StatelessWidget{
 
@@ -57,7 +58,7 @@ class NutritionSummaryCard extends StatelessWidget{
 
     return GestureDetector(//make card clickable
       onTap: () {
-        //will be updated later!!1
+        Navigator.push(context, MaterialPageRoute(builder: (context) => NutritionHistoryScreen()));
       },
       child: Container(
         width: double.infinity,

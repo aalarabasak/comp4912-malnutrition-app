@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../widgets/password_field.dart';
+import '../../widgets/password_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'field_worker_home.dart';
-import 'CampManagerHome.dart';
-import 'NutritionOfficerHome.dart';
+import '../field-worker-screens/field_worker_home.dart';
+import '../camp-manager-special-screens/CampManagerHome.dart';
+import '../nutrition-officer-special-screens/NutritionOfficerHome.dart';
 
 class LoginScreen extends StatefulWidget{
   const LoginScreen({super.key});
@@ -185,16 +185,7 @@ class _LoginScreenState extends State<LoginScreen>{
 
               SizedBox(height: 10),
 
-              /*TextButton(
-                onPressed: () {
-                  //will be updated
-                },
-                child: Text(
-                  'Forgot Password?',
-                  style: TextStyle(color: const Color.fromARGB(255, 118, 118, 118)), 
-                ),
-              ),
-              */
+              
               
             ],
           ),

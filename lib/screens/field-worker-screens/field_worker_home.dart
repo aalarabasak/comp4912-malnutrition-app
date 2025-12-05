@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'add_child_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'welcome_screen.dart';
+import '../login-related-screens/welcome_screen.dart';
 import 'child_profile_screen.dart';
-import '../utils/formatting_helpers.dart';
+import '../../utils/formatting_helpers.dart';
 
 class FieldWorkerHome extends StatefulWidget{
   const FieldWorkerHome({super.key});

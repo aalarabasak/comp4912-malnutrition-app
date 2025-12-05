@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../widgets/date_picker_field.dart';
+import '../../widgets/date_picker_field.dart';
 import 'dart:math';
 
 class AddChildScreen extends StatefulWidget{

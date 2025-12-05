@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:malnutrition_app/screens/field_worker_home.dart';
-import 'screens/welcome_screen.dart'; 
+import 'package:malnutrition_app/screens/field-worker-screens/field_worker_home.dart';
+import 'screens/login-related-screens/welcome_screen.dart'; 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
