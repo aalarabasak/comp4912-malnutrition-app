@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import '../info_display_widgets.dart';
 
 class NutritionLineChart extends StatelessWidget{
-  final List<double> caloriespots;
-  final List<double> proteinspots;
+  final List<double> caloriespots;//y axis
+  final List<double> proteinspots;//y axis
+  final List<String> dateLabels; //for x axis labels
   final Function(int) onPointTapped;
 
   const NutritionLineChart({
     super.key, 
     required this.caloriespots, 
     required this.proteinspots,
+    required this.dateLabels,
     required this.onPointTapped,//parent screen wants to know when a dot is clicked, can be null
   });
 
@@ -79,20 +81,25 @@ class NutritionLineChart extends StatelessWidget{
                 sideTitles: SideTitles(
                   showTitles: true,
                   interval: 1,
+                  reservedSize: 50,
                   getTitlesWidget: (value, meta) {
-                    final int xValue = value.toInt();
-                    // Only show labels for valid week positions (x >= 1 and x <= number of data points)
-                    // Data points are at x=1, 2, 3, ..., caloriespots.length
-                    if (xValue < 1 || xValue > caloriespots.length) {
-                      return const SizedBox.shrink();
-                    }
-                    // Only show label if value is close to an integer (within 0.05)
-                    if ((value - xValue).abs() > 0.05) {
-                      return const SizedBox.shrink();
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text('W$xValue', style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold),
+
+                    final int index = value.toInt() - 1;
+                     //validate index against available labels
+                      if (index < 0 || index >= dateLabels.length) {
+                        return const SizedBox.shrink();
+                      }
+                       
+                    //ensure draw on the exact integer spot
+                      if ((value - value.toInt()).abs() > 0.05) {
+                        return const SizedBox.shrink();
+                      }
+
+                    return Transform.translate(
+                      offset: const Offset(0, 13.3), //push labels down slightly to avoid overlapping the line
+                      child: Transform.rotate(
+                        angle: -0.8,//Rotate ~45 degrees
+                        child: Text(dateLabels[index],style: const TextStyle(color: Colors.grey,fontSize: 10,fontWeight: FontWeight.bold),),
                       ),
                     );
                   },
@@ -113,7 +120,7 @@ class NutritionLineChart extends StatelessWidget{
                     final int percentage = (value * 100).toInt();
                     return Text(
                       '$percentage', // just number
-                      style: const TextStyle(color: Colors.grey, fontSize: 11, fontWeight: FontWeight.bold
+                      style: const TextStyle(color: Colors.grey, fontSize: 10, fontWeight: FontWeight.bold
                       ),
                       textAlign: TextAlign.center,
                     );

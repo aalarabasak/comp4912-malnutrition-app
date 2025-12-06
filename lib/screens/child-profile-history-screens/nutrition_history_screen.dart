@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:malnutrition_app/services/nutrition_history_service.dart';
 import 'package:malnutrition_app/widgets/charts/deficit_rate_card.dart';
 import '../../widgets/charts/weekly_nutirition_cards.dart';
 import '../../widgets/charts/nutrition_line_chart.dart';
@@ -14,19 +15,50 @@ class NutritionHistoryScreen extends StatefulWidget{
 class NutritionHistoryScreenState extends State<NutritionHistoryScreen> {
 
   int selectedindex = 4; //by default the screen shows the last week
+  bool isloading = true;
+  List<Map<String, dynamic>> historydata = [];
 
-  //MOCK DATA, WILL BE CHANGED
-  final List<Map<String, dynamic>> historyData = [
-    {"week": "Week 1", "calPercent": 0.4, "proPercent": 0.3, "cal": 3000, "pro": 50, "carb": 400, "fat": 100},
-    {"week": "Week 2", "calPercent": 0.55, "proPercent": 0.4, "cal": 4200, "pro": 65, "carb": 550, "fat": 130},
-    {"week": "Week 3", "calPercent": 0.7, "proPercent": 0.5, "cal": 5500, "pro": 80, "carb": 700, "fat": 180},
-    {"week": "Week 4", "calPercent": 0.85, "proPercent": 0.6, "cal": 6800, "pro": 95, "carb": 900, "fat": 210},
-    {"week": "Week 5", "calPercent": 0.95, "proPercent": 0.8, "cal": 7200, "pro": 120, "carb": 950, "fat": 240},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future <void> loadData() async{
+    final data = await NutritionHistoryService.getWeeklyNutritiondata(widget.childId);
+
+    if(mounted){
+      setState(() {
+        historydata = data;
+        isloading=false;
+
+        if(historydata.isNotEmpty){//if data exists ->default selected index to the last element newest week
+          selectedindex = historydata.length-1;
+        }
+      });
+    }
+  }
+  
 
   @override
   Widget build(BuildContext context){
-    final currentdata = historyData[selectedindex]; //get data for the selected week
+    //loading state
+    if(isloading){
+      return const Scaffold(body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    //empty state
+    if(historydata.isEmpty){
+      return Scaffold(
+        appBar: AppBar(title: const Text('Nutrition Analysis')),
+        body: const Center(child: Text("No nutrition data found for the last 5 weeks.")),
+      );
+    }
+
+    final currentdata = historydata[selectedindex]; //get data for the selected week
+
+
     return Scaffold(
       backgroundColor:const Color(0xFFF5F7FA) ,
       appBar: AppBar(
@@ -40,8 +72,9 @@ class NutritionHistoryScreenState extends State<NutritionHistoryScreen> {
           children: [
             //chart wiht touch callback
             NutritionLineChart(
-              caloriespots: historyData.map((e) => e['calPercent'] as double).toList(),
-              proteinspots: historyData.map((e) => e['proPercent'] as double).toList(),
+              caloriespots: historydata.map((e) => e['calPercent'] as double).toList(),
+              proteinspots: historydata.map((e) => e['proPercent'] as double).toList(),
+              dateLabels: historydata.map((e) => e['dateRange'] as String).toList(),//pass the formatted date strings to the chart
               onPointTapped: (index) {
                 setState(() {
                   selectedindex = index;//saves which data point was tapped -triggers rebuild so new details appear
@@ -65,12 +98,14 @@ class NutritionHistoryScreenState extends State<NutritionHistoryScreen> {
               const SizedBox(height: 11),
               //nutrition infos
               WeeklyNutiritionCards(
-                eatenkcal: currentdata['cal'],
-                eatenprotein: currentdata['pro'],
+                eatenkcal: (currentdata['cal'] as double).toInt(),
+                eatenprotein: (currentdata['pro'] as double).toInt(),
                 percentagecal: currentdata['calPercent'],
                 percentageprotein: currentdata['proPercent'],
-                eatencarbs: currentdata['carb'],
-                eatenfat:currentdata['fat'] ,
+                percentagecarbs: currentdata['carbPercent'],
+                percentagefat: currentdata['fatPercent'],
+                eatencarbs: (currentdata['carb']as double).toInt(),
+                eatenfat:(currentdata['fat']as double).toInt() ,
                 )
           ],
         ),

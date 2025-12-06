@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class WeeklyNutiritionCards extends StatelessWidget{
   final double percentagecal;
   final double percentageprotein;
+  final double percentagecarbs;
+  final double percentagefat;
 
   final int eatenkcal;
   final int eatenprotein;
@@ -17,6 +19,8 @@ class WeeklyNutiritionCards extends StatelessWidget{
     required this.eatenprotein,
     required this.percentagecal,
     required this.percentageprotein,
+    required this.percentagecarbs,
+    required this.percentagefat,
   });
 
   @override
@@ -31,18 +35,29 @@ class WeeklyNutiritionCards extends StatelessWidget{
     }
 
     int targetprotein;
-    if(percentagecal >0){
+    if(percentageprotein >0){
       targetprotein = (eatenprotein/percentageprotein).round();
     }
     else{
       targetprotein=0;
     }
 
-    // Diğerleri için şimdilik varsayılan yüzde (Mock)
-    double carbsPercent = 0.55; 
-    double fatPercent = 0.70; 
-    int targetCarbs = (eatencarbs > 0) ? (eatencarbs / carbsPercent).round() : 100;
-    int targetFat = (eatenfat > 0) ? (eatenfat / fatPercent).round() : 50;
+    // Calculate targets from percentages (like calories and protein)
+    int targetCarbs;
+    if(percentagecarbs > 0){
+      targetCarbs = (eatencarbs/percentagecarbs).round();
+    }
+    else{
+      targetCarbs = 0;
+    }
+
+    int targetFat;
+    if(percentagefat > 0){
+      targetFat = (eatenfat/percentagefat).round();
+    }
+    else{
+      targetFat = 0;
+    }
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -90,7 +105,7 @@ class WeeklyNutiritionCards extends StatelessWidget{
                 title: "Carbs", 
                 current: eatencarbs, 
                 target: targetCarbs, 
-                percentage: carbsPercent, 
+                percentage: percentagecarbs, 
                 color: Colors.amber, 
                 unit: "g"),
               
@@ -98,7 +113,7 @@ class WeeklyNutiritionCards extends StatelessWidget{
                 title: "Fats", 
                 current: eatenfat, 
                 target: targetFat, 
-                percentage: fatPercent, 
+                percentage: percentagefat, 
                 color: Colors.green, 
                 unit: "g"),
             ],
