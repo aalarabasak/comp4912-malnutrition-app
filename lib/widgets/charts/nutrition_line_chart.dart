@@ -138,7 +138,15 @@ class NutritionLineChart extends StatelessWidget{
                 color: Colors.orange,
                 barWidth: 3,
                 isStrokeCapRound: true,
-                dotData: FlDotData(show: true),
+                dotData: FlDotData(
+                  show: true,
+                  getDotPainter: (spot, percent, barData, index) {
+                    return FlDotCirclePainter(
+                      radius: 6, //size
+                      color: Colors.orange, //inside color of the dot
+                      strokeColor: Colors.white,//white frame outside the dot
+                    );
+                  },),
                 belowBarData: BarAreaData(show: false)
               ),
               LineChartBarData(
@@ -148,7 +156,16 @@ class NutritionLineChart extends StatelessWidget{
                 color: Colors.redAccent.shade400,
                 barWidth: 3,
                 isStrokeCapRound: true,
-                dotData: FlDotData(show: true),
+                dotData: FlDotData(
+                  show: true,
+                  getDotPainter: (spot, percent, barData, index) {
+                    return FlDotCirclePainter(
+                      radius: 6, //size
+                      color: Colors.redAccent.shade400, //inside color of the dot
+                      strokeColor: Colors.white,//white frame outside the dot
+                    );
+                  },
+                  ),
                 belowBarData: BarAreaData(show: false)
               )
             ],
@@ -156,6 +173,20 @@ class NutritionLineChart extends StatelessWidget{
             //touch handling
             lineTouchData: LineTouchData(
               handleBuiltInTouches: true,//show standard tooltip bubble
+              touchTooltipData: LineTouchTooltipData(//for rounded numbers tooltip
+                getTooltipColor: (touchedSpot) => Colors.blueGrey.withOpacity(0.8),
+                getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+                  return touchedBarSpots.map((barSpot) {
+                    final flSpot = barSpot;
+                    final int value = (flSpot.y * 100).round();// multpily with 100 and round it
+                    return LineTooltipItem(
+                      '$value%', 
+                      TextStyle(
+                        color: barSpot.bar.color, //take the color of the line
+                        fontWeight: FontWeight.bold,fontSize: 14,),);
+                  }).toList();
+                },
+              ),
               touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
                 if(event is FlTapUpEvent && touchResponse != null && touchResponse.lineBarSpots != null){
                   final spot = touchResponse.lineBarSpots!.first;

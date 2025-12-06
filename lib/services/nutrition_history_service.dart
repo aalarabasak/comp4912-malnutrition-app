@@ -29,7 +29,9 @@ class NutritionHistoryService {
         .collection('children').doc(childId)
         .collection('mealIntakes').orderBy('date',descending: true).get();
       
-      final DateTime now = DateTime.now(); //get today's date 
+      final DateTime rawNow = DateTime.now();
+      //set the time to 00:00:00 so  it covers the entire day no matter what time of day 
+      final DateTime now = DateTime(rawNow.year, rawNow.month, rawNow.day);
       final DateTime fiveweeksago = now.subtract(const Duration(days: 35));//calculate the start of 5 weeks ago
 
 
@@ -86,7 +88,7 @@ class NutritionHistoryService {
         double proteinpercentage=0;
         double carbspercentage = 0;
         double fatpercentage = 0;
-        
+
         if(weeklytargets['kcal']! >0){
           calpercentage = (weekkcal/weeklytargets['kcal']!).clamp(0.0, 1.2);
         }//to prevent overflow used clamp func
