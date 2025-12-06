@@ -3,6 +3,7 @@ import 'package:malnutrition_app/screens/field-worker-screens/field_worker_home.
 import 'screens/login-related-screens/welcome_screen.dart'; 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:malnutrition_app/screens/nutrition-officer-screens/nutrition_officer_home.dart';
 
 void main() async{ //'async' -> because app will wait for Firebase to initialize
 
@@ -31,7 +32,8 @@ class MyApp extends StatelessWidget {
       ),
       
       //home: const WelcomeScreen(),
-      home: const FieldWorkerHome(), 
+      //home: const FieldWorkerHome(), 
+      home: const NutritionOfficerHome(), 
     );
   }
 }

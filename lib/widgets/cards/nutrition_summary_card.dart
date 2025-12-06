@@ -38,7 +38,7 @@ class NutritionSummaryCard extends StatelessWidget{
       double eatenprotein =0;
       double eatencarbs =0;
       double eatenfat =0;
-
+      
       DateTime now = DateTime.now();
       DateTime sevendaysago = now.subtract(const Duration(days: 7));//take 7days before 
       
@@ -65,7 +65,7 @@ class NutritionSummaryCard extends StatelessWidget{
         margin: EdgeInsets.only(top: 15.0),
         padding: EdgeInsets.all(13.0),
         decoration: BoxDecoration(//card styling background color, borders, shadow
-          color: const Color.fromARGB(255, 226, 237, 240),
+          color:const Color(0xFFF8F9FA),
           borderRadius: BorderRadius.circular(10.0),
           border: Border.all(color: Colors.grey[400]!),   
         ),
@@ -173,7 +173,7 @@ class NutritionSummaryCard extends StatelessWidget{
             color: iconcolor.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: iconcolor, size: 25,),
+          child: Icon(icon, color: iconcolor, size: 34,),
         ),
 
         const SizedBox(width: 15),

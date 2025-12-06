@@ -131,7 +131,7 @@ class NutritionLineChart extends StatelessWidget{
             ),
 
             lineBarsData: [
-              LineChartBarData(
+              LineChartBarData(//calories line
                 spots: caloriespots.asMap().entries.map((e) => FlSpot((e.key + 1).toDouble(), e.value)).toList(),
                 //shift x positions by +1 so data points start at x=1 instead of x=0
                 isCurved: true,
@@ -149,7 +149,7 @@ class NutritionLineChart extends StatelessWidget{
                   },),
                 belowBarData: BarAreaData(show: false)
               ),
-              LineChartBarData(
+              LineChartBarData(//protein line
                 spots: proteinspots.asMap().entries.map((e) => FlSpot((e.key + 1).toDouble(), e.value)).toList(),
                 //shift x positions by +1 so data points start at x=1 instead of x=0
                 isCurved: true,
