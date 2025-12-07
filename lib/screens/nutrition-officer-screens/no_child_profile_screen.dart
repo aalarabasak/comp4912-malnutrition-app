@@ -1,79 +1,43 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:malnutrition_app/screens/field-worker-screens/add_test_results_screen.dart';
-import 'package:malnutrition_app/screens/field-worker-screens/scan_barcode_screen.dart';
-import 'package:malnutrition_app/screens/child-profile-history-screens/measurements_history_screen.dart';
-import 'package:malnutrition_app/widgets/ai_feedback_button.dart';
-import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
-import '../../utils/formatting_helpers.dart';
-import '../../widgets/cards/latest_measurement_card.dart';
-import '../../widgets/info_display_widgets.dart';
 
-class ChildProfileScreen extends StatefulWidget{
+import 'package:malnutrition_app/screens/child-profile-history-screens/risk_status_history_screen.dart';
+import 'package:malnutrition_app/screens/child-profile-history-screens/measurements_history_screen.dart';
+import 'package:malnutrition_app/screens/nutrition-officer-screens/create_treatment_plan.dart';
+
+import 'package:malnutrition_app/widgets/cards/nutrition_summary_card.dart';
+import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
+import '../../widgets/cards/latest_measurement_card.dart';
+import 'package:malnutrition_app/widgets/ai_feedback_button.dart';
+
+import '../../widgets/info_display_widgets.dart';
+import '../../utils/formatting_helpers.dart';
+
+
+class NOChildProfileScreen extends StatefulWidget{
 
   final String childId;
 
-  const ChildProfileScreen({super.key,required this.childId});
+  const NOChildProfileScreen({super.key,required this.childId});
 
   @override
-  State<ChildProfileScreen> createState() => _ChildProfileScreenState();
+  State<NOChildProfileScreen> createState() => _NOChildProfileScreenState();
 
 
 }
   
-class _ChildProfileScreenState extends State<ChildProfileScreen> {
-
-  //this is for add meal button's dialog page
-  void showAddMealOptions(BuildContext context){
-    showDialog(
-      context: context, 
-      builder: (BuildContext dialogcontext){
-        return AlertDialog(
-          title: Text('Please choose how you want to add the meal.',
-            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),),
-          content: Column(
-            mainAxisSize: MainAxisSize.min, //Adjusts window size according to content
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.qr_code_scanner),
-                title: Text('Add Packaged Food'),
-                onTap: () {
-                  Navigator.of(dialogcontext).pop();// first close the dialog
-                  //after that, direct to the barcode screen
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>  ScanBarcodeScreen(childId: widget.childId )));
-
-
-                },
-
-              ),
-
-              ListTile(
-                leading: Icon(Icons.camera_alt),
-                title: Text('Add Unpackaged Food'),
-                onTap: () {
-                  Navigator.of(dialogcontext).pop();//close for now, will be updated!!!!!
-                },
-              )
-
-            ],
-          ),
-
-        );
-
-      }
-      );
-  }
-
+class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
 
   @override
   Widget build(BuildContext context){
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FB),
       appBar: AppBar(
         title: Icon(Icons.monitor_heart_outlined, color: Colors.black,),
         centerTitle: true ,
         
       backgroundColor: Colors.transparent, 
-      actions: [
+       actions: [
         //View AI feedback button
         Padding(padding: const EdgeInsets.only(right: 30.0),
         child: AiFeedbackButton(
@@ -86,7 +50,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
       ),
 
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 23.0, vertical: 12.0),
         decoration: BoxDecoration(
           color: const Color.fromARGB(247, 241, 241, 241),
           boxShadow:[
@@ -101,47 +65,50 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
         child: SafeArea(
           child: Row(
             children: [
-                  //add test results button
+                  //create treatment plan button
                   Expanded(
                               child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                                backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),
                                 foregroundColor: Colors.black,
                                 padding: EdgeInsets.symmetric(vertical: 18),
-                                textStyle: TextStyle(fontWeight: FontWeight.bold),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 )),
 
                               onPressed:() {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) =>  AddTestResultsScreen(childid: widget.childId)));
+                                //will be updated
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTreatmentPlan(
+ 
+                                riskstatus: "High Risk",  // "SAM" veya "Normal" yaparak renk değişimini dene
+                              )));
+                               
                               },
 
-                              icon:  Icon(Icons.text_snippet),
-                              label: Text('Add Test Results'),
+                              icon:  Icon(Icons.medical_information_outlined, size: 20, ),
+                              label: Text('Create Plan', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
                               
                             )
                           ),
 
                           const SizedBox(width: 20), // Space between buttons
 
-                        //add meal button
+                        //Approve button
                           Expanded(
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                                backgroundColor: const Color(0xFF81C784).withOpacity(0.6),
                                 foregroundColor: Colors.black,
                                 padding: EdgeInsets.symmetric(vertical: 18),
-                                textStyle: TextStyle(fontWeight: FontWeight.bold),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 )
                               ),
                               onPressed: () {
-                                showAddMealOptions(context);
+                                //will be updated
                               },
-                              label: Text('Add Meal'),
-                              icon: Icon(Icons.medication_liquid_rounded),
+                              label: Text('Approve', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
+                              icon: Icon(Icons.add_task_outlined, size: 20,),
                             ),
                           ),
                         ], 
@@ -186,6 +153,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
           // measurements StreamBuilder inside the child data StreamBuilder
           return StreamBuilder<QuerySnapshot>(
             //  Fetch once for both cards -latest measurement card and risk status card
+            //also I need to pass the current latest weight to the nutrition summary card for daily need calc
             stream: FirebaseFirestore.instance
                 .collection('children')
                 .doc(widget.childId)
@@ -207,7 +175,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
 
               return SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 23.0),
                   child: ListView(
                     children: [ //lots of elements from top the down
                       //Header row : name of child + profile icon 
@@ -230,7 +198,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                         width: double.infinity,
                         padding: EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 155, 211, 237),
+                          color: const Color.fromARGB(255, 155, 211, 237).withOpacity(0.8),
                           borderRadius: BorderRadius.circular(10.0),
                         ),
 
@@ -255,7 +223,13 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                       if(docs.isNotEmpty)
                         RiskStatusCard(latestdoc: docs.first, childId: widget.childId)
                       else
-                        buildCards("Risk Status: ", "No available data"),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
+                          },
+                          child:buildCards("Risk Status: ", "No available data"), 
+                        ),
+ 
                       
                       //give the last data to card for showing the latest measurement result
                       if(docs.isNotEmpty)
@@ -270,13 +244,13 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   
 
                       //Nutrition summary info card
-                      buildCards(
-                        "Nutrition Summary", 
-                        "-"),
-
+                    
+                        NutritionSummaryCard(childID: widget.childId, dateofbirthString: temp,
+                        gender: gender, weightkg: docs.first['weight'],),
+                      
                       //recent activities info card
                       buildCards(
-                        "Recent Activities", 
+                        "Treatment Plan", 
                         "-"),
 
                       const SizedBox(height: 20,),                    

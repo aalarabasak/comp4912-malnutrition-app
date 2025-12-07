@@ -1,0 +1,400 @@
+import 'package:flutter/material.dart';
+import 'package:malnutrition_app/widgets/info_display_widgets.dart';
+
+class CreateTreatmentPlan extends StatefulWidget{
+
+  final String riskstatus; //normal, MAM-> moderate, SAM->high demek
+
+  const CreateTreatmentPlan({super.key, required this.riskstatus});
+
+  @override
+  State<CreateTreatmentPlan> createState() => CreateTreatmentPlanState();
+}
+
+class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
+  //state variables:
+  DateTime? selecteddate;
+  int? selectedRUTFindex; //which RUTF product is chosen
+  int quantityperday = 0; //default quantity
+  int durationweeks = 0;//default duration
+  final Set<String> selectedsupplements ={};//supplemantary food choices multiple choices
+
+  // Dummy RUTF Verileri (Senin veritabanı verilerin)!!!!!!
+  final List<Map<String, dynamic>> _rutfProducts = [
+    {
+      "name": "Plumpy'Nut",
+      "kcal": 500,
+      "prot": 13,
+      "carb": 46,
+      "fat": 33,
+    },
+    {
+      "name": "Valid P-RUTF",
+      "kcal": 535,
+      "prot": 14,
+      "carb": 44,
+      "fat": 34,
+    },
+    {
+      "name": "eeZeePaste NUT",
+      "kcal": 500,
+      "prot": 13,
+      "carb": 45,
+      "fat": 30,
+    },
+  ];
+
+  // Dummy Ek Gıdalar!!!!!!
+  final List<Map<String, String>> _supplements = [
+    {"name": "Banana", "icon": "🍌"},
+    {"name": "Apple", "icon": "🍎"},
+    {"name": "Carrot", "icon": "🥕"},
+    {"name": "Orange", "icon": "🍊"},
+  ];
+
+
+  //helper functions
+  Color getriskcolor(){
+    switch(widget.riskstatus){//returns a color based on risk status
+      case "High Risk" : return Colors.red.shade100;
+      case "Moderate Risk" : return Colors.orange.shade100;
+      case "Healthy - No Risk" : return Colors.green.shade100;
+      default: return Colors.grey.shade200;
+    }
+  }
+
+  Color getrisktextcolor() {
+    switch (widget.riskstatus) {//returns a darker text color for readability
+      case "High Risk": return Colors.red.shade900;
+      case "Moderate Risk": return Colors.orange.shade900;
+      case "Healthy - No Risk": return Colors.green.shade900;
+      default: return Colors.black87;
+    }
+  }
+
+  String getdiagnosis(){//converts risk status to diagnosis code sam,mam, normal
+    switch(widget.riskstatus){
+      case "High Risk" : return "SAM";
+      case "Moderate Risk" : return "MAM";
+      default: return "Normal";
+    }
+  }
+  
+
+  //date picker
+  Future <void> pickdateinFuture(BuildContext context) async{
+    final DateTime? picked = await showDatePicker(//shows the date picker and waits for the result.
+      context: context, 
+      firstDate: DateTime.now(), //start date of the date picker is current day 
+      lastDate: DateTime.now().add(const Duration(days: 365)), //make the last choosanable date to 1 year later
+    );
+
+    if(picked != null && picked != selecteddate){
+      setState(() {
+        selecteddate = picked;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        title: Icon(Icons.monitor_heart_outlined, color: Colors.black,),
+        centerTitle: true ,
+        automaticallyImplyLeading: false, //avoid the presence of back button
+        backgroundColor: Colors.transparent, 
+      ),
+
+      body: SingleChildScrollView(//makes the content scrollable
+       padding: const EdgeInsets.only(bottom: 100),//adds bottom padding so content isn't hidden by buttons.
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //1st part diagnosis header
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20),
+              color: getriskcolor(),
+              child: Column(
+                children: [
+                  Text("Diagnosis Status", style: TextStyle(color: getrisktextcolor(), fontSize: 12, fontWeight: FontWeight.bold),),
+                  const SizedBox(height: 5),
+                  Text(getdiagnosis(), style: TextStyle(color: getrisktextcolor(), fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 1.5),)
+                ],
+              ),
+
+            ),
+
+            const SizedBox(height: 20),
+
+            //2nd part next visit date 
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Next Visit Date", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+
+                  InkWell(//makes the container clickable with a ripple effect
+                    onTap: () => pickdateinFuture(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.calendar_today, color: Colors.black54),
+                          const SizedBox(width: 10),
+                          Text(
+                            selecteddate == null ? "Select a date..." : "${selecteddate!.day}/${selecteddate!.month}/${selecteddate!.year}",
+                            //iff selecteddate is null then show the text, otherwise show the selected date
+                            style: TextStyle(color: selecteddate == null ? Colors.grey : Colors.black87,fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const Divider(height: 40),
+
+                  //3rd part rutf Prescription
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: const Text("Therapeutic Food (RUTF)", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+
+                  const SizedBox(height: 10),
+                  //containerss rutf
+                  SizedBox(
+                    height: 160,
+
+                    child: ListView.builder(//horizontal scrollable list with fixed height.
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _rutfProducts.length,
+                      itemBuilder:(context, index) {
+                        final product = _rutfProducts[index];
+                        final isselected = selectedRUTFindex == index;
+                        //builds one item per product -isselected checks if this item is selected
+
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+
+                              //if already selected deselect otherwise select
+                              if(isselected){
+                                 selectedRUTFindex = null;
+                              }
+                              else{
+                                selectedRUTFindex = index;
+                              }
+                            });
+                          },
+
+                          child: AnimatedContainer(//container that animates changes
+                            duration: const Duration(milliseconds: 200),
+                            width: 140,
+                            margin: const EdgeInsets.only(right: 12),
+                            padding: const EdgeInsets.all(12),
+
+                            decoration: BoxDecoration(//conditional styling based on selection.
+                              color: isselected ? Colors.blue.shade50 : Colors.white,
+                              //if there is a selection make it blue othervise white
+                              border: Border.all(
+                                color: isselected ? Colors.blue : Colors.grey.shade300,
+                                width: isselected ? 2 : 1,),
+                                //if there is a selection make color blue and width 2 otherwise make them white and 1
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: isselected//if there is a selection
+                                  ? [BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))]//make a box shadow
+                                  : [], //otherwise do not put
+                            ),
+                            //inside of the container textes etc->>
+                            child: Column(//product name -nutrition infos below it
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text( product['name'],style: TextStyle(fontWeight: FontWeight.bold,color:  Colors.black87,),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+
+                                const Spacer(),//line
+                                //values of the rutf uses info display widget .dart
+                                buildnutrientrow("Kcal", "${product['kcal']}"),
+                                buildnutrientrow("Prot", "${product['prot']}g"),
+                                buildnutrientrow("Carb", "${product['carb']}g"),
+                                buildnutrientrow("Fat", "${product['fat']}g"),
+
+
+                              ],
+                            ),
+                          ),
+                          
+                        );
+                      },
+                    ),
+                  ),
+
+                  //quantity and duration settings of rutf
+                  if(selectedRUTFindex != null) ...[
+                    //only if any rutf is selected otherwise, the list cannot be seen
+                    const SizedBox(height: 20,),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blue.shade100),
+                      ),
+
+                      child: Column(
+                        children: [
+                          buildcounterrow("Quantity per day", "Packets", quantityperday, 
+                          (val) {setState(() => quantityperday = val);
+                          }
+                          ),
+                          //counter row with a callback to update state
+                          const Divider(),
+                          buildcounterrow("Duration", "Weeks", durationweeks, 
+                          (val) {setState(() => durationweeks = val);
+                          }
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  const Divider(height: 40),
+                  //4th part supplementary food section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: const Text("Dietary Supplements", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(height: 10),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Wrap(
+                      //arranges items horizontally and moves to the next line if there is no space
+                      spacing: 10,//horizontal space btw cards
+                      runSpacing: 10,//vertical space btw lines
+
+                      //go through every item in the supplements list
+                      children: _supplements.map((item) {//maps each supplement to a widget 
+                        final isselected = selectedsupplements.contains(item['name']);//returns true if selected false if not
+                        return FilterChip(
+                          label: Text("${item['icon']}  ${item['name']}"), //show the icon and the name of the supplement
+
+                          selected: isselected,
+                          onSelected:(bool selected) {//what happens when the user taps the chip
+                            setState(() {
+                              if(selected){
+                                selectedsupplements.add(item['name']!);
+                                //if tapped to select -> Add to the list
+                              }
+                              else{
+                                selectedsupplements.remove(item['name']!);
+                                //if tapped to deselect -> Remove from the list
+                              }
+                            });
+                          },
+                          backgroundColor:Colors.grey.shade100, 
+                          selectedColor: Colors.green.shade100,
+                          checkmarkColor: Colors.green,//color of the little check icon
+                          labelStyle: TextStyle(color: isselected ? Colors.green.shade900 : Colors.black87,),//conditional styling for selected unselected states.
+                          //dark green text if selected,black if not
+
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8), 
+                            side: BorderSide(color: isselected ? Colors.green.shade200 : Colors.grey.shade300,)),
+                                //green border if selected grey if not
+                        );
+                      }).toList(),//convert the map result back to a list of widgets
+                      //if do not make list, then it gives errorr
+
+                    ),
+                  )
+
+                    
+
+                ],
+                
+                
+                
+              ),
+            ),
+
+            
+
+            
+            
+
+          ],
+        ),
+      ),
+
+      //cancel - save buttonssss
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 23.0, vertical: 12.0),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(247, 241, 241, 241),
+          boxShadow:[
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            )
+          ]
+        ),
+        child: SafeArea(
+          child: Row(
+            children: [
+                  //cancel button
+                  Expanded(
+                              child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                 backgroundColor: const Color.fromARGB(255, 176, 174, 174),
+                                  foregroundColor: Colors.black,
+                                  padding: const EdgeInsets.symmetric(vertical: 18),
+                                  textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+                              ),
+                              onPressed:() {
+                                Navigator.of(context).pop();
+                              }, 
+                              child: Text('Cancel')
+                            )
+                          ),
+
+                          const SizedBox(width: 20), // Space between buttons
+
+                        //save button
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                                foregroundColor: Colors.black,
+                                padding: const EdgeInsets.symmetric(vertical: 18),
+                                textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+                              ),
+                              onPressed:() {
+                                //will be updatedd
+                              }, 
+                              child: Text('Save'),
+                            )
+                          ),
+                        ], 
+          ),
+        ),
+      ),
+
+    );
+  }
+}

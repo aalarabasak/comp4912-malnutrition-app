@@ -76,3 +76,56 @@ Widget buildlegend(Color color, String text){
     ],
   );
 }
+
+//small nutrition value line in rutf containers in create treatment plan screen
+Widget buildnutrientrow(String label, String value){
+  return Padding(padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+          Text(value, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+}
+
+Widget buildcounterrow(String title, String unit, int value, Function(int) onChanged){
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text("$value $unit", style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold)),
+        ],
+
+        
+      ),
+
+      Row(
+        children: [
+          IconButton(
+            onPressed:() {
+              if(value>1){
+                onChanged(value-1);
+              }
+              else{
+                return;
+              }
+            },
+            icon: const Icon(Icons.remove_circle_outline),
+            color: Colors.grey,
+          ),
+          IconButton(
+            onPressed: () => onChanged(value + 1),
+            icon: const Icon(Icons.add_circle),
+            color: Colors.blue,
+            iconSize: 32,
+          )
+        ],
+      )
+    ],
+  );
+}

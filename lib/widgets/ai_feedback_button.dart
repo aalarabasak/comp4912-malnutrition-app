@@ -59,7 +59,7 @@ class AiFeedbackButtonState extends State<AiFeedbackButton>{
         width: isexpanded ? 170.0: 48.0,// if open, it will be wide, if closed, it will be only as wide as the icon.
         height: 40.0,
         decoration: BoxDecoration(
-          color: const Color(0xFF9FA8DA), 
+          color: const Color(0xFF9FA8DA).withOpacity(0.5), 
           borderRadius: BorderRadius.circular(20.0),
           boxShadow: [BoxShadow(
               color: Colors.black26,

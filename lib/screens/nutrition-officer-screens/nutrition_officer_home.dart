@@ -192,7 +192,7 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context)=> ChildProfileScreen(childId: childdoc.id)));
+                          MaterialPageRoute(builder: (context)=> NOChildProfileScreen(childId: childdoc.id)));
 
                         debugPrint("Tıklanan çocuk: $name");
                       },
