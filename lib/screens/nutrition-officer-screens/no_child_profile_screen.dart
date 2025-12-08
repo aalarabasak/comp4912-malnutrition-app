@@ -7,6 +7,7 @@ import 'package:malnutrition_app/screens/nutrition-officer-screens/create_treatm
 
 import 'package:malnutrition_app/widgets/cards/nutrition_summary_card.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
+import 'package:malnutrition_app/widgets/cards/treatment_plan_card.dart';
 import '../../widgets/cards/latest_measurement_card.dart';
 import 'package:malnutrition_app/widgets/ai_feedback_button.dart';
 
@@ -65,18 +66,18 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
           ]
         ),
         child: SafeArea(
-          child: Row(
-            children: [
+          child: SizedBox( 
+            width: double.infinity,
+            height: 56,
                   //create treatment plan button
-                  Expanded(
-                              child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),
-                                foregroundColor: Colors.black,
-                                padding: EdgeInsets.symmetric(vertical: 18),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                )),
+                  child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),
+                      foregroundColor: Colors.black,
+                      padding: EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      )),
 
                               onPressed:() {
                             
@@ -87,34 +88,11 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                                
                               },
 
-                              icon:  Icon(Icons.medical_information_outlined, size: 20, ),
-                              label: Text('Create Plan', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
+                              icon:  Icon(Icons.medical_information_outlined, size: 21, ),
+                              label: Text('Create Treatment Plan', style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                               
-                            )
-                          ),
-
-                          const SizedBox(width: 20), // Space between buttons
-
-                        //Approve button
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF81C784).withOpacity(0.6),
-                                foregroundColor: Colors.black,
-                                padding: EdgeInsets.symmetric(vertical: 18),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                )
-                              ),
-                              onPressed: () {
-                                //will be updated
-                              },
-                              label: Text('Approve', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
-                              icon: Icon(Icons.add_task_outlined, size: 20,),
                             ),
-                          ),
-                        ], 
-          ),
+             )   ,        
         ),
       ),
 
@@ -284,10 +262,8 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
 
                      
                       
-                      //recent activities info card
-                      buildCards(
-                        "Treatment Plan", 
-                        "-"),
+                      //treatment plan info card
+                     TreatmentPlanCard(childID: widget.childId),
 
                       const SizedBox(height: 20,),                    
                     ],

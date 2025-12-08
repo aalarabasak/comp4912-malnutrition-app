@@ -33,7 +33,7 @@ class TreatmentService {
       final plandata = {
         'createdAt': FieldValue.serverTimestamp(),
         'diagnosis': diagnosis,
-        'nextvisitdate': Timestamp.fromDate(nextvisitdate),
+        'nextvisitdate': nextvisitdate.toIso8601String(),
         'prescribed_RUTF': prescribedRUTF,
         'supplements': supplements,
       };
@@ -51,5 +51,13 @@ class TreatmentService {
     }catch(e){
       throw Exception('Error occurred while saving plan: $e');
     }
+  }
+
+  //-------------
+  //used in treatment plan card in profile page
+  Stream <QuerySnapshot>getlatestTreatmentPlan(String childid){
+    return firestore.collection('children').doc(childid)
+      .collection('treatmentPlans').orderBy('createdAt',descending: true)//get the newest one
+      .limit(1).snapshots(); //bring just oneeee
   }
 }

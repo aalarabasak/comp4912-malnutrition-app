@@ -1,0 +1,147 @@
+import 'package:flutter/material.dart';
+import 'package:malnutrition_app/widgets/info_display_widgets.dart';
+import 'package:malnutrition_app/services/treatment_service.dart';//get the firebase service
+
+
+class TreatmentPlanCard extends StatelessWidget{
+  
+  final String childID;
+
+  const TreatmentPlanCard({
+    super.key,
+    required this.childID,
+  });
+
+  @override
+  Widget build(BuildContext context){
+
+    final TreatmentService treatmentService =TreatmentService(); 
+
+    return StreamBuilder(
+      stream: treatmentService.getlatestTreatmentPlan(childID), //go treatment_service.dart
+      builder:(context, snapshot) {
+
+        if (snapshot.hasError) return const SizedBox(); //if there s error no showing
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {//if there is no data
+         return  buildCards("Treatment Plan", "No available data.");
+        }
+
+        var data = snapshot.data!.docs.first.data() as Map<String, dynamic>;//parse the data
+
+        var rutfmap = data['prescribed_RUTF'] as Map<String, dynamic>?;
+        String? productname = rutfmap?['productName'];
+        int? dailyquantity = rutfmap?['dailyQuantity'];
+
+        //Supplements (List<dynamic> -> List<String>)
+        List<String> supplements =[];
+        if(data['supplements'] != null){
+          supplements=List<String>.from(data['supplements']);
+        }
+        //String -> DateTime
+        DateTime nextVisitDate = DateTime.parse(data['nextvisitdate']);
+        
+
+
+    return GestureDetector(
+      onTap: () {
+        //will be updated!!
+      },
+      child: Container(
+        width: double.infinity,
+        margin: EdgeInsets.only(top: 15.0),
+        padding: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10.0),//rounded corners
+          border: Border.all(color: Colors.grey.shade200),
+
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //left side all infos
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //title 
+ 
+                  Text("Treatment Plan: ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+
+                  const SizedBox(height: 8),
+                  //product name
+                  if(productname !=null)...[
+                    buildinformationrow("RUTF Name", productname!),
+                    const SizedBox(height: 4),
+                  ],
+                  
+                  //quanttiy info
+                  if(dailyquantity != null)...[
+                    buildRichText("Quantity", "$dailyquantity", suffix: " packets / day"),
+                    const SizedBox(height: 4),
+                  ],
+                  
+                  
+                  if(productname == null)const SizedBox(height: 4),
+                  //if there is no RUTF, open the gap a little the date is not too close to the title.
+
+                  //date last updated
+                  buildinformationrow("Next Visit",_formatDate(nextVisitDate)),
+
+
+                  //supplements -if it is not empty show
+                  if(supplements.isNotEmpty)...[
+                    const SizedBox(height: 4,),
+                    buildinformationrow("Supplements", supplements.join(", ") )//show the names separated by commas
+                  ]
+
+
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 15),
+            //icon part - right part
+            Padding(padding: const EdgeInsets.only(top: 20.0), child: buildiconbox(),),
+            Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey[400],),
+          ],
+        )
+        
+        
+        
+        
+        
+        
+        
+      ),
+    );
+    }
+    );
+  }
+
+  Widget buildiconbox() {
+    return Container(
+      height: 70,
+      width: 70,
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50, 
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.medication_liquid_rounded, 
+          color: Colors.orange.shade800,
+          size: 48,
+        ),
+      ),
+    );
+  }
+  //datetime-> string
+  String _formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
+  }
+}
