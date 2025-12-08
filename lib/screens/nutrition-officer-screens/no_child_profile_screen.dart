@@ -77,10 +77,10 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                                 )),
 
                               onPressed:() {
-                                //will be updated
-                               Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTreatmentPlan(
+                            
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTreatmentPlan(childId: widget.childId,
  
-                                riskstatus: "High Risk",  // "SAM" veya "Normal" yaparak renk değişimini dene
+                              
                               )));
                                
                               },

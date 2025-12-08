@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:malnutrition_app/widgets/info_display_widgets.dart';
+import 'package:malnutrition_app/services/treatment_service.dart';//for any kind of firebase functions is here
 
 class CreateTreatmentPlan extends StatefulWidget{
 
-  final String riskstatus; //normal, MAM-> moderate, SAM->high demek
+  final String childId;
 
-  const CreateTreatmentPlan({super.key, required this.riskstatus});
+  const CreateTreatmentPlan({super.key,  required this.childId});
 
   @override
   State<CreateTreatmentPlan> createState() => CreateTreatmentPlanState();
@@ -18,8 +19,36 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
   int quantityperday = 0; //default quantity
   int durationweeks = 0;//default duration
   final Set<String> selectedsupplements ={};//supplemantary food choices multiple choices
+  bool isloading = false;
+  final TreatmentService treatmentservice = TreatmentService();
+  String? riskstatus; //to keep rsikstatus
 
-  // Dummy RUTF Verileri (Senin veritabanı verilerin)!!!!!!
+  @override
+  void initState() {
+    super.initState();
+    _loadRiskStatus();
+  }
+
+  Future<void> _loadRiskStatus() async {
+  try {
+    //call the service method
+    final status = await treatmentservice.getcurrentriskstatus(widget.childId);    
+    if (mounted) {
+      setState(() {
+        riskstatus = status;
+      });
+    }
+  } catch (e) {
+    if (mounted) {// Handle error if needed
+      setState(() {
+        riskstatus = null;
+      });
+    }
+  }
+
+}
+
+  // rutf datas
   final List<Map<String, dynamic>> _rutfProducts = [
     {
       "name": "Plumpy'Nut",
@@ -44,7 +73,7 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
     },
   ];
 
-  // Dummy Ek Gıdalar!!!!!!
+  // supplement datas
   final List<Map<String, String>> _supplements = [
     {"name": "Banana", "icon": "🍌"},
     {"name": "Apple", "icon": "🍎"},
@@ -55,7 +84,7 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
 
   //helper functions
   Color getriskcolor(){
-    switch(widget.riskstatus){//returns a color based on risk status
+    switch(riskstatus){//returns a color based on risk status
       case "High Risk" : return Colors.red.shade100;
       case "Moderate Risk" : return Colors.orange.shade100;
       case "Healthy - No Risk" : return Colors.green.shade100;
@@ -64,7 +93,7 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
   }
 
   Color getrisktextcolor() {
-    switch (widget.riskstatus) {//returns a darker text color for readability
+    switch (riskstatus) {//returns a darker text color for readability
       case "High Risk": return Colors.red.shade900;
       case "Moderate Risk": return Colors.orange.shade900;
       case "Healthy - No Risk": return Colors.green.shade900;
@@ -73,7 +102,7 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
   }
 
   String getdiagnosis(){//converts risk status to diagnosis code sam,mam, normal
-    switch(widget.riskstatus){
+    switch(riskstatus){
       case "High Risk" : return "SAM";
       case "Moderate Risk" : return "MAM";
       default: return "Normal";
@@ -94,6 +123,65 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
         selecteddate = picked;
       });
     }
+  }
+
+  //saving treatment plan to firebase
+  Future<void> handlesave() async{
+    if(selecteddate == null){//warn if date not selected
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Please select a next visit date!') ));
+      return;
+     
+    }
+
+    setState(() => isloading = true);
+
+    try{
+      Map<String, dynamic>? rutfdata;
+      if(selectedRUTFindex != null){
+        final product = _rutfProducts[selectedRUTFindex!];
+
+        rutfdata={
+          'productName': product['name'],
+          'dailyQuantity': quantityperday,
+          'durationWeeks': durationweeks,
+          'totalTarget': quantityperday*7*durationweeks,//total quantity
+
+        };
+      }
+
+      await treatmentservice.savetreatmentplan(
+        childid: widget.childId, 
+        diagnosis: getdiagnosis(), 
+        nextvisitdate: selecteddate!,
+        prescribedRUTF: rutfdata, 
+        supplements: selectedsupplements.isNotEmpty//if any supplement is chosen
+          ? selectedsupplements.toList()//turn result to a list
+          : null,//otherwise null
+        );
+
+        if (mounted) {//if saving process is succesful
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Plan saved successfully!'), backgroundColor: Colors.green),
+        );
+        Navigator.of(context).pop();
+      }
+
+
+
+
+    }catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }finally {
+      //in every situation stop the loading
+      if (mounted) {
+        setState(() => isloading = false);}
+    }
+
+    
   }
 
   @override
@@ -150,7 +238,7 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
                           const Icon(Icons.calendar_today, color: Colors.black54),
                           const SizedBox(width: 10),
                           Text(
-                            selecteddate == null ? "Select a date..." : "${selecteddate!.day}/${selecteddate!.month}/${selecteddate!.year}",
+                            selecteddate == null ? "Tap to select a date..." : "${selecteddate!.day}/${selecteddate!.month}/${selecteddate!.year}",
                             //iff selecteddate is null then show the text, otherwise show the selected date
                             style: TextStyle(color: selecteddate == null ? Colors.grey : Colors.black87,fontSize: 16,
                             ),
@@ -384,8 +472,8 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
                                 textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
                               ),
-                              onPressed:() {
-                                //will be updatedd
+                              onPressed:isloading ? null:() {
+                                handlesave();//Lloading? yes -> lock the button null. no -> run the funct
                               }, 
                               child: Text('Save'),
                             )
