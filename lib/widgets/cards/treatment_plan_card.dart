@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:malnutrition_app/widgets/cards/treatment_details_sheet.dart';
 import 'package:malnutrition_app/widgets/info_display_widgets.dart';
 import 'package:malnutrition_app/services/treatment_service.dart';//get the firebase service
 
@@ -43,12 +44,31 @@ class TreatmentPlanCard extends StatelessWidget{
         }
         //String -> DateTime
         DateTime nextVisitDate = DateTime.parse(data['nextvisitdate']);
+
+        int? durationweeks = rutfmap?['durationWeeks'];
+        int? totaltarget =rutfmap?['totalTarget'];
+        String diagnosis = data['diagnosis'];
+
         
 
 
     return GestureDetector(
       onTap: () {
-        //will be updated!!
+        showModalBottomSheet(
+          context: context, 
+          isScrollControlled: true,//if the content is long it can be full screen
+          backgroundColor: Colors.transparent,
+          builder:(context) => TreatmentDetailsSheet(
+            diagnosis: diagnosis, 
+            nextvisitdate: nextVisitDate,
+            productname: productname,
+            dailyquantity: dailyquantity,
+            durationweeks: durationweeks,
+            totaltarget: totaltarget,
+            supplements: supplements,
+          ),
+        );
+        
       },
       child: Container(
         width: double.infinity,
@@ -75,7 +95,7 @@ class TreatmentPlanCard extends StatelessWidget{
                   const SizedBox(height: 8),
                   //product name
                   if(productname !=null)...[
-                    buildinformationrow("RUTF Name", productname!),
+                    buildinformationrow("RUTF Name", productname),
                     const SizedBox(height: 4),
                   ],
                   
@@ -92,12 +112,6 @@ class TreatmentPlanCard extends StatelessWidget{
                   //date last updated
                   buildinformationrow("Next Visit",_formatDate(nextVisitDate)),
 
-
-                  //supplements -if it is not empty show
-                  if(supplements.isNotEmpty)...[
-                    const SizedBox(height: 4,),
-                    buildinformationrow("Supplements", supplements.join(", ") )//show the names separated by commas
-                  ]
 
 
                 ],
