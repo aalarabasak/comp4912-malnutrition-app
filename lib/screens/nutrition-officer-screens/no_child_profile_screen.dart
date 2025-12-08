@@ -30,6 +30,8 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
 
   @override
   Widget build(BuildContext context){
+    double availableWidth = MediaQuery.of(context).size.width - 46;
+    //take the screen width and remove the paddings (23+23=46) so that the horizontal scrollable cards fit perfectly
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FB),
       appBar: AppBar(
@@ -218,35 +220,69 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                           ],
                         ) ,
                       ),
+                      const Divider(height: 20),
+                      //horizontal scrollable area starts
 
-                      //give the last data to card for showing the latest risk result
-                      if(docs.isNotEmpty)
-                        RiskStatusCard(latestdoc: docs.first, childId: widget.childId)
-                      else
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
-                          },
-                          child:buildCards("Risk Status: ", "No available data"), 
-                        ),
- 
-                      
-                      //give the last data to card for showing the latest measurement result
-                      if(docs.isNotEmpty)
-                        LatestMeasurementCard(latestDoc: docs.first, childId: widget.childId)
-                      else
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: widget.childId)));
-                          },
-                          child: buildCards("Measurements", "No measurements yet."),
-                        ),
-                  
+                      SizedBox(
+                        height: 420,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          //physics: PageScrollPhysics(),
+                          children: [
+                            //part 1 risk status card + latest measurement card alt alta
+                            SizedBox(
+                              width: availableWidth,
+                              child: Column(
+                                children: [
+                                  //top card: risk
+                                  //give the last data to card for showing the latest risk result
+                                if(docs.isNotEmpty)
+                                  RiskStatusCard(latestdoc: docs.first, childId: widget.childId)
+                                else
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
+                                    },
+                                    child:buildCards("Risk Status: ", "No available data"), 
+                                  ),
 
-                      //Nutrition summary info card
+
+                                //give the last data to card for showing the latest measurement result
+                                if(docs.isNotEmpty)
+                                  LatestMeasurementCard(latestDoc: docs.first, childId: widget.childId)
+                                else
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: widget.childId)));
+                                    },
+                                    child: buildCards("Measurements", "No measurements yet."),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(width: 15), //space btw two big columns
+
+                            SizedBox(
+                              width: availableWidth,
+                              child: Column(
+                                children: [
+                                  //Nutrition summary info card
+                                   NutritionSummaryCard(childID: widget.childId, dateofbirthString: temp,
+                                   gender: gender, weightkg: docs.first['weight'],),
+                                ],
+                              ),
+                            )
+
+                          ],
+                        ),
+                      ),
+
+                      //horizontal scrollable area ends hereeee
+                      const Divider(),
                     
-                        NutritionSummaryCard(childID: widget.childId, dateofbirthString: temp,
-                        gender: gender, weightkg: docs.first['weight'],),
+
+                     
                       
                       //recent activities info card
                       buildCards(

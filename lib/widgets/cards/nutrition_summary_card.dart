@@ -62,6 +62,7 @@ class NutritionSummaryCard extends StatelessWidget{
       },
       child: Container(
         width: double.infinity,
+        height: 388,
         margin: EdgeInsets.only(top: 15.0),
         padding: EdgeInsets.all(13.0),
         decoration: BoxDecoration(//card styling background color, borders, shadow
@@ -81,7 +82,7 @@ class NutritionSummaryCard extends StatelessWidget{
               ],
             ),
             
-            const SizedBox(height: 15,),
+            const SizedBox(height: 20,),
             
             buildNutritionProgressBar(//calori part
               label: "Calories", 
@@ -90,7 +91,7 @@ class NutritionSummaryCard extends StatelessWidget{
               current: eatenkcal, 
               target: weeklytargets['kcal']!, 
               unit: "kcal"),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             
             buildNutritionProgressBar(//carbs part
               label: "Carbs", 
@@ -100,7 +101,7 @@ class NutritionSummaryCard extends StatelessWidget{
               target: weeklytargets['carbs']!, 
               unit: "g"),
             
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             buildNutritionProgressBar(//protein part
               label: "Protein", 
@@ -110,7 +111,7 @@ class NutritionSummaryCard extends StatelessWidget{
               target: weeklytargets['protein']!, 
               unit: "g"),
             
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             buildNutritionProgressBar(//fat part
               label:"Fat", 
@@ -173,7 +174,7 @@ class NutritionSummaryCard extends StatelessWidget{
             color: iconcolor.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: iconcolor, size: 34,),
+          child: Icon(icon, color: iconcolor, size: 36,),
         ),
 
         const SizedBox(width: 15),
@@ -198,7 +199,7 @@ class NutritionSummaryCard extends StatelessWidget{
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
                 value: percent,
-                minHeight: 10,
+                minHeight: 20,
                 backgroundColor: Colors.grey[200], //head part color
                 color: progresscolor, //color of the filled part-dynamic
               ),

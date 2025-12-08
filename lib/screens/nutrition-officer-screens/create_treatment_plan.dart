@@ -26,10 +26,10 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
   @override
   void initState() {
     super.initState();
-    _loadRiskStatus();
+    loadriskstatus();
   }
 
-  Future<void> _loadRiskStatus() async {
+  Future<void> loadriskstatus() async {
   try {
     //call the service method
     final status = await treatmentservice.getcurrentriskstatus(widget.childId);    
