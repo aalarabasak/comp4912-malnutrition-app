@@ -101,7 +101,11 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
                     dates.add(label);
 
                   }
-
+                  // Only set default to last measurement if nothing is selected yet
+                    if (selectedindex == -1) {
+                      selectedindex = dates.length-1;
+                    }
+                  
                   return SingleChildScrollView(
                     child: Column(
                       children: [

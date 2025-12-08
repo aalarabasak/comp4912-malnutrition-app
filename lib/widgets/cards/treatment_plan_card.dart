@@ -56,7 +56,6 @@ class TreatmentPlanCard extends StatelessWidget{
       onTap: () {
         showModalBottomSheet(
           context: context, 
-          isScrollControlled: true,//if the content is long it can be full screen
           backgroundColor: Colors.transparent,
           builder:(context) => TreatmentDetailsSheet(
             diagnosis: diagnosis, 
