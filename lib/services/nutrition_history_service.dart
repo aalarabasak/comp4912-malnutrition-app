@@ -32,8 +32,13 @@ class NutritionHistoryService {
       final DateTime rawNow = DateTime.now();
       //set the time to 00:00:00 so  it covers the entire day no matter what time of day 
       final DateTime now = DateTime(rawNow.year, rawNow.month, rawNow.day);
-      final DateTime fiveweeksago = now.subtract(const Duration(days: 35));//calculate the start of 5 weeks ago
 
+      // Find the Monday of the CURRENT week
+      // weekday: 1 (Mon) ... 7 (Sun), subtract (weekday-1) days to get Monday
+      final DateTime currentweekmonday = now.subtract(Duration(days: now.weekday - 1));
+      
+      // 5 weeks total: 4 past weeks +current week
+      final DateTime startdatechart = currentweekmonday.subtract(const Duration(days: 28));//calculate the start label of the chart
 
       //1st group 5weeks- convert Firestore documents to a list of meal data
       final List<Map<String,dynamic>> allmeals = [];//create empty list
@@ -41,7 +46,9 @@ class NutritionHistoryService {
         final Map<String,dynamic> mealdata = doc.data() as Map<String, dynamic>;
         final DateTime mealdate = DateTime.parse(mealdata['date']);//get the date part from datetime attribute
 
-        if(mealdate.isAfter(fiveweeksago)){//include meals from the last 5 weeks
+        if(mealdate.isAfter(startdatechart.subtract(const Duration(seconds: 1)))){//include meals from the last 5 weeks
+         //subtract 1 second to make the comparison inclusive for the exact start moment
+         
           allmeals.add({
             'date': mealdate,
             'totalKcal': mealdata['totalKcal'],
@@ -56,10 +63,16 @@ class NutritionHistoryService {
       //2nd group meals by week -oldest to newest
       final List<Map<String,dynamic>> weeklydata = [];//create empty list
       //create 5 weeks starting from 5 weeks ago
-      for(int weekindex =0; weekindex<5; weekindex++){
+      for(int i =0; i<5; i++){
         //calculate grouping dates
-        final DateTime weekstart = fiveweeksago.add(Duration(days: weekindex *7)); //calculate start day of week
+        final DateTime weekstart = startdatechart.add(Duration(days: i *7)); //calculate start day of week
         final DateTime weekend = weekstart.add(Duration(days: 6)); //calculate end day of week - 6 days later
+
+        //for uncompleted weeks - their end date
+        DateTime displayend = weekend;
+        if(weekend.isAfter(now)){
+          displayend =now;
+        }
 
         //select meals belong to this week
         final List<Map<String, dynamic>> weekmeals = allmeals.where((meal) {
@@ -102,11 +115,10 @@ class NutritionHistoryService {
           fatpercentage = (weekfat/weeklytargets['fat']!).clamp(0.0, 1.2);
         }//to prevent overflow used clamp func
 
-        final String daterangestring = formatdaterange(weekstart,weekend);
+        final String daterangestring = formatdaterange(weekstart, displayend);
         //---
         //Add this week's data to our list
         weeklydata.add({
-          'week': 'Week ${weekindex + 1}',
           'dateRange': daterangestring, //for x axis labels for line chart
           'calPercent': calpercentage,
           'proPercent': proteinpercentage,
@@ -132,7 +144,7 @@ class NutritionHistoryService {
 //helper func to format date range 
   static String formatdaterange(DateTime start, DateTime end){
     if(start.month == end.month){
-      return '${start.day}-${end.day} ${getmonthAbvn(end.month)}'; //format: 20-26 Oct
+      return '${start.day}-${end.day} ${getmonthAbvn(end.month)}'; //format: 20-26 Oct same month
     }
     else{
       return '${start.day} ${getmonthAbvn(start.month)}-${end.day} ${getmonthAbvn(end.month)}'; //format: 28 Oct - 3 Nov

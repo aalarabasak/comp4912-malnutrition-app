@@ -17,7 +17,7 @@ class NutritionValuesCalculator {
       ageinmonths--;//if the day of the month hasnt reached yet -> decrease 1 unit
     }
 
-    return ageinmonths;
+    return ageinmonths < 0 ? 0 : ageinmonths;//prevent ageinmonths being negative
 
 
   }
