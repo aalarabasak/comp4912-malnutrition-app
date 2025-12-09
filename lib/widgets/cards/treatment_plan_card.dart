@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:malnutrition_app/widgets/cards/treatment_details_sheet.dart';
+import 'package:malnutrition_app/widgets/cards/treatment_details_bottomsheet.dart';
 import 'package:malnutrition_app/widgets/info_display_widgets.dart';
 import 'package:malnutrition_app/services/treatment_service.dart';//get the firebase service
 

@@ -75,6 +75,9 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
 
   @override
   Widget build(BuildContext context){
+     double availableWidth = MediaQuery.of(context).size.width - 46;
+    //take the screen width and remove the paddings (23+23=46) so that the horizontal scrollable cards fit perfectly
+
     return Scaffold(
       appBar: AppBar(
         title: Icon(Icons.monitor_heart_outlined, color: Colors.black,),
@@ -103,7 +106,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   Expanded(
                               child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                                backgroundColor:  const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),
                                 foregroundColor: Colors.black,
                                 padding: EdgeInsets.symmetric(vertical: 18),
                                 textStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -127,7 +130,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                           Expanded(
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                                backgroundColor:  const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),
                                 foregroundColor: Colors.black,
                                 padding: EdgeInsets.symmetric(vertical: 18),
                                 textStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -229,7 +232,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                         width: double.infinity,
                         padding: EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 155, 211, 237),
+                          color: const Color.fromARGB(255, 155, 211, 237).withOpacity(0.8),
                           borderRadius: BorderRadius.circular(10.0),
                         ),
 
@@ -250,34 +253,67 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                         ) ,
                       ),
 
-                      //give the last data to card for showing the latest risk result
-                      if(docs.isNotEmpty)
-                        RiskStatusCard(latestdoc: docs.first, childId: widget.childId)
-                      else
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
-                          },
-                          child:buildCards("Risk Status: ", "No available data"), 
-                        ),
- 
-                      
-                      //give the last data to card for showing the latest measurement result
-                      if(docs.isNotEmpty)
-                        LatestMeasurementCard(latestDoc: docs.first, childId: widget.childId)
-                      else
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: widget.childId)));
-                          },
-                          child: buildCards("Measurements", "No measurements yet."),
-                        ),
-                  
+                      const Divider(height: 20),
+                      //horizontal scrollable area starts
 
-                      //Nutrition summary info card
-                    
-                        NutritionSummaryCard(childID: widget.childId, dateofbirthString: temp,
-                        gender: gender, weightkg: docs.first['weight'],),
+                      SizedBox(
+                        height: 420,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          //physics: PageScrollPhysics(),
+                          children: [
+                            //part 1 risk status card + latest measurement card alt alta
+                            SizedBox(
+                              width: availableWidth,
+                              child: Column(
+                                children: [
+                                  //top card: risk
+                                  //give the last data to card for showing the latest risk result
+                                if(docs.isNotEmpty)
+                                  RiskStatusCard(latestdoc: docs.first, childId: widget.childId)
+                                else
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
+                                    },
+                                    child:buildCards("Risk Status: ", "No available data"), 
+                                  ),
+
+
+                                //give the last data to card for showing the latest measurement result
+                                if(docs.isNotEmpty)
+                                  LatestMeasurementCard(latestDoc: docs.first, childId: widget.childId)
+                                else
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: widget.childId)));
+                                    },
+                                    child: buildCards("Measurements", "No measurements yet."),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(width: 15), //space btw two big columns
+
+                            SizedBox(
+                              width: availableWidth,
+                              child: Column(
+                                children: [
+                                  //Nutrition summary info card
+                                   NutritionSummaryCard(childID: widget.childId, dateofbirthString: temp,
+                                   gender: gender, weightkg: docs.first['weight'],),
+                                ],
+                              ),
+                            )
+
+                          ],
+                        ),
+                      ),
+
+
+                      //horizontal scrollable area ends hereeee
+                      const Divider(),
                       
                       //recent activities info card
                       buildCards(
