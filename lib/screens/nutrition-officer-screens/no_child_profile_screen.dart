@@ -198,7 +198,27 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                           ],
                         ) ,
                       ),
-                      const Divider(height: 20),
+
+                      if(docs.isEmpty)...[
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
+                          },
+                          child:buildCards("Risk Status: ", "No available data."), 
+                          ),
+
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: widget.childId)));
+                          },
+                          child: buildCards("Measurements", "No measurements yet."),
+                        ),
+
+                        buildCards("Nutrition Summary","Add a measurement to see nutrition targets.",),
+
+                      ]
+                      else...[
+                        const Divider(height: 20),
                       //horizontal scrollable area starts
 
                       SizedBox(
@@ -214,27 +234,11 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                                 children: [
                                   //top card: risk
                                   //give the last data to card for showing the latest risk result
-                                if(docs.isNotEmpty)
-                                  RiskStatusCard(latestdoc: docs.first, childId: widget.childId)
-                                else
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
-                                    },
-                                    child:buildCards("Risk Status: ", "No available data"), 
-                                  ),
-
-
+                                  RiskStatusCard(latestdoc: docs.first, childId: widget.childId),
+                                
                                 //give the last data to card for showing the latest measurement result
-                                if(docs.isNotEmpty)
-                                  LatestMeasurementCard(latestDoc: docs.first, childId: widget.childId)
-                                else
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: widget.childId)));
-                                    },
-                                    child: buildCards("Measurements", "No measurements yet."),
-                                  ),
+                                  LatestMeasurementCard(latestDoc: docs.first, childId: widget.childId),
+                                
                                 ],
                               ),
                             ),
@@ -246,8 +250,8 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                               child: Column(
                                 children: [
                                   //Nutrition summary info card
-                                   NutritionSummaryCard(childID: widget.childId, dateofbirthString: temp,
-                                   gender: gender, weightkg: docs.first['weight'],),
+                                    NutritionSummaryCard(childID: widget.childId,dateofbirthString: temp,gender: gender,weightkg: docs.first['weight'],),
+                                  
                                 ],
                               ),
                             )
@@ -256,9 +260,12 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                         ),
                       ),
 
+
                       //horizontal scrollable area ends hereeee
                       const Divider(),
-                    
+                      ], //if-else line ends here
+
+                     
 
                      
                       

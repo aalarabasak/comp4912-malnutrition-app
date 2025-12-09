@@ -183,7 +183,7 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
                     String temp = childData['dateofBirth'];
                     String age = calculateAge(temp);
 
-                    String riskstatus = childData['currentRiskStatus'];//get current status from child's data firebase
+                    String riskstatus = childData['currentRiskStatus'] ?? "";//get current status from child's data firebase
                     String risk ="";
                     Color riskcolor;
                     if(riskstatus.contains('High Risk')){
@@ -194,9 +194,13 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
                       risk = "Moderate";
                       riskcolor = Colors.amber.shade700;
                     }
-                    else{
+                    else if(riskstatus.contains('Healthy - No Risk')){
                       risk = "Healthy";
                       riskcolor = Colors.green.shade600;
+                    }
+                    else{
+                      risk = "No data";
+                      riskcolor = Colors.grey;
                     }
 
 
