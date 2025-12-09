@@ -57,6 +57,7 @@ class TreatmentPlanCard extends StatelessWidget{
         showModalBottomSheet(
           context: context, 
           backgroundColor: Colors.transparent,
+          isScrollControlled: true,//prevents overflow error
           builder:(context) => TreatmentDetailsSheet(
             diagnosis: diagnosis, 
             nextvisitdate: nextVisitDate,

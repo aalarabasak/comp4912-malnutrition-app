@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/nutrition_values_calculator.dart';
 
+//this scipt is only used by nutriiton history chart screen
 class NutritionHistoryService {
   //gets and processes nutrition data for last 5weeks
   static Future<List<Map<String,dynamic>> >getWeeklyNutritiondata(String childId) async{
