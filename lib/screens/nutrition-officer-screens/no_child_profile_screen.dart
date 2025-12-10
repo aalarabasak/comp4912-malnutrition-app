@@ -9,7 +9,9 @@ import 'package:malnutrition_app/widgets/cards/nutrition_summary_card.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import 'package:malnutrition_app/widgets/cards/treatment_plan_card.dart';
 import '../../widgets/cards/latest_measurement_card.dart';
+
 import 'package:malnutrition_app/widgets/ai_feedback_button.dart';
+import 'package:malnutrition_app/widgets/ai_feedback_dialog.dart';
 
 import '../../widgets/info_display_widgets.dart';
 import '../../utils/formatting_helpers.dart';
@@ -43,10 +45,15 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
        actions: [
         //View AI feedback button
         Padding(padding: const EdgeInsets.only(right: 30.0),
-        child: AiFeedbackButton(
+        child: AiFeedbackButton(//goes to ../widgets/ai_feedback_button.dart to draw button
           onPressed:() {
-            //will be updated!!!!!!!
-            print("ai button is presseed");
+            showDialog(
+              context: context, 
+              builder:(context) {
+                //goes to ../widgets/ai_feedback_dialog.dart to show the pop up screen
+                return const AiFeedbackDialog();
+              },
+            );
           },)
         )
       ],
