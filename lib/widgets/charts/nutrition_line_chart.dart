@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../info_display_widgets.dart';
+import 'dart:math';
 
 class NutritionLineChart extends StatelessWidget{
   final List<double> caloriespots;//y axis
@@ -16,11 +17,33 @@ class NutritionLineChart extends StatelessWidget{
     required this.onPointTapped,//parent screen wants to know when a dot is clicked, can be null
   });
 
+  double calculatemaxY(){
+    if(caloriespots.isEmpty && proteinspots.isEmpty)return 1.2;
+
+    double maxValue = 0;
+
+    if(caloriespots.isNotEmpty){//find the max value in caloriespots
+      maxValue = caloriespots.reduce(max);
+    }
+
+    if(proteinspots.isNotEmpty){//find the max value in proteinspots
+      double maxprotein =proteinspots.reduce(max);
+      if(maxprotein>maxValue){
+        maxValue =maxprotein;
+      }
+    }
+
+    return maxValue>1.2 ? maxValue+0.15: 1.2;
+
+  }
+
   @override
   Widget build(BuildContext context){
     if(caloriespots.isEmpty || proteinspots.isEmpty){
       return const Center(child: Text("No data available."));
     }
+
+    final double calculatedmaxy = calculatemaxY();
     return Container(
       padding: const EdgeInsets.all(12.0), //12units of space from the inside
       decoration: BoxDecoration(
@@ -69,7 +92,7 @@ class NutritionLineChart extends StatelessWidget{
 
             //limits of the chart
             minY: 0,
-            maxY: 1.2,
+            maxY: calculatedmaxy,
             minX: 0.5,
             maxX: caloriespots.length.toDouble() + 0.4,
 
@@ -174,6 +197,9 @@ class NutritionLineChart extends StatelessWidget{
             lineTouchData: LineTouchData(
               handleBuiltInTouches: true,//show standard tooltip bubble
               touchTooltipData: LineTouchTooltipData(//for rounded numbers tooltip
+                fitInsideHorizontally: true,
+                //fitInsideVertically: true,
+                tooltipMargin: -0.5,
                 getTooltipColor: (touchedSpot) => Colors.blueGrey.withOpacity(0.8),
                 getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                   return touchedBarSpots.map((barSpot) {

@@ -200,7 +200,7 @@ class WeeklyNutiritionCards extends StatelessWidget{
         ),
         //the percentage writing
         const SizedBox(height: 8),
-        Text("${(percentage*100).toInt()}%", style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 13),)
+        Text("${(displaypercent*100).toInt()}%", style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 13),)
       ],
       
     );

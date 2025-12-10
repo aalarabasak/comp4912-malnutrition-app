@@ -104,16 +104,16 @@ class NutritionHistoryService {
         double fatpercentage = 0;
 
         if(weeklytargets['kcal']! >0){
-          calpercentage = (weekkcal/weeklytargets['kcal']!).clamp(0.0, 1.2);
+          calpercentage = (weekkcal/weeklytargets['kcal']!);
         }//to prevent overflow used clamp func
         if(weeklytargets['protein']! >0){
-          proteinpercentage = (weekprotein/weeklytargets['protein']!).clamp(0.0, 1.2);
+          proteinpercentage = (weekprotein/weeklytargets['protein']!);
         }//to prevent overflow used clamp func
         if(weeklytargets['carbs']! >0){
-          carbspercentage = (weekcarbs/weeklytargets['carbs']!).clamp(0.0, 1.2);
+          carbspercentage = (weekcarbs/weeklytargets['carbs']!);
         }//to prevent overflow used clamp func
         if(weeklytargets['fat']! >0){
-          fatpercentage = (weekfat/weeklytargets['fat']!).clamp(0.0, 1.2);
+          fatpercentage = (weekfat/weeklytargets['fat']!);
         }//to prevent overflow used clamp func
 
         final String daterangestring = formatdaterange(weekstart, displayend);

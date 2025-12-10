@@ -51,7 +51,7 @@ class NutritionHistoryScreenState extends State<NutritionHistoryScreen> {
     //empty state
     if(historydata.isEmpty){
       return Scaffold(
-        appBar: AppBar(title: const Text('Nutrition Analysis')),
+        appBar: AppBar(title: const Text('Weekly Nutrition Analysis')),
         body: const Center(child: Text("No nutrition data found for the last 5 weeks.")),
       );
     }
@@ -64,7 +64,7 @@ class NutritionHistoryScreenState extends State<NutritionHistoryScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
-        title: Text('Nutrition Analysis', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600, fontSize: 19)),
+        title: Text('Weekly Nutrition Analysis', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600, fontSize: 19)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 22.0),

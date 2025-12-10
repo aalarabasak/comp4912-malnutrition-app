@@ -77,7 +77,7 @@ class NutritionSummaryCard extends StatelessWidget{
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Nutrition Summary :', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+                Text('Nutrition Summary (Last 7 days):', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
                 Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey[400],),
               ],
             ),
