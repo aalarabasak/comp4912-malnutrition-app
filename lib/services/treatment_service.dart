@@ -44,6 +44,7 @@ class TreatmentService {
       batch.update(childref, {
         'treatmentStatus': 'Active',   //filtering will be done according to this attribute in the FW list
         'lastPlanDate': FieldValue.serverTimestamp(),
+        'nextvisitdate':nextvisitdate.toIso8601String(),
       });
 
       await batch.commit(); //finish the processes

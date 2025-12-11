@@ -95,7 +95,7 @@ class TreatmentDetailsSheet extends StatelessWidget{
 
             Wrap(
               //widget arranges items horizontally and moves to the next line if there is no space
-              spacing: 0,//no horizontal gap between chips
+              spacing: 2,//no horizontal gap between chips
 
               children: supplements.map((s) => Chip(//loop through the supplements list and convert each item into a chip widget
                 label: Text(s),//showthe supplement name inside the chip
@@ -119,7 +119,7 @@ class TreatmentDetailsSheet extends StatelessWidget{
             if(footeraction != null)...[
               const Divider(),
               const SizedBox(height: 10),
-              footeraction!,//shoe that it is not null with an ünlem bcs it is inside an if
+              footeraction!,//show that it is not null with an ünlem bcs it is inside an if
             ]
           ]
       ),
