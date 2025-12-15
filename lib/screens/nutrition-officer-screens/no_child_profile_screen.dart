@@ -14,6 +14,7 @@ import 'package:malnutrition_app/widgets/ai_feedback_button.dart';
 import 'package:malnutrition_app/widgets/ai_feedback_dialog.dart';
 
 import 'package:malnutrition_app/services/api_service.dart';//it is for llm short advice
+import 'package:malnutrition_app/services/nutrition_data_gathererllm.dart';
 
 import '../../widgets/info_display_widgets.dart';
 import '../../utils/formatting_helpers.dart';
@@ -34,6 +35,7 @@ class NOChildProfileScreen extends StatefulWidget{
 class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
 
   final ApiService apiService = ApiService();
+  final NutritionDataGathererllm datagatherer = NutritionDataGathererllm();
 
   Future<void> handleAiFeedback(BuildContext context) async{
     //show loading sign
@@ -43,12 +45,13 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
       builder:(ctx) => const Center(child: CircularProgressIndicator())
     );
 
-    String? advice = await apiService.getAiAdvice(
-      age:  "4 years old",
-      weight: "12 kg",
-      riskstatus: "High Risk",
-      foodname: "Banana",
-    );
+    //first, take the datas gather them as packet
+    final request = await datagatherer.prepareadviceRequest(widget.childId);
+
+    String? advice;
+    if(request != null){//if the gathering data as packet process is successful, then go to api service
+      advice = await apiService.getAiAdvice(request);
+    }
 
     if(context.mounted) Navigator.pop(context); //close the loading sign
 
@@ -57,7 +60,7 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
       showDialog(
         context: context,
         builder: (context) {
-          return AiFeedbackDialog(airesponse: advice);
+          return AiFeedbackDialog(airesponse: advice!);
         },
       );
     }

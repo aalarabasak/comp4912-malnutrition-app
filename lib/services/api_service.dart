@@ -2,6 +2,7 @@ import 'dart:convert';//convert json string to dart objects
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:malnutrition_app/services/nutrition_datamodels.dart';
 
 class ApiService {
 
@@ -59,12 +60,7 @@ class ApiService {
   }
 
   //this method is used for getting LLM advice from endpoint /advice
-  Future<String?> getAiAdvice({
-    required String age,
-    required String weight,
-    required String riskstatus,
-    required String foodname,
-  })async{
+  Future<String?> getAiAdvice(FullAdviceRequest request)async{
     
     final Uri url = Uri.parse("$baseurl/advice");
 
@@ -76,12 +72,8 @@ class ApiService {
           "Content-Type": "application/json",
           "X-API-Key": apikey,
         },
-        body: jsonEncode({
-          "child_age":age,
-          "child_weight": weight,
-          "risk_status": riskstatus,
-          "food_name": foodname,
-        })
+        // Encode the request as a JSON object
+        body: jsonEncode(request.tojson()),
       );
 
       if(response.statusCode == 200){
