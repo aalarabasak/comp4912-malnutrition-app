@@ -5,14 +5,17 @@ import 'package:http_parser/http_parser.dart';
 
 class ApiService {
 
-  final String baseurl = "https://food-detection.abasak.com/detect";//send the image to this url address
+  final String baseurl = "https://food-detection.abasak.com";//send the image to this url address
   final String apikey = "PP4d6Kksn9HgwVoJZ8TCUuAEpYgHTtAT";
 
+  //this method is used for yolo-food detection
   Future <Map<String, dynamic>?> detectFood(File imagefile) async{
+
+    final Uri url = Uri.parse("$baseurl/detect");
 
     try{
 
-      var request = http.MultipartRequest('POST', Uri.parse(baseurl));//create a multipart request -used for file uploads
+      var request = http.MultipartRequest('POST', url);//create a multipart request -used for file uploads
       //POST method -> sending data
       request.headers['X-API-Key'] = apikey;//add api key to headers for security
 
@@ -53,6 +56,52 @@ class ApiService {
 
     }
     
+  }
+
+  //this method is used for getting LLM advice from endpoint /advice
+  Future<String?> getAiAdvice({
+    required String age,
+    required String weight,
+    required String riskstatus,
+    required String foodname,
+  })async{
+    
+    final Uri url = Uri.parse("$baseurl/advice");
+
+    try{
+
+      final response = await http.post(
+        url, 
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": apikey,
+        },
+        body: jsonEncode({
+          "child_age":age,
+          "child_weight": weight,
+          "risk_status": riskstatus,
+          "food_name": foodname,
+        })
+      );
+
+      if(response.statusCode == 200){
+        final Map<String, dynamic> data = jsonDecode(response.body);
+
+        if(data['success'] == true){
+          return data['advice'];
+        }
+        else{
+          print("Server Error: ${response.statusCode} - ${response.body}");
+        }
+
+      }
+
+    
+    } catch (e){
+      print("Advice Connection Error: $e");
+    }
+
+    return null;
   }
 
 

@@ -6,7 +6,7 @@ class AiFeedbackDialog extends StatelessWidget{
 
   const AiFeedbackDialog({
     super.key,
-   this.airesponse = "Add protein-rich foods like lentils, milk, or eggs. Consider adding fruit for iron intake. Since the weight loss is slightly above 5%, closely monitor daily intake for the next 3 days.",
+    required this.airesponse,
   });
 
   @override
@@ -92,7 +92,7 @@ class AiFeedbackDialog extends StatelessWidget{
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Source: Gemini",style: TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic), ),
+              Text("",style: TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic), ),
               Text(DateTime.now().toString().split(" ")[0], style: TextStyle(fontSize: 11, color: Colors.grey),),
             ],
 

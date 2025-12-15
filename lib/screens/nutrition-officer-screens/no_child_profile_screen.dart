@@ -13,6 +13,8 @@ import '../../widgets/cards/latest_measurement_card.dart';
 import 'package:malnutrition_app/widgets/ai_feedback_button.dart';
 import 'package:malnutrition_app/widgets/ai_feedback_dialog.dart';
 
+import 'package:malnutrition_app/services/api_service.dart';//it is for llm short advice
+
 import '../../widgets/info_display_widgets.dart';
 import '../../utils/formatting_helpers.dart';
 
@@ -31,6 +33,38 @@ class NOChildProfileScreen extends StatefulWidget{
   
 class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
 
+  final ApiService apiService = ApiService();
+
+  Future<void> handleAiFeedback(BuildContext context) async{
+    //show loading sign
+    showDialog(
+      context: context, 
+      barrierDismissible: false,
+      builder:(ctx) => const Center(child: CircularProgressIndicator())
+    );
+
+    String? advice = await apiService.getAiAdvice(
+      age:  "4 years old",
+      weight: "12 kg",
+      riskstatus: "High Risk",
+      foodname: "Banana",
+    );
+
+    if(context.mounted) Navigator.pop(context); //close the loading sign
+
+    //show the advice , show the result
+    if(advice != null && context.mounted){
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AiFeedbackDialog(airesponse: advice);
+        },
+      );
+    }
+    
+  }
+
+
   @override
   Widget build(BuildContext context){
     double availableWidth = MediaQuery.of(context).size.width - 46;
@@ -46,15 +80,8 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
         //View AI feedback button
         Padding(padding: const EdgeInsets.only(right: 30.0),
         child: AiFeedbackButton(//goes to ../widgets/ai_feedback_button.dart to draw button
-          onPressed:() {
-            showDialog(
-              context: context, 
-              builder:(context) {
-                //goes to ../widgets/ai_feedback_dialog.dart to show the pop up screen
-                return const AiFeedbackDialog();
-              },
-            );
-          },)
+          onPressed: () => handleAiFeedback(context), //this hadnleaifeedback function is above of this dart script
+          )
         )
       ],
       ),
