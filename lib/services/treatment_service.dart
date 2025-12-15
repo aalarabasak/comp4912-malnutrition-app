@@ -20,7 +20,7 @@ class TreatmentService {
     required String diagnosis,
     required DateTime nextvisitdate,
     required Map<String, dynamic>? prescribedRUTF,//if there is no selection, it shoulf be null
-    required List<String>? supplements,//if there is no selection, it shoulf be null
+    required Map<String, dynamic>? supplements,//if there is no selection, it shoulf be null
   }) async{
 
     WriteBatch batch = firestore.batch();//batch start to combine two processes

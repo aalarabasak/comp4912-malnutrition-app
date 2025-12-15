@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'package:malnutrition_app/screens/child-profile-history-screens/risk_status_history_screen.dart';
-import 'package:malnutrition_app/screens/child-profile-history-screens/measurements_history_screen.dart';
 import 'package:malnutrition_app/screens/nutrition-officer-screens/create_treatment_plan.dart';
 
 import 'package:malnutrition_app/widgets/cards/nutrition_summary_card.dart';
@@ -237,20 +235,8 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                       ),
 
                       if(docs.isEmpty)...[
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
-                          },
-                          child:buildCards("Risk Status: ", "No available data."), 
-                          ),
-
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: widget.childId)));
-                          },
-                          child: buildCards("Measurements", "No measurements yet."),
-                        ),
-
+                        buildCards("Risk Status: ", "No available data."), 
+                        buildCards("Measurements", "No measurements yet."),
                         buildCards("Nutrition Summary","Add a measurement to see nutrition targets.",),
 
                       ]

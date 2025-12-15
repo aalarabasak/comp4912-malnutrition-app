@@ -108,7 +108,7 @@ Widget buildcounterrow(String title, String unit, int value, Function(int) onCha
         children: [
           IconButton(
             onPressed:() {
-              if(value>1){
+              if(value>0){
                 onChanged(value-1);
               }
               else{

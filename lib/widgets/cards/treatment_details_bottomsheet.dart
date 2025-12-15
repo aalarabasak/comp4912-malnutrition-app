@@ -8,11 +8,13 @@ class TreatmentDetailsSheet extends StatelessWidget{
   final int? totaltarget;
   final DateTime nextvisitdate;
   final List<String>supplements;
+  final int? suppquantity;
+  final int? suppduration;
 
   final Widget? footeraction; //this is for field worker to rich this class with a button function 
 
   const TreatmentDetailsSheet({super.key, required this.diagnosis, this.productname, this.dailyquantity, this.durationweeks,
-  this.totaltarget,required this.nextvisitdate, this.supplements =const[], this.footeraction,
+  this.totaltarget,required this.nextvisitdate, this.supplements =const[], this.suppduration, this.suppquantity,this.footeraction,
   });//constructor of class
 
   @override
@@ -102,6 +104,15 @@ class TreatmentDetailsSheet extends StatelessWidget{
                 backgroundColor: Colors.green.shade50,
                 labelStyle: TextStyle(color: Colors.green.shade900) )).toList(),//convert the map result back to a list of widgets
             ),
+
+            const SizedBox(height: 5),
+              // Duration Info
+              builddetailrow(Icons.access_time, "Duration", "$suppduration Weeks"),
+
+              // Daily Dose Info
+              builddetailrow(Icons.onetwothree, "Daily Dose", "$suppquantity item(s) / type"),
+            
+           
 
             const SizedBox(height: 20),
 

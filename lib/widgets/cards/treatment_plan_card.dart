@@ -36,19 +36,35 @@ class TreatmentPlanCard extends StatelessWidget{
         var rutfmap = data['prescribed_RUTF'] as Map<String, dynamic>?;
         String? productname = rutfmap?['productName'];
         int? dailyquantity = rutfmap?['dailyQuantity'];
-
-        //Supplements (List<dynamic> -> List<String>)
-        List<String> supplements =[];
-        if(data['supplements'] != null){
-          supplements=List<String>.from(data['supplements']);
-        }
-        //String -> DateTime
-        DateTime nextVisitDate = DateTime.parse(data['nextvisitdate']);
-
         int? durationweeks = rutfmap?['durationWeeks'];
         int? totaltarget =rutfmap?['totalTarget'];
         String diagnosis = data['diagnosis'];
 
+        //String -> DateTime
+        DateTime nextVisitDate = DateTime.parse(data['nextvisitdate']);
+
+        //Supplements 
+        //initialize variables to hold supplement details
+        List<String> supplements =[];
+        int? supplementquantity;// Holds quantity per item
+        int? supplementduration;// Holds duration in weeks
+
+        var supplementmap = data['supplements'] as Map<String, dynamic>?;//retrieve the supplements field as a Map
+
+        if(supplementmap != null){
+          //extract the list of selected food names 
+          if (supplementmap['selecteditems'] != null) {
+            supplements = List<String>.from(supplementmap['selecteditems']);
+          }
+          
+          supplementquantity = supplementmap['dailyQuantity']; 
+          supplementduration = supplementmap['durationWeeks'];
+        }
+
+      
+        
+
+    
         
 
 
@@ -66,6 +82,8 @@ class TreatmentPlanCard extends StatelessWidget{
             durationweeks: durationweeks,
             totaltarget: totaltarget,
             supplements: supplements,
+            suppquantity: supplementquantity,
+            suppduration: supplementduration,
           ),
         );
         

@@ -124,8 +124,6 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
                         //information cards that appear when a point is selected
                         if(selectedindex >= 0 && selectedindex < timelinedata.length)//if selectedindex is valid
                           buildriskDetailCards(timelinedata[selectedindex])
-                        else
-                          _buildEmptyState(),
                       ],
                     ),
                   );
@@ -201,32 +199,4 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
     );
   }
 
-  //empty state when no point is selected
-  Widget _buildEmptyState() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(Icons.touch_app_outlined, color: Colors.grey[400], size: 48),
-          const SizedBox(height: 12),
-          Text('Tap on a data point to view details',style: TextStyle(fontSize: 14,color: Colors.grey[600],fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
 }

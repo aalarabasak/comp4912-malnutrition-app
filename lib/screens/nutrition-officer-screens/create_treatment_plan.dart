@@ -19,6 +19,8 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
   int quantityperday = 0; //default quantity
   int durationweeks = 0;//default duration
   final Set<String> selectedsupplements ={};//supplemantary food choices multiple choices
+  int supplementquantity = 0; //supplement quantity per day
+  int supplementduration =0;//supplement kaç hafta sürecek
   bool isloading = false;
   final TreatmentService treatmentservice = TreatmentService();
   String? riskstatus; //to keep rsikstatus
@@ -133,6 +135,16 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
      
     }
 
+    if(selectedsupplements.isNotEmpty &&(supplementquantity == 0 || supplementduration == 0) ){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter quantity for supplements!')));
+       return;
+    }
+
+    if(selectedRUTFindex != null && (quantityperday == 0 || durationweeks == 0)){
+       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter quantity for RUTF!')));
+       return;
+    }
+
     setState(() => isloading = true);
 
     try{
@@ -149,14 +161,24 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
         };
       }
 
+      Map<String, dynamic>? supplementdata;
+      if(selectedsupplements.isNotEmpty){
+       
+
+        supplementdata={
+          'selecteditems': selectedsupplements.toList(),
+          'dailyQuantity': supplementquantity,
+          'durationWeeks': supplementduration,
+
+        };
+      }
+
       await treatmentservice.savetreatmentplan(
         childid: widget.childId, 
         diagnosis: getdiagnosis(), 
         nextvisitdate: selecteddate!,
         prescribedRUTF: rutfdata, 
-        supplements: selectedsupplements.isNotEmpty//if any supplement is chosen
-          ? selectedsupplements.toList()//turn result to a list
-          : null,//otherwise null
+        supplements: supplementdata,
         );
 
         if (mounted) {//if saving process is succesful
@@ -406,7 +428,38 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
                       //if do not make list, then it gives errorr
 
                     ),
-                  )
+
+                    
+                  ),
+
+                  //show this card if at least one supplement is selected
+                  if(selectedsupplements.isNotEmpty)...[
+
+                    const SizedBox(height: 20),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50.withOpacity(0.5), 
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.green.shade100),
+                      ),
+
+                      child: Column(
+                        children: [
+                          // Supplement quantity
+                          buildcounterrow("Quantity per day", "Items", supplementquantity, (val) {
+                            setState(() => supplementquantity = val);
+                          }),
+                          const Divider(),
+                          // duration
+                          buildcounterrow("Duration", "Weeks", supplementduration, (val) {
+                            setState(() => supplementduration = val);
+                          }),
+                        ],
+                      ),
+                    )
+                  ]
 
                     
 

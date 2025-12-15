@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:malnutrition_app/screens/field-worker-screens/add_test_results_screen.dart';
 import 'package:malnutrition_app/screens/field-worker-screens/scan_barcode_screen.dart';
 
-import 'package:malnutrition_app/screens/child-profile-history-screens/risk_status_history_screen.dart';
-import 'package:malnutrition_app/screens/child-profile-history-screens/measurements_history_screen.dart';
-
 import 'package:malnutrition_app/widgets/cards/nutrition_summary_card.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import '../../widgets/cards/latest_measurement_card.dart';
@@ -254,20 +251,8 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                       ),
 
                       if(docs.isEmpty)...[
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => RiskStatusHistoryScreen(childid: widget.childId)));
-                          },
-                          child:buildCards("Risk Status: ", "No available data."), 
-                          ),
-
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: widget.childId)));
-                          },
-                          child: buildCards("Measurements", "No measurements yet."),
-                        ),
-
+                        buildCards("Risk Status: ", "No available data."), 
+                        buildCards("Measurements", "No measurements yet."),
                         buildCards("Nutrition Summary","Add a measurement to see nutrition targets.",),
 
                       ]
