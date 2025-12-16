@@ -29,6 +29,14 @@ class _TreatmentListScreenState extends State <TreatmentListScreen> {
 
   }
 
+  @override
+void initState() {
+  super.initState();
+  
+  treatmentservice.checkpastvisits(); 
+  
+}
+
   bool showonlytoday = false;//for filter: today only
  
 
