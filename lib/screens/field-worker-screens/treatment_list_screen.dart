@@ -271,10 +271,18 @@ class _TreatmentListScreenState extends State <TreatmentListScreen> {
             String? productname = rutfmap?['productName'];
             int? dailyquantity = rutfmap?['dailyQuantity'];
 
-            //Supplements (List<dynamic> -> List<String>)
-            List<String> supplements =[];
-            if(data['supplements'] != null){
-              supplements=List<String>.from(data['supplements']);
+            // Supplements – mirror the structure used in `treatment_plan_card.dart`
+            List<String> supplements = [];
+            int? supplementquantity; // quantity per item
+            int? supplementduration; // duration in weeks
+
+            var supplementmap = data['supplements'] as Map<String, dynamic>?;
+            if (supplementmap != null) {
+              if (supplementmap['selecteditems'] != null) {
+                supplements = List<String>.from(supplementmap['selecteditems']);
+              }
+              supplementquantity = supplementmap['dailyQuantity'];
+              supplementduration = supplementmap['durationWeeks'];
             }
             //String -> DateTime
             DateTime nextVisitDate = DateTime.parse(data['nextvisitdate']);
@@ -289,6 +297,8 @@ class _TreatmentListScreenState extends State <TreatmentListScreen> {
               dailyquantity: dailyquantity,
               durationweeks: durationweeks,
               supplements: supplements,
+              suppquantity: supplementquantity,
+              suppduration: supplementduration,
               nextvisitdate: nextVisitDate,
               totaltarget: totaltarget,
 

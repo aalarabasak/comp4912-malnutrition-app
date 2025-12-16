@@ -194,7 +194,7 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
                           context,
                           MaterialPageRoute(builder: (context)=> ChildProfileScreen(childId: childdoc.id)));
 
-                        debugPrint("Tıklanan çocuk: $name");
+                        debugPrint("selected child: $name");
                       },
                     );
                  
