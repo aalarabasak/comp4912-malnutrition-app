@@ -6,6 +6,8 @@ import 'package:malnutrition_app/widgets/cards/treatment_details_bottomsheet.dar
 import 'package:malnutrition_app/services/treatment_service.dart';
 import 'package:malnutrition_app/widgets/info_display_widgets.dart';
 
+import 'package:malnutrition_app/services/distribution_service.dart';
+
 
 class TreatmentListScreen extends StatefulWidget{
   const TreatmentListScreen({super.key});
@@ -237,7 +239,7 @@ void initState() {
 
                             ),
                             onTap: () {
-                              showTreatmentdetails(context, childdoc.id); //the related function is below of this codeee
+                              showTreatmentdetails(context, childdoc.id, name); //the related function is below of this codeee
                             },
                           );
                         },
@@ -255,83 +257,218 @@ void initState() {
     );
   }
 
-  void showTreatmentdetails(BuildContext context, String childid){
+  void showTreatmentdetails(BuildContext context, String childid, String childname){
     showModalBottomSheet(
       context: context, 
       isScrollControlled: true, //prevents overflow
       backgroundColor: Colors.transparent,
       builder:(context) {
-        return StreamBuilder(
-          stream: treatmentservice.getlatestTreatmentPlan(childid),
-          builder:(context, snapshot) {
-            if (snapshot.hasError) return const SizedBox(); //if there s error no showing
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        return _TreatmentDetailsBottomSheet(
+          childId: childid,
+          childName: childname,
+        );
+      },
+    );
+  }
+}
 
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {//if there is no data
-            return  buildCards("Treatment Plan", "No available data.");
-            }
+// Separate StatefulWidget to properly manage state
+class _TreatmentDetailsBottomSheet extends StatefulWidget {
+  final String childId;
+  final String childName;
 
-            var data = snapshot.data!.docs.first.data() as Map<String, dynamic>;//parse the data
+  const _TreatmentDetailsBottomSheet({
+    required this.childId,
+    required this.childName,
+  });
 
-            var rutfmap = data['prescribed_RUTF'] as Map<String, dynamic>?;
-            String? productname = rutfmap?['productName'];
-            int? dailyquantity = rutfmap?['dailyQuantity'];
+  @override
+  State<_TreatmentDetailsBottomSheet> createState() => _TreatmentDetailsBottomSheetState();
+}
 
-            // Supplements – mirror the structure used in `treatment_plan_card.dart`
-            List<String> supplements = [];
-            int? supplementquantity; // quantity per item
-            int? supplementduration; // duration in weeks
+class _TreatmentDetailsBottomSheetState extends State<_TreatmentDetailsBottomSheet> {
+  bool _isDelivered = false;
+  bool _isProcessing = false;
 
-            var supplementmap = data['supplements'] as Map<String, dynamic>?;
-            if (supplementmap != null) {
-              if (supplementmap['selecteditems'] != null) {
-                supplements = List<String>.from(supplementmap['selecteditems']);
-              }
-              supplementquantity = supplementmap['dailyQuantity'];
-              supplementduration = supplementmap['durationWeeks'];
-            }
-            //String -> DateTime
-            DateTime nextVisitDate = DateTime.parse(data['nextvisitdate']);
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: TreatmentService().getlatestTreatmentPlan(widget.childId),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return const SizedBox(); //if there s error no showing
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-            int? durationweeks = rutfmap?['durationWeeks'];
-            int? totaltarget =rutfmap?['totalTarget'];
-            String diagnosis = data['diagnosis'];
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {//if there is no data
+          return buildCards("Treatment Plan", "No available data.");
+        }
 
-            return TreatmentDetailsSheet(
-              diagnosis: diagnosis, 
-              productname: productname,
-              dailyquantity: dailyquantity,
-              durationweeks: durationweeks,
-              supplements: supplements,
-              suppquantity: supplementquantity,
-              suppduration: supplementduration,
-              nextvisitdate: nextVisitDate,
-              totaltarget: totaltarget,
+        var data = snapshot.data!.docs.first.data() as Map<String, dynamic>;//parse the data
 
-              //special button for field worker
-              footeraction: SizedBox(
-                width: double.infinity,
+        var rutfmap = data['prescribed_RUTF'] as Map<String, dynamic>?;
+        String? productname = rutfmap?['productName'];
+        int? dailyquantity = rutfmap?['dailyQuantity'];
+
+        // Supplements – mirror the structure used in `treatment_plan_card.dart`
+        List<String> supplements = [];
+        int? supplementquantity; // quantity per item
+        int? supplementduration; // duration in weeks
+
+        var supplementmap = data['supplements'] as Map<String, dynamic>?;
+
+        if (supplementmap != null) {
+          if (supplementmap['selecteditems'] != null) {
+            supplements = List<String>.from(supplementmap['selecteditems']);
+          }
+          supplementquantity = supplementmap['dailyQuantity'];
+          supplementduration = supplementmap['durationWeeks'];
+        }
+
+        //String -> DateTime
+        DateTime nextVisitDate = DateTime.parse(data['nextvisitdate']);
+
+        int? durationweeks = rutfmap?['durationWeeks'];
+        int? totaltarget =rutfmap?['totalTarget'];
+        String diagnosis = data['diagnosis'];
+
+        return TreatmentDetailsSheet(
+          diagnosis: diagnosis, 
+          productname: productname,
+          dailyquantity: dailyquantity,
+          durationweeks: durationweeks,
+          supplements: supplements,
+          suppquantity: supplementquantity,
+          suppduration: supplementduration,
+          nextvisitdate: nextVisitDate,
+          totaltarget: totaltarget,
+
+          //special buttons for field worker
+          footeraction: 
+          Row(
+            children: [
+              
+              Expanded(//mark as delivered button
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    //if it is delivered, it is grey, otherwise it is green (means active button)
+                    backgroundColor: _isDelivered ? Colors.grey: Colors.green.withOpacity(0.5),
+                    disabledBackgroundColor: Colors.grey,
+                    foregroundColor: Colors.black87,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  icon: _isProcessing 
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.check_circle_outline),//prefix icon
+
+                  label: Text(_isProcessing ? "Processing..." : "Mark as Delivered"),//the text on it
+
+                  onPressed:(_isDelivered || _isProcessing || (productname == null && supplements.isEmpty)) 
+                    ? null
+                    :() async {
+                      //process is starting-> lock the button
+                      setState(() {
+                        _isProcessing = true;
+                      });
+
+                      try{
+                        final distributionservice = DistributionService();
+                        bool itemdistributed = false;
+                        //-----
+                        //call the service to make the firebase process save distribution
+
+                        if(productname != null){//rutf distribution if any
+                          int rutfquantity = totaltarget ?? 1;
+
+                          await distributionservice.recorddistribution(
+                            childId: widget.childId, 
+                            childname: widget.childName, 
+                            productName: productname,
+                            quantity: rutfquantity,
+                          );
+                          itemdistributed = true;
+                        }
+
+                        if(supplements.isNotEmpty){
+                          int duration = supplementduration ?? 1; 
+                          int daily = supplementquantity ?? 1;
+                          int calculatedsuppqty = daily * 7 * duration;
+
+                          // Process supplements sequentially to avoid transaction conflicts
+                          for (String suppName in supplements) {
+                            await distributionservice.recorddistribution(
+                              childId: widget.childId,
+                              childname: widget.childName,
+                              productName: suppName, 
+                              quantity: calculatedsuppqty
+                            );
+                          }
+                          itemdistributed = true;
+                        }
+                        
+                        //result
+                        if(mounted){
+                          if(itemdistributed){
+                            setState(() {
+                              _isProcessing = false;
+                              _isDelivered = true; //to make the button grey
+                            });
+
+                          } 
+                          else{
+                            setState(() { 
+                              _isProcessing = false; 
+                            });
+
+                          }
+                        }
+                      
+                      } catch (errorr){
+                        //if there s an error
+                        if(mounted){
+                          setState(() {
+                            _isProcessing = false;
+                          }); //to make the button green again
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Error: ${errorr.toString().replaceAll('Exception:', '')}"),
+                              backgroundColor: Colors.red,
+                              duration: const Duration(seconds: 3),
+                            )
+                          );
+                        }
+                      }
+                    },
+                )
+              ),
+
+              const SizedBox(width: 15),//space between two buttons
+
+              Expanded(//profile buttonnn
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 229, 142, 171),
                     foregroundColor: Colors.black87,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed:() {
                     Navigator.pop(context); //close the bottom sheet
 
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChildProfileScreen(childId: childid)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChildProfileScreen(childId: widget.childId)));
                     //then, go to the full profile for the specific child
                   }, 
-                  child: const Text("Go to Full Profile", style: TextStyle(fontSize: 14)),
+                  child: const Text("View Profile"),
                 ),
               ),
-
-            );
-          },
+            ],
+          ),
         );
       },
     );
