@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../services/stock_service.dart';
 
 enum Stockcategory {rutf, supplement} //for segmented button widget
 
@@ -12,6 +13,8 @@ class UpdateStockScreen extends StatefulWidget{
 
 class UpdateStockScreenState extends State<UpdateStockScreen>{
 
+  final StockService stockservice = StockService();//call the service 
+
   Set<Stockcategory> selectedview = {Stockcategory.rutf}; //by default it is arranged as rutf
 
   // Controllers
@@ -20,7 +23,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
   final TextEditingController quantitycontroller = TextEditingController();
   final TextEditingController expirydatecontroller = TextEditingController();
 
-  //will be deleted later, needs to be get from firebase
+
   final List<String> rutfOptions = [
     "Plumpy'Nut",
     "Valid P-RUTF",
@@ -57,11 +60,86 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
       });
     }
   }
-  
-  void savestock(){
+
+  Future <void> savestock() async{
+
+    if(quantitycontroller.text.isEmpty){//control
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter quantity!")));
+      return;
+    }
+
+    //prepare datas
+    Stockcategory currentcategory = selectedview.first;
+    String categorystring;
+    String productname;
+    String? lotnumber;
+    DateTime expirydate;
+
+    if (currentcategory == Stockcategory.rutf) {
+
+      if (selectedrutfname == null || lotnumbercontroller.text.isEmpty || selecteddate == null) {//if the are empty
+         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all RUTF fields!")));
+         //show warning message
+         return;
+      }
+
+      categorystring = "RUTF";
+      productname = selectedrutfname!;
+      lotnumber = lotnumbercontroller.text;
+      expirydate = selecteddate!;
+
+    } 
+    else {
+      //supplement part
+      if (supplementnamecontroller.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter supplement name!")));
+        return;
+      }
+
+      categorystring = "Supplement";
+      productname = supplementnamecontroller.text;
+      lotnumber = null;
+      expirydate = DateTime.now().add(const Duration(days: 14)); 
+    }
 
 
+    //saving to firestore part by using stock_service.dart
+    try{
+      int quantity = int.parse(quantitycontroller.text);
+
+      //send to  service
+      await stockservice.addorUpdatestock(
+        category: categorystring, 
+        productname: productname, 
+        quantity: quantity, 
+        expirydate: expirydate,
+        lotnumber: lotnumber,
+      );
+
+      if (mounted) {
+        //give success feedback
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Saved $productname!"),
+          backgroundColor: Colors.green,
+        ));
+    
+        Navigator.pop(context); //close the screen
+      }
+    } catch (e) {
+
+      //if there is a error show failed message
+      if (mounted) {
+
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Something is wrong "),
+          backgroundColor: Colors.red,
+        ));
+      }
+    }
   }
+  
+  
 
   @override
   Widget build(BuildContext context){
@@ -114,7 +192,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
                       ButtonSegment<Stockcategory>(
                         value: Stockcategory.supplement,
                         label: Text("Supplements"),
-                        icon: Icon(Icons.apple, color: Color.fromARGB(255, 84, 84, 84),),
+                        icon: Icon(Icons.apple_outlined, color: Color.fromARGB(255, 110, 110, 110),),
                       ),
                     ],
 
@@ -262,7 +340,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
                           )
                         ),
                         onPressed:() {
-                          savestock();
+                         savestock();
                         }, 
                         child: const Text("Save")),
                       ),
