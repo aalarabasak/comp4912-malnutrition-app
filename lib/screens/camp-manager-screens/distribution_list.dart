@@ -34,7 +34,7 @@ class DistributionListState extends State<DistributionList>{
     
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0),
+      padding: const EdgeInsets.symmetric(horizontal: 13.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

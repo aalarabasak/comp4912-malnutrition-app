@@ -31,7 +31,7 @@ class CampManagerHomeState extends State<CampManagerHome>{
         automaticallyImplyLeading: false,
         actions: [
           Padding(
-            padding:  const EdgeInsets.only(right: 25.0),
+            padding:  const EdgeInsets.only(right: 13.0),
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor:  const Color.fromARGB(255, 203, 202, 202),
