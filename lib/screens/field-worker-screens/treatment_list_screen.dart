@@ -1,12 +1,8 @@
 //children list whose treatment plan is active and connected to field worker home screen
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'child_profile_screen.dart';
-import 'package:malnutrition_app/widgets/cards/treatment_details_bottomsheet.dart';
 import 'package:malnutrition_app/services/treatment_service.dart';
-import 'package:malnutrition_app/widgets/info_display_widgets.dart';
-
-import 'package:malnutrition_app/services/distribution_service.dart';
+import 'package:malnutrition_app/screens/field-worker-screens/child_treatment_details_helper.dart';
 
 
 class TreatmentListScreen extends StatefulWidget{
@@ -20,9 +16,9 @@ class _TreatmentListScreenState extends State <TreatmentListScreen> {
 
     final TreatmentService treatmentservice = TreatmentService();//call treatment service for getting latest measurement
 
-  final searchcontroller = TextEditingController(); //A controller to read and manage the text in the search textfield
+  final searchcontroller = TextEditingController(); //a controller to read and manage the text in the search textfield
 
-  String searchquery ="";//A  variable to store the current search query entered by the user.
+  String searchquery ="";//a  variable to store the current search query entered by the user.
 
   @override
   void dispose(){
@@ -69,7 +65,7 @@ void initState() {
                       
                       onChanged: (value) { //tells Flutter to rebuild the screen because our search query changed.
                         setState(() {
-                          searchquery = value.toLowerCase();// Store the query in lowercase for easier matching
+                          searchquery = value.toLowerCase();//store the query in lowercase for easier matching
                         });
                       },
 
@@ -133,13 +129,13 @@ void initState() {
                         var dataA = a.data();
                         var dataB = b.data();
 
-                        String datestringA = dataA['nextvisitdate'];
+                        String datestringA = dataA['nextvisitdate'];//get the nextvisitdate strings
                         String datestringB = dataB['nextvisitdate'];
 
-                        DateTime dateA = DateTime.parse(datestringA);
+                        DateTime dateA = DateTime.parse(datestringA);//convert them to DateTime objects.
                         DateTime dateB = DateTime.parse(datestringB);
 
-                        return dateA.compareTo(dateB);
+                        return dateA.compareTo(dateB);//compare the two dates so that the earlier nextvisitdate comes first
                       },);
 
                        List<DocumentSnapshot> filteredlist; //prepare a empty list for now
@@ -161,7 +157,7 @@ void initState() {
 
                        
 
-                      if(showonlytoday){
+                      if(showonlytoday){//if the today filter is active
                         List<DocumentSnapshot> listduetoday = [];
                         
 
@@ -173,6 +169,7 @@ void initState() {
                             DateTime today = DateTime.now();
 
                             if(nextvisitdate.year == today.year && nextvisitdate.month == today.month && nextvisitdate.day == today.day){
+                              //if equal its due today—>add the doc to listduetoday
                               listduetoday.add(doc);
                             }
                           }
@@ -206,7 +203,7 @@ void initState() {
 
 
                           String datestring = "-";
-                          bool istoday = false;
+                          bool istoday = false;//indicate if the date is today-> used for styling
 
                           if(childData['nextvisitdate'] != null){
                             DateTime date = DateTime.parse(childData['nextvisitdate']);
@@ -263,213 +260,7 @@ void initState() {
       isScrollControlled: true, //prevents overflow
       backgroundColor: Colors.transparent,
       builder:(context) {
-        return _TreatmentDetailsBottomSheet(
-          childId: childid,
-          childName: childname,
-        );
-      },
-    );
-  }
-}
-
-// Separate StatefulWidget to properly manage state
-class _TreatmentDetailsBottomSheet extends StatefulWidget {
-  final String childId;
-  final String childName;
-
-  const _TreatmentDetailsBottomSheet({
-    required this.childId,
-    required this.childName,
-  });
-
-  @override
-  State<_TreatmentDetailsBottomSheet> createState() => _TreatmentDetailsBottomSheetState();
-}
-
-class _TreatmentDetailsBottomSheetState extends State<_TreatmentDetailsBottomSheet> {
-  bool _isDelivered = false;
-  bool _isProcessing = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: TreatmentService().getlatestTreatmentPlan(widget.childId),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) return const SizedBox(); //if there s error no showing
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {//if there is no data
-          return buildCards("Treatment Plan", "No available data.");
-        }
-
-        var data = snapshot.data!.docs.first.data() as Map<String, dynamic>;//parse the data
-
-        var rutfmap = data['prescribed_RUTF'] as Map<String, dynamic>?;
-        String? productname = rutfmap?['productName'];
-        int? dailyquantity = rutfmap?['dailyQuantity'];
-
-        // Supplements – mirror the structure used in `treatment_plan_card.dart`
-        List<String> supplements = [];
-        int? supplementquantity; // quantity per item
-        int? supplementduration; // duration in weeks
-
-        var supplementmap = data['supplements'] as Map<String, dynamic>?;
-
-        if (supplementmap != null) {
-          if (supplementmap['selecteditems'] != null) {
-            supplements = List<String>.from(supplementmap['selecteditems']);
-          }
-          supplementquantity = supplementmap['dailyQuantity'];
-          supplementduration = supplementmap['durationWeeks'];
-        }
-
-        //String -> DateTime
-        DateTime nextVisitDate = DateTime.parse(data['nextvisitdate']);
-
-        int? durationweeks = rutfmap?['durationWeeks'];
-        int? totaltarget =rutfmap?['totalTarget'];
-        String diagnosis = data['diagnosis'];
-
-        return TreatmentDetailsSheet(
-          diagnosis: diagnosis, 
-          productname: productname,
-          dailyquantity: dailyquantity,
-          durationweeks: durationweeks,
-          supplements: supplements,
-          suppquantity: supplementquantity,
-          suppduration: supplementduration,
-          nextvisitdate: nextVisitDate,
-          totaltarget: totaltarget,
-
-          //special buttons for field worker
-          footeraction: 
-          Row(
-            children: [
-              
-              Expanded(//mark as delivered button
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    //if it is delivered, it is grey, otherwise it is green (means active button)
-                    backgroundColor: _isDelivered ? Colors.grey: Colors.green.withOpacity(0.5),
-                    disabledBackgroundColor: Colors.grey,
-                    foregroundColor: Colors.black87,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  icon: _isProcessing 
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Icon(Icons.check_circle_outline),//prefix icon
-
-                  label: Text(_isProcessing ? "Processing..." : "Mark as Delivered"),//the text on it
-
-                  onPressed:(_isDelivered || _isProcessing || (productname == null && supplements.isEmpty)) 
-                    ? null
-                    :() async {
-                      //process is starting-> lock the button
-                      setState(() {
-                        _isProcessing = true;
-                      });
-
-                      try{
-                        final distributionservice = DistributionService();
-                        bool itemdistributed = false;
-                        //-----
-                        //call the service to make the firebase process save distribution
-
-                        if(productname != null){//rutf distribution if any
-                          int rutfquantity = totaltarget ?? 1;
-
-                          await distributionservice.recorddistribution(
-                            childId: widget.childId, 
-                            childname: widget.childName, 
-                            productName: productname,
-                            quantity: rutfquantity,
-                          );
-                          itemdistributed = true;
-                        }
-
-                        if(supplements.isNotEmpty){
-                          int duration = supplementduration ?? 1; 
-                          int daily = supplementquantity ?? 1;
-                          int calculatedsuppqty = daily * 7 * duration;
-
-                          // Process supplements sequentially to avoid transaction conflicts
-                          for (String suppName in supplements) {
-                            await distributionservice.recorddistribution(
-                              childId: widget.childId,
-                              childname: widget.childName,
-                              productName: suppName, 
-                              quantity: calculatedsuppqty
-                            );
-                          }
-                          itemdistributed = true;
-                        }
-                        
-                        //result
-                        if(mounted){
-                          if(itemdistributed){
-                            setState(() {
-                              _isProcessing = false;
-                              _isDelivered = true; //to make the button grey
-                            });
-
-                          } 
-                          else{
-                            setState(() { 
-                              _isProcessing = false; 
-                            });
-
-                          }
-                        }
-                      
-                      } catch (errorr){
-                        //if there s an error
-                        if(mounted){
-                          setState(() {
-                            _isProcessing = false;
-                          }); //to make the button green again
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Error: ${errorr.toString().replaceAll('Exception:', '')}"),
-                              backgroundColor: Colors.red,
-                              duration: const Duration(seconds: 3),
-                            )
-                          );
-                        }
-                      }
-                    },
-                )
-              ),
-
-              const SizedBox(width: 15),//space between two buttons
-
-              Expanded(//profile buttonnn
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 229, 142, 171),
-                    foregroundColor: Colors.black87,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed:() {
-                    Navigator.pop(context); //close the bottom sheet
-
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChildProfileScreen(childId: widget.childId)));
-                    //then, go to the full profile for the specific child
-                  }, 
-                  child: const Text("View Profile"),
-                ),
-              ),
-            ],
-          ),
-        );
+        return ChildTreatmentDetailsHelper(childId: childid, childName: childname);
       },
     );
   }

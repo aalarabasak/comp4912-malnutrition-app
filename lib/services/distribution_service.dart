@@ -1,25 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:malnutrition_app/utils/formatting_helpers.dart';
+import 'package:malnutrition_app/utils/formatting_helpers.dart';//used here for parseDateString
 
 
 class DistributionService {
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<void> recorddistribution({
-    required String childId,
-    required String childname,
-    required String productName,
-    required int quantity,
+  //check if treatment plan has already been delivered 
+  Future<bool> checkIfPlanDelivered({required String childId,required String treatmentPlanId }) async {
+
+    try {
+      //query distributions for this child and treatment plan
+      final query = await firestore.collection('distributions').where('childdocId', isEqualTo: childId)
+        .where('treatmentPlanId', isEqualTo: treatmentPlanId)
+        .limit(1)//stop after finding just one match
+        .get();
+
+      //if we found any records->means plan is  delivered
+      return query.docs.isNotEmpty;
+    } catch (e) {
+      //if error, return false 
+      return false;
+    }
+
+    //returns true if there is at least one document, false if none.
+  }
+
+  Future<void> recorddistribution({required String childId,required String childname,required String productName,required int quantity,
+    required String treatmentPlanId,
   }) async{
 
     //find the product in stocks
-    //query only by productName to avoid needing composite index, filter quantity in memory
     final stockquery = await firestore.collection('stocks')
       .where('productName', isEqualTo: productName)
-      .get();
+      .get();//only filter by productName in firestore and handle the rest in memory with lisst
+
     
-    //filter out stocks with quantity <= 0 in memory (avoids needing composite index)
+    //dont look stocks with quantity <= 0 in memory 
     List<QueryDocumentSnapshot> availableStocks = stockquery.docs
       .where((doc) => (doc['quantity'] as int) > 0)
       .toList();
@@ -29,7 +46,7 @@ class DistributionService {
       throw Exception("$productName not found is out of stock!");
     }
 
-    //find the most suitable lot (FIFO - First In First Out)
+    //find the most suitable lot - first in first out-use the one that expires first
      //list the documents and sort them by date
     List<QueryDocumentSnapshot> sortedstocks = availableStocks;
 
@@ -41,7 +58,7 @@ class DistributionService {
 
     });
 
-    DocumentSnapshot? targetstockdoc;//Find the stock that is available to meet the need
+    DocumentSnapshot? targetstockdoc;//find the stock that is available to meet the need
 
     for(var doc in sortedstocks){
       int currentStock = doc['quantity'];
@@ -58,14 +75,15 @@ class DistributionService {
       throw Exception("Insufficient Stock in single batch! Required: $quantity for $productName");
     }
     
+    //reference pattern: https://firebase.google.com/docs/firestore/manage-data/transactions
     //!!!!!!___!!!!!!!!
     //start transaction
-    await firestore.runTransaction((transaction) async {
+    await firestore.runTransaction((transaction) async {//ensures all reads/writes inside either all succeed together or fail together atomic
 
       //read the fresh snapshot of the stock
       DocumentSnapshot stocksnapshot = await transaction.get(targetstockdoc!.reference);
 
-      if(!stocksnapshot.exists){
+      if(!stocksnapshot.exists){//double check
         throw Exception("Product has been removed from the database");
       }
 
@@ -82,7 +100,7 @@ class DistributionService {
       }
 
       //check if enough stock exists - guard code
-      if (currentquantity < quantity) {
+      if (currentquantity < quantity) {//double check
         throw Exception("Insufficient stock!");
       }
 
@@ -99,7 +117,7 @@ class DistributionService {
         'category': category, 
         'quantity': quantity,
         'distributedAt': FieldValue.serverTimestamp(),
-        'status': 'Delivered'
+        'treatmentPlanId': treatmentPlanId,
       };
 
       if(currentlotNumber != null){ //if it rutf, then save the lot number too
