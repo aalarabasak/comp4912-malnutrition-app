@@ -49,7 +49,6 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
         int rutfquantity = totaltarget ?? 1;
 
         await distributionservice.recorddistribution(
-          childId: widget.childId,
           childname: widget.childName,
           productName: productname,
           quantity: rutfquantity,
@@ -65,11 +64,10 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
         int calculatedsuppqty = daily * 7 * duration;
 
         // Process supplements sequentially to avoid transaction conflicts
-        for (String suppName in supplements) {
+        for (String suppname in supplements) {
           await distributionservice.recorddistribution(
-            childId: widget.childId,
             childname: widget.childName,
-            productName: suppName,
+            productName: suppname,
             quantity: calculatedsuppqty,
             treatmentPlanId: currentPlanId,
           );
@@ -104,6 +102,34 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
             duration: const Duration(seconds: 3),
           ),
         );
+      }
+    }
+  }
+  //used for undo operation
+  Future <void> handlerestore(String currentPlanId) async{
+    setState(() {
+      isprocessing = true;
+    });
+
+    try {
+      final distributionservice = DistributionService();//call the service
+      await distributionservice.reversedistribution(currentPlanId); //call the function 
+
+      if (mounted) {
+        setState(() {
+          isprocessing = false;
+          isdelivered = false; //becomes undelivered reversed
+        });
+        
+      }
+
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isprocessing = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Undo failed: "), backgroundColor: Colors.red),);
       }
     }
   }
@@ -170,34 +196,63 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
 
             builder: (context, distributionSnapshot) {
               //check if still loading
-              bool isLoading = distributionSnapshot.connectionState == ConnectionState.waiting;
+              bool isloading = distributionSnapshot.connectionState == ConnectionState.waiting;
               
-              bool alreadyDelivered;
+              //senkronizasyon
+              bool dbdeliveredornot; //whats the sitation in firestore
+              if(distributionSnapshot.data != null){
 
-              if (distributionSnapshot.data != null) {
-                //use the actual delivery status if data is available
-                alreadyDelivered = distributionSnapshot.data!;//returns as a true or false from the firebase answer (if it is delivered -> true)
-              } else {
-                //give default to true while loading to prevent accidental button clicks
-                alreadyDelivered = isLoading;
+                dbdeliveredornot = distributionSnapshot.data!;
               }
-              
-              //check if the database says its already delivered-> but ui doesnt know it yet
-              if (!isdelivered && !isLoading && alreadyDelivered) {
-
-                //wait until the screen finishes drawing  avoid flutter errors
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (mounted) {
-                    setState(() {
-                      isdelivered = true;
-                    });
-                  }
-                });
+              else{
+                dbdeliveredornot = false;
               }
 
-              //the situations where the button should be disabled
-              final bool isButtonDisabled = isdelivered ||isprocessing ||alreadyDelivered ||isLoading 
-              ||(productname == null && supplements.isEmpty);
+              //whats the last decision
+              bool isfinallydelivered;
+              if (dbdeliveredornot == true) {
+                
+                //if db says delivered, its deliverd
+                isfinallydelivered = true;
+              } 
+              else if (isdelivered == true) {
+                
+                //if db says no delivery, but user clicks the button delivery
+                isfinallydelivered = true;
+              } 
+              else {
+                //if both says no delivery
+                isfinallydelivered = false;
+              }
+
+              bool nothingtodeliver;
+              if (productname == null && supplements.isEmpty) {
+                nothingtodeliver = true;
+              } 
+              else {
+                nothingtodeliver = false;
+              }
+
+              //get the functions
+              void deliver() => handledelivery(//for distribution
+                productname: productname,
+                supplements: supplements,
+                totaltarget: totaltarget,
+                supplementduration: supplementduration,
+                supplementquantity: supplementquantity,
+                currentPlanId: currentPlanId,
+              );
+
+              void restore () => handlerestore(currentPlanId);//for undo
+
+             final buttonproperties = getbuttonproperty(
+              isprocessing: isprocessing, 
+              isloading: isloading, 
+              nothingtodeliver: 
+              nothingtodeliver, 
+              isfinallydeliver: isfinallydelivered, 
+              deliver: deliver, 
+              restore: restore);
 
               return Row(
                 children: [
@@ -205,46 +260,20 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
                   Expanded(//mark as delivered button
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        //if it is delivered or already delivered or loading, it is grey, otherwise it is green
-                        backgroundColor: (isdelivered || alreadyDelivered || isLoading)
-                            ? Colors.grey//the color when the button is diabled
-                            : Colors.green.withOpacity(0.5),////the color when the button is active
-
+                        backgroundColor: buttonproperties['color'],
                         disabledBackgroundColor: Colors.grey,
                         foregroundColor: Colors.black87,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      icon: isprocessing //means database saving process
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : (isLoading //if waiting a response from firebase
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                              )
-                            : const Icon(Icons.check_circle_outline)),//prefix icon
+                      
+                      icon: (isprocessing || isloading)
 
-                      label: Text(
-                        isprocessing 
-                          ? "Processing..." 
-                          : (isLoading ? "..." : "Mark as Delivered")
-                      ),//the text on it
+                        ? const SizedBox(width: 20, height: 20,child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),)
+                        : Icon(buttonproperties['icon']),
 
-                      onPressed: isButtonDisabled//if button is disabled -> true, if not-> false
-                          ? null//if it is true, dont do anything not clickable
-                          : () => handledelivery( //if it s false do the recording 
-                                productname: productname,
-                                supplements: supplements,
-                                totaltarget: totaltarget,
-                                supplementduration: supplementduration,
-                                supplementquantity: supplementquantity,
-                                currentPlanId: currentPlanId,
-                              ),
+                      label: Text(buttonproperties['text']),//text on it
+                      onPressed: buttonproperties['action'],//tap thing
                     )
                   ),
 
@@ -275,6 +304,54 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
       },
     );
   }
+
+  //button properties
+    Map<String, dynamic> getbuttonproperty({required bool isprocessing,required bool isloading,required bool nothingtodeliver,required bool isfinallydeliver,
+      required VoidCallback deliver, //deliver task
+      required VoidCallback restore, //undo task
+    }) {
+      
+      if (isprocessing || isloading) {//loading situations
+        return {
+          'color': Colors.grey,
+          'text': "Processing...",
+          'icon': Icons.hourglass_empty,
+          'action': null, //cant be clicked
+        };
+      }    
+     //there is nothing deliver
+      if (nothingtodeliver) {
+        return {
+          'color': Colors.grey.shade400,
+          'text': "No Items to Deliver",
+          'icon': Icons.block,
+          'action': null, //cant be clicked
+        };
+      }     
+      //undo the delivered item
+      if (isfinallydeliver) {
+        return {
+          'color':Colors.amber.shade600.withOpacity(0.3),
+          'text': "Undo Delivery",
+          'icon': Icons.undo,
+          'action': restore,//call the undo func
+        };
+      }
+      //deliver mode
+      return {
+        'color': Colors.green.withOpacity(0.5),
+        'text': "Mark as Delivered",
+        'icon': Icons.check_circle_outline,
+        'action': deliver, //call the deliver func
+      };
+
+
+
+
+    }
+
+
+
 }
 
 

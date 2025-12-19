@@ -10,9 +10,8 @@ class DistributionService {
   Future<bool> checkIfPlanDelivered({required String childId,required String treatmentPlanId }) async {
 
     try {
-      //query distributions for this child and treatment plan
-      final query = await firestore.collection('distributions').where('childdocId', isEqualTo: childId)
-        .where('treatmentPlanId', isEqualTo: treatmentPlanId)
+      //query distributions for the specific treatment plan
+      final query = await firestore.collection('distributions').where('treatmentPlanId', isEqualTo: treatmentPlanId)
         .limit(1)//stop after finding just one match
         .get();
 
@@ -26,7 +25,8 @@ class DistributionService {
     //returns true if there is at least one document, false if none.
   }
 
-  Future<void> recorddistribution({required String childId,required String childname,required String productName,required int quantity,
+  //used in child_treatment_detailshelper
+  Future<void> recorddistribution({required String childname,required String productName,required int quantity,
     required String treatmentPlanId,
   }) async{
 
@@ -111,7 +111,6 @@ class DistributionService {
       DocumentReference newDistributionRef=firestore.collection('distributions').doc();
 
       Map<String, dynamic> distributiondata ={
-        'childdocId': childId,
         'childName': childname,
         'itemName': productName,
         'category': category, 
@@ -126,5 +125,53 @@ class DistributionService {
 
       transaction.set(newDistributionRef, distributiondata); //end the transaction hereeee
     });
+  }
+
+  //used in child_treatment_detailshelper
+  Future <void> reversedistribution(String treatmentPlanId) async{
+
+    //get data
+    final querydistribution = await firestore.collection('distributions').where('treatmentPlanId', isEqualTo: treatmentPlanId).get();
+    
+    //atomic process 
+    await firestore.runTransaction((transaction) async{
+
+      for(var distributiondoc in querydistribution.docs){
+
+        var distributiondata = distributiondoc.data();
+        String productname = distributiondata['itemName'];
+        int quantity= distributiondata['quantity'];
+        String? lotnumber = distributiondata['lotNumber'];
+
+        QuerySnapshot stocksnapshot;//to find the correct stock of restore
+
+        if(lotnumber != null){
+          //if it s rutf find it by lot num
+          stocksnapshot = await firestore.collection('stocks').where('productName', isEqualTo: productname)
+            .where('lotNumber', isEqualTo: lotnumber).limit(1).get();
+        }
+        else{
+          //if it is supplement find it by only name
+          stocksnapshot = await firestore.collection('stocks').where('productName', isEqualTo: productname).limit(1).get();
+        }
+
+        if(stocksnapshot.docs.isNotEmpty){//stock record is found and update it
+
+          DocumentReference stockreference = stocksnapshot.docs.first.reference; 
+
+          DocumentSnapshot lateststocksnap = await transaction.get(stockreference); //read the current stock value
+          if(lateststocksnap.exists){
+            int currentstockquantity = lateststocksnap['quantity'];
+            transaction.update(stockreference, {'quantity': currentstockquantity + quantity});
+          }
+        }
+
+        //delete the related distribution doc
+        transaction.delete(distributiondoc.reference);
+      }
+    });
+
+
+
   }
 }
