@@ -76,6 +76,19 @@ Widget buildlegend(Color color, String text){
     ],
   );
 }
+//used in guest user screens stock pie chart - risk pie chart
+Widget buildlegendwithvalue(Color color, String text, int value){
+  return Row(
+    children: [
+      Container(//the color container indicator
+        width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.rectangle),
+      ),
+      const SizedBox(width: 4),
+      Text(text, style: TextStyle(fontSize: 12, color: Colors.black54, fontWeight: FontWeight.bold),) ,//text
+      Text("$value", style: TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.bold),), //value
+    ],
+  );
+}
 
 //small nutrition value line in rutf containers in create treatment plan screen
 Widget buildnutrientrow(String label, String value){
