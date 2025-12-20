@@ -100,7 +100,7 @@ class TrendLineChart extends StatelessWidget{
                       return Text('Normal', style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.w600),);
                     }
                     else if(value == 1){
-                      return Text('Moderate', style: TextStyle(color: Colors.amber, fontSize: 11,fontWeight: FontWeight.w600),);
+                      return Text('Moderate', style: TextStyle(color: Colors.amber.shade600, fontSize: 11,fontWeight: FontWeight.w600),);
                     }
                     else if(value == 2){
                       return Text('High', style: TextStyle(color: Colors.red, fontSize: 11,fontWeight: FontWeight.w600),);

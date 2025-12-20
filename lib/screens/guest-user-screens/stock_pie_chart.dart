@@ -10,8 +10,9 @@ class StockPieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
+    
     return Row(
-      children: [
+      children: [      
         SizedBox(
           width: 130,
           height: 130,
@@ -20,24 +21,34 @@ class StockPieChart extends StatelessWidget {
               sectionsSpace: 1,
               centerSpaceRadius: 30,
               sections: [
-                //distributed rutf items number 
-                PieChartSectionData(
-                  value: distributeditemsnum,
-                  color: Colors.blueGrey.shade200,
-                  radius: 35,
-                  showTitle: false,
-                ),
 
-                //remaining rutf items number 
-                PieChartSectionData(
-                  value: remainingitemsnum,
-                  color: Colors.blueAccent,
-                  radius: 35,
-                  showTitle: false,
-                ),
-                
+                if((distributeditemsnum == 0) && (remainingitemsnum == 0))...[
+                  PieChartSectionData(
+                    color: Colors.grey.shade300,
+                    value: 1, 
+                    title: '',
+                    radius: 35,
+                    showTitle: false,
+                  )
+                ]
+                else...[
+                  //distributed rutf items number 
+                  PieChartSectionData(
+                    value: distributeditemsnum,
+                    color: Colors.blueGrey.shade200,
+                    radius: 35,
+                    showTitle: false,
+                  ),
 
-                
+                  //remaining rutf items number 
+                  PieChartSectionData(
+                    value: remainingitemsnum,
+                    color: Colors.blueAccent.withOpacity(0.9),
+                    radius: 35,
+                    showTitle: false,
+                  ),
+                ],
+                            
               ],
               
             )

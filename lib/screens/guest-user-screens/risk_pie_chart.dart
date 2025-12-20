@@ -24,30 +24,42 @@ class RiskPieChart extends StatelessWidget{
               sectionsSpace: 1,
               centerSpaceRadius: 30,
               sections: [
-                //normal risk
-                PieChartSectionData(
-                  value: greencount,
-                  color: Colors.green,
-                  radius: 35,
-                  showTitle: false,
-                ),
-                //medium risk
-                PieChartSectionData(
-                  value: yellowcount,
-                  color: Colors.orange,
 
-                  radius: 35,
-                  showTitle: false
+                if((greencount == 0) && (yellowcount == 0)&&(redcount ==0))...[
+                  PieChartSectionData(
+                    color: Colors.grey.shade300,
+                    value: 1, 
+                    radius: 35,
+                    showTitle: false,
+                  )
+                ]
+                else...[
+                  //normal risk
+                  PieChartSectionData(
+                    value: greencount,
+                    color: Colors.green,
+                    radius: 35,
+                    showTitle: false,
+                  ),
+                  //medium risk
+                  PieChartSectionData(
+                    value: yellowcount,
+                    color: Colors.orange,
 
-                ),
-                //high risk
-                PieChartSectionData(
-                  value: redcount,
-                  color: Colors.red,
-                  radius: 35,
-                  showTitle: false
+                    radius: 35,
+                    showTitle: false
 
-                ),
+                  ),
+                  //high risk
+                  PieChartSectionData(
+                    value: redcount,
+                    color: Colors.red,
+                    radius: 35,
+                    showTitle: false
+
+                  ),
+                ]
+               
 
                 
               ],
