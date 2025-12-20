@@ -260,7 +260,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
                   Expanded(//mark as delivered button
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonproperties['color'],
+                        backgroundBuilder: buttonproperties['color'],
                         disabledBackgroundColor: Colors.grey,
                         foregroundColor: Colors.black87,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -331,7 +331,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
       //undo the delivered item
       if (isfinallydeliver) {
         return {
-          'color':Colors.amber.shade600.withOpacity(0.3),
+          'color': Colors.orange.shade300,
           'text': "Undo Delivery",
           'icon': Icons.undo,
           'action': restore,//call the undo func

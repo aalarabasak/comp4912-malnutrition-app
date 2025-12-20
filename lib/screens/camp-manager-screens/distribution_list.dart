@@ -34,7 +34,7 @@ class DistributionListState extends State<DistributionList>{
     
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 13.0),
+      padding: const EdgeInsets.symmetric(horizontal: 18.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -66,8 +66,8 @@ class DistributionListState extends State<DistributionList>{
          const Row(//list titles (or name of the columns)
           children: [//expanded-> it takes up the remaininng horizontal space
            //flex-> shows how the space can be shared
-            Expanded( flex: 2,child: Text('Child', style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(flex: 3, child: Text('Item', style: TextStyle(fontWeight: FontWeight.bold))),
+            Expanded( flex: 3,child: Text('Child', style: TextStyle(fontWeight: FontWeight.bold))),
+            Expanded(flex: 2, child: Text('Item', style: TextStyle(fontWeight: FontWeight.bold))),
             Expanded(flex: 2, child: Text('Quantity', style: TextStyle(fontWeight: FontWeight.bold))),
             Expanded(flex: 2, child: Text('Date', style: TextStyle(fontWeight: FontWeight.bold))),
           ],
@@ -116,13 +116,13 @@ class DistributionListState extends State<DistributionList>{
                   title: Row(
                     children: [
                       //child name
-                      Expanded(flex: 2,child: Text(data["childName"], style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500))),
+                      Expanded(flex: 3,child: Text(data["childName"], style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500))),
 
                       //product name
-                      Expanded(flex: 3,child: Text(data["itemName"], style: const TextStyle(fontSize: 14))),
+                      Expanded(flex: 2,child: Text(data["itemName"], style: const TextStyle(fontSize: 14))),
 
                       //quantity given
-                      Expanded(flex: 2,child: Text(data["quantity"].toString(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)) ),
+                      Expanded(flex: 2,child: Text(data["quantity"], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)) ),
 
                       //date of issue
                       Expanded(flex: 2,child: Text(date, style: const TextStyle(fontSize: 13, color: Colors.grey))),
