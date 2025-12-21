@@ -248,8 +248,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
              final buttonproperties = getbuttonproperty(
               isprocessing: isprocessing, 
               isloading: isloading, 
-              nothingtodeliver: 
-              nothingtodeliver, 
+              nothingtodeliver:  nothingtodeliver, 
               isfinallydeliver: isfinallydelivered, 
               deliver: deliver, 
               restore: restore);
@@ -260,7 +259,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
                   Expanded(//mark as delivered button
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundBuilder: buttonproperties['color'],
+                        backgroundColor: buttonproperties['color'],
                         disabledBackgroundColor: Colors.grey,
                         foregroundColor: Colors.black87,
                         padding: const EdgeInsets.symmetric(vertical: 16),
