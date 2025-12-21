@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
       padding: const EdgeInsets.symmetric(vertical: 2.0), //Add vertical spacing between rows
       child: Row(
         children: [
-          //e.g. "age: "
+
           Text('$label: ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87 ),),
 
-          //the value e.g. "3"
+ 
           Expanded( //Take remaining space, wrap if long
             child: Text(value, style: TextStyle(fontSize: 15, color: Colors.black87),))
         ],

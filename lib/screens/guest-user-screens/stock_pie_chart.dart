@@ -35,7 +35,7 @@ class StockPieChart extends StatelessWidget {
                   //distributed rutf items number 
                   PieChartSectionData(
                     value: distributeditemsnum,
-                    color: Colors.blueGrey.shade200,
+                    color: Colors.blueGrey.shade300,
                     radius: 35,
                     showTitle: false,
                   ),
@@ -43,7 +43,7 @@ class StockPieChart extends StatelessWidget {
                   //remaining rutf items number 
                   PieChartSectionData(
                     value: remainingitemsnum,
-                    color: Colors.blueAccent.withOpacity(0.9),
+                    color: Colors.pinkAccent.withOpacity(0.7),
                     radius: 35,
                     showTitle: false,
                   ),
@@ -62,9 +62,9 @@ class StockPieChart extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildlegendwithvalue(Colors.blueGrey.shade400, "Distributed: ", distributeditemsnum.toInt()),
+              buildlegendwithvalue(Colors.blueGrey.shade300, "Distributed: ", distributeditemsnum.toInt()),
               const SizedBox(height: 8),
-              buildlegendwithvalue(Colors.blueAccent, "Remaining: ", remainingitemsnum.toInt()),
+              buildlegendwithvalue(Colors.pinkAccent.withOpacity(0.7), "Remaining: ", remainingitemsnum.toInt()),
             ],
           ),
         )

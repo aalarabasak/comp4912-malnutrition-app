@@ -37,14 +37,14 @@ class RiskPieChart extends StatelessWidget{
                   //normal risk
                   PieChartSectionData(
                     value: greencount,
-                    color: Colors.green,
+                    color: Colors.green.shade300,
                     radius: 35,
                     showTitle: false,
                   ),
                   //medium risk
                   PieChartSectionData(
                     value: yellowcount,
-                    color: Colors.orange,
+                    color: Colors.orange.shade300,
 
                     radius: 35,
                     showTitle: false
@@ -53,7 +53,7 @@ class RiskPieChart extends StatelessWidget{
                   //high risk
                   PieChartSectionData(
                     value: redcount,
-                    color: Colors.red,
+                    color: Colors.red.shade400,
                     radius: 35,
                     showTitle: false
 
@@ -80,7 +80,7 @@ class RiskPieChart extends StatelessWidget{
               const SizedBox(height: 8),
               buildlegendwithvalue(Colors.orange, "Moderate Risk: ", yellowcount.toInt()),
               const SizedBox(height: 8),
-              buildlegendwithvalue(Colors.red, "High Risk: ", redcount.toInt()),
+              buildlegendwithvalue(Colors.red.shade400, "High Risk: ", redcount.toInt()),
             ],
           )
         )

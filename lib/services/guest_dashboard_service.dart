@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/formatting_helpers.dart';
+import 'package:intl/intl.dart';
 
 class GuestDashboardService {
 
@@ -155,6 +156,88 @@ class GuestDashboardService {
     }
   }
 
+  //trend line chart high risk
+  Future <Map<String,dynamic>> gethighrisklinedata(String period) async{
+    List<double> yspots=[];//y axis
+    List<String>xlabels=[];//x axis
+
+    try{
+      //get only high risk ones
+      QuerySnapshot highrisksnapshot= await firestore.collectionGroup('measurements').where('calculatedRiskStatus', isEqualTo: 'High Risk').get();
+      
+      //get the dates from the snapshot
+      List<DateTime> dates =[];
+      for(var doc in highrisksnapshot.docs){
+        var data= doc.data() as Map<String, dynamic>;
+
+        if(data.containsKey('dateofMeasurement')){
+          DateTime stringtodatetime = parseDateString(data['dateofMeasurement']);
+          dates.add(stringtodatetime);
+        }
+      }
+
+      if(period == "week"){//if the filter is week
+        for(int i =6; i>=0; i--){
+          //x axis
+          DateTime day =DateTime.now().subtract(Duration(days: i));
+          String formatteddate = DateFormat('d MMM').format(day);
+          xlabels.add(formatteddate);
+
+          //y axis
+          int dailycount= dates.where((date)=> 
+            date.day == day.day && date.month ==day.month&& date.year==day.year
+          ).length;
+          yspots.add(dailycount.toDouble());
+         
+        }
+
+      }
+      else if(period == "month"){//if filter is month
+
+        for(int i =3; i>=0; i--){
+          //x axis
+          DateTime weekstart =DateTime.now().subtract(Duration(days: (i*7)+6));
+          DateTime weekend = DateTime.now().subtract(Duration(days: i*7));
+          String formatteddate = DateFormat('d MMM').format(weekstart);
+          xlabels.add(formatteddate);
+
+
+          //y axis
+          int weeklycount = dates.where((date)=> 
+            date.isAfter(weekstart.subtract(Duration(seconds: 1)))&& date.isBefore(weekend.subtract(Duration(seconds: 1)))
+          ).length;
+          yspots.add(weeklycount.toDouble());
+
+          
+
+
+        }
+
+      }
+
+      else{//if the filter is all
+        for(int i=5; i>=0; i--){
+          DateTime month =DateTime(DateTime.now().year,DateTime.now().month - i );
+          String formatteddate = DateFormat('MMM y').format(month);
+          xlabels.add(formatteddate);
+
+          int monthlycount = dates.where((date) => date.month== month.month&& date.year== month.year).length;
+          yspots.add(monthlycount.toDouble());
+        }
+
+      }
+
+      return {'spots': yspots, 'labels': xlabels};
+
+
+
+
+    }catch(e){
+      print("$e");
+      return {'spots': [], 'labels': []};
+    }
+
+  }
 
 
 

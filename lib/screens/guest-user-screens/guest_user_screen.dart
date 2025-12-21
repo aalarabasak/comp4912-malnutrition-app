@@ -26,6 +26,9 @@ class GuestDashboardState extends State<GuestDashboard>{
   bool isloading = true;
   double remainingstock=0;//for stock levels
   double usedstock=0;
+  List<double> yvalues= []; //y axis of line chrt
+  List<String> xlabels=[];//x axis of lien chrrt
+
 
 
   @override
@@ -47,6 +50,7 @@ class GuestDashboardState extends State<GuestDashboard>{
     int count = await service.getchildcount(period); //go service and take the value by using the func 
     Map<String,double>risks=await service.getriskvalues(period);//go service and take the value ofrisks 
     Map<String,double>stocks=await service.getstockvalues(period);
+    Map<String,dynamic> linedata= await service.gethighrisklinedata(period);
 
     setState(() {
       totalchildren = count;
@@ -56,58 +60,22 @@ class GuestDashboardState extends State<GuestDashboard>{
       remainingstock=stocks['remaining']!;
       usedstock =stocks['used']!;
       isloading = false; 
+
+      yvalues=List<double>.from(linedata['spots']);
+      xlabels=List<String>.from(linedata['labels']);
+
     });
   }
 
   @override
   Widget build(BuildContext context){
 
-    // DUMMY DATA WİLL BE CHANGED DEĞİŞTİRRR
-
-
-
-    List<FlSpot> trendSpots = [];
-    List<String> trendDates = [];
-
-    switch (selectedfilter) {
-      case Timefilter.all:
-
-
-        trendSpots = const [
-          FlSpot(0, 2), FlSpot(1, 2), FlSpot(2, 1), 
-          FlSpot(3, 1), FlSpot(4, 0), FlSpot(5, 0)
-        ];
-        trendDates = ["May", "Jun", "Jul", "Aug", "Sep", "Oct"];
-        break;
-      case Timefilter.month:
-
-
-
-        trendSpots = const [
-          FlSpot(0, 2), // Week 1: High
-          FlSpot(1, 1), // Week 2: Moderate
-          FlSpot(2, 1), // Week 3: Moderate
-          FlSpot(3, 0), // Week 4: Normal
-        ];
-        trendDates = ["W1", "W2", "W3", "W4"];
-        break;
-      case Timefilter.week:
-
-
-
-        trendSpots = const [
-          FlSpot(0, 1), // Pzt: Moderate
-          FlSpot(1, 1), // Sal: Moderate
-          FlSpot(2, 0), // Çar: Normal
-          FlSpot(3, 0), // Per: Normal
-          FlSpot(4, 2), // Cum: High
-          FlSpot(5, 1), // Cmt: Moderate
-          FlSpot(6, 0), // Paz: Normal
-        ];
-        trendDates = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-        break;
+    //line chart data preparation needs to converted to flspot
+    List<FlSpot> finalyvalues=[];
+    for(int i=0; i<yvalues.length; i++){
+      FlSpot value = FlSpot(i.toDouble(), yvalues[i]);
+      finalyvalues.add(value);
     }
-    //--!!!
 
     return Scaffold(
       appBar: AppBar(
@@ -206,8 +174,9 @@ class GuestDashboardState extends State<GuestDashboard>{
 
               const SizedBox(height: 10),
               buildchartcontainer(
-                title: "Critical Cases Trend" ,
-                child: TrendLineChart(spots: trendSpots, dates: trendDates,),
+                title: "Critical Cases Trend (High Risk)" ,
+                child: isloading ? Center(child: CircularProgressIndicator(),)
+                :TrendLineChart(spots: finalyvalues, datelabels: xlabels),
                 containercolor: Colors.blue.withOpacity(0.1),
               ),
 
@@ -215,7 +184,8 @@ class GuestDashboardState extends State<GuestDashboard>{
               //Stock levels 
               buildchartcontainer(
                 title: "RUTF Stock Levels" ,
-                child: StockPieChart(distributeditemsnum: usedstock, remainingitemsnum: remainingstock),
+                child: isloading ? Center(child: CircularProgressIndicator(),)
+                :StockPieChart(distributeditemsnum: usedstock, remainingitemsnum: remainingstock),
                 containercolor: Colors.pink.withOpacity(0.1),
               ),
               
