@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';//for min and max
-import '../info_display_widgets.dart';
+import '../helper-widgets/info_display_widgets.dart';
 
 class MuacChart extends StatelessWidget{
 

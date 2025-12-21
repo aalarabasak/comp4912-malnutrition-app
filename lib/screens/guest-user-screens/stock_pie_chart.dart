@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../widgets/info_display_widgets.dart';//for buildlegendwithvalue function
+import '../../widgets/helper-widgets/info_display_widgets.dart';//for buildlegendwithvalue function
 
 class StockPieChart extends StatelessWidget {
   final double distributeditemsnum;

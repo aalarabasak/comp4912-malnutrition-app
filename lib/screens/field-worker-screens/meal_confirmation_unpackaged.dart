@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../widgets/info_display_widgets.dart';
+import '../../widgets/helper-widgets/info_display_widgets.dart';
 import 'dart:io';
 
 class MealConfirmationUnpackaged extends StatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:malnutrition_app/widgets/info_display_widgets.dart';
+import 'package:malnutrition_app/widgets/helper-widgets/info_display_widgets.dart';
 import 'package:malnutrition_app/services/treatment_service.dart';//for any kind of firebase functions is here
 
 class CreateTreatmentPlan extends StatefulWidget{

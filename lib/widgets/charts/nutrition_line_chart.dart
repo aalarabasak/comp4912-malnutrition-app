@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import '../info_display_widgets.dart';
+import '../helper-widgets/info_display_widgets.dart';
 import 'dart:math';
 
 class NutritionLineChart extends StatelessWidget{

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../widgets/password_field.dart';
+import '../../widgets/helper-widgets/password_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../field-worker-screens/field_worker_home.dart';
 import '../camp-manager-screens/CampManagerHome.dart';

@@ -8,13 +8,13 @@ import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import 'package:malnutrition_app/widgets/cards/treatment_plan_card.dart';
 import '../../widgets/cards/latest_measurement_card.dart';
 
-import 'package:malnutrition_app/widgets/ai_feedback_button.dart';
-import 'package:malnutrition_app/widgets/ai_feedback_dialog.dart';
+import 'package:malnutrition_app/widgets/helper-widgets/ai_feedback_button.dart';
+import 'package:malnutrition_app/widgets/helper-widgets/ai_feedback_dialog.dart';
 
 import 'package:malnutrition_app/services/api_service.dart';//it is for llm short advice
 import 'package:malnutrition_app/services/nutrition_data_gathererllm.dart';
 
-import '../../widgets/info_display_widgets.dart';
+import '../../widgets/helper-widgets/info_display_widgets.dart';
 import '../../utils/formatting_helpers.dart';
 
 

@@ -8,7 +8,7 @@ import 'package:malnutrition_app/widgets/cards/nutrition_summary_card.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import '../../widgets/cards/latest_measurement_card.dart';
 
-import '../../widgets/info_display_widgets.dart';
+import '../../widgets/helper-widgets/info_display_widgets.dart';
 import '../../utils/formatting_helpers.dart';
 import '../../utils/food_camera_helper.dart'; 
 

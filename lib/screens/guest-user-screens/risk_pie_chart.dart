@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../widgets/info_display_widgets.dart';
+import '../../widgets/helper-widgets/info_display_widgets.dart';
 
 class RiskPieChart extends StatelessWidget{
 

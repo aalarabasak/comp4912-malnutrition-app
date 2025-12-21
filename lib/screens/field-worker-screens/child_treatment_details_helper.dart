@@ -4,7 +4,7 @@ import 'child_profile_screen.dart';
 import 'package:malnutrition_app/services/treatment_service.dart';//to get latest treatment plan from Firestore
 import 'package:malnutrition_app/services/distribution_service.dart';//to record distributions and update stock
 import 'package:malnutrition_app/widgets/cards/treatment_details_bottomsheet.dart';
-import 'package:malnutrition_app/widgets/info_display_widgets.dart';//used for buildCards
+import 'package:malnutrition_app/widgets/helper-widgets/info_display_widgets.dart';//used for buildCards
 
 class ChildTreatmentDetailsHelper extends StatefulWidget {
   final String childId;

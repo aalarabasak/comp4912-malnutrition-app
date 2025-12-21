@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/password_field.dart';
+import '../../widgets/helper-widgets/password_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

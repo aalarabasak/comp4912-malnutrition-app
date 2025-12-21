@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../screens/child-profile-history-screens/measurements_history_screen.dart'; 
-import '../info_display_widgets.dart'; // Import helper widgets for displaying rows and cards ( buildCards, buildRichText)
+import '../helper-widgets/info_display_widgets.dart'; // Import helper widgets for displaying rows and cards ( buildCards, buildRichText)
 
 
 class LatestMeasurementCard extends StatelessWidget{// This class is a StatelessWidget that receives data instead of fetching it
