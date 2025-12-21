@@ -7,6 +7,7 @@ import 'package:malnutrition_app/screens/field-worker-screens/scan_barcode_scree
 import 'package:malnutrition_app/widgets/cards/nutrition_summary_card.dart';
 import 'package:malnutrition_app/widgets/cards/risk_status_card.dart';
 import '../../widgets/cards/latest_measurement_card.dart';
+import '../../widgets/cards/recent_activities_card.dart';
 
 import '../../widgets/helper-widgets/info_display_widgets.dart';
 import '../../utils/formatting_helpers.dart';
@@ -264,7 +265,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                         height: 420,
                         child: ListView(
                           scrollDirection: Axis.horizontal,
-                          //physics: PageScrollPhysics(),
+                          
                           children: [
                             //part 1 risk status card + latest measurement card alt alta
                             SizedBox(
@@ -307,9 +308,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     
                       
                       //recent activities info card
-                      buildCards(
-                        "Recent Activities", 
-                        "-"),
+                      RecentActivitiesCard(childid: widget.childId),
 
                       const SizedBox(height: 10,),                    
                     ],

@@ -30,7 +30,7 @@ import 'package:flutter/material.dart';
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[400]!),
         borderRadius: BorderRadius.circular(10.0),
-        color: const Color.fromARGB(255, 178, 190, 194)
+        color: Colors.orangeAccent.withOpacity(0.2), 
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,// Align content to the left.

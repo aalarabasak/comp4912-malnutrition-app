@@ -3,6 +3,7 @@ import 'package:malnutrition_app/utils/formatting_helpers.dart';
 import 'package:malnutrition_app/utils/risk_calculator.dart';
 import '../../widgets/helper-widgets/date_picker_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../services/user_service.dart';
 
 class AddTestResultsScreen extends StatefulWidget{
 
@@ -266,6 +267,9 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                             'currentRiskStatus': calculatedStatus,
                             'lastRiskUpdate': FieldValue.serverTimestamp(),
                           });
+
+                          //add new acitivity to user's subcollection
+                          await UserService().addactivity(childId: widget.childid, activitytype: "Measurement", description: "New Measurement added");
 
                           //if the process successful
                           if(context.mounted){

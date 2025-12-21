@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/helper-widgets/info_display_widgets.dart';
+import '../../services/user_service.dart';
 
 class MealConfirmationScreenPackaged extends StatefulWidget {
 
@@ -90,6 +91,9 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
         .doc(widget.childid)//find the related child
         .collection('mealIntakes')//create subcollection
         .add(mealdata);// fill the data
+      
+      //add new acitivity to user's subcollection
+      await UserService().addactivity(childId: widget.childid, activitytype: "Meal", description: "${data['name']} added");
 
       if(!context.mounted)return;
       
