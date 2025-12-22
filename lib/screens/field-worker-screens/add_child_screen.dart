@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/helper-widgets/date_picker_field.dart';
 import 'dart:math';
@@ -289,6 +290,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
                             'hasDisability': _hasdisability,
                             'disabilityExplanation': _hasdisability ? _disabilityexplanationController.text.trim(): null,
                             'createdAt': FieldValue.serverTimestamp(),
+                            'registeredBy': FirebaseAuth.instance.currentUser?.uid, //field worker uid who registred child
                           };
 
                           //add data to firestore

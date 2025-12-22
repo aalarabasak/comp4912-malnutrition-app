@@ -1,4 +1,5 @@
 //all children list connected to field worker home screen
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'add_child_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,6 +29,8 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
 
   @override
   Widget build(BuildContext context){
+
+    final String currentuserid= FirebaseAuth.instance.currentUser!.uid;
     
     
     return Padding(padding: const EdgeInsets.symmetric(horizontal: 18.0),
@@ -97,6 +100,7 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
              child: StreamBuilder <QuerySnapshot>(
               stream: FirebaseFirestore.instance
                 .collection('children')
+                .where('registeredBy', isEqualTo: currentuserid)
                 .orderBy('createdAt', descending: true)
                 .snapshots(), //provides live streaming, if new data comes to the firebase, immediately is shown in list screen.
 

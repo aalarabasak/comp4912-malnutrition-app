@@ -1,5 +1,6 @@
 //children list whose treatment plan is active and connected to field worker home screen
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:malnutrition_app/services/treatment_service.dart';
 import 'package:malnutrition_app/screens/field-worker-screens/child_treatment_details_helper.dart';
@@ -40,6 +41,8 @@ void initState() {
 
   @override
   Widget build(BuildContext context){
+    final String currentuserid= FirebaseAuth.instance.currentUser!.uid;
+
     return Padding(padding: const EdgeInsets.symmetric(horizontal:18.0),
         child:  Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,11 +119,14 @@ void initState() {
                 //child list datas
                 Expanded(//It takes up all the remaining vertical space.
                   child: StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection('children').where('treatmentStatus', isEqualTo: 'Active').snapshots(),
+                    stream: FirebaseFirestore.instance.collection('children').where('registeredBy', isEqualTo: currentuserid)
+                    .where('treatmentStatus', isEqualTo: 'Active').snapshots(),
 
                     builder:(context, snapshot) {
                       
-                      if (snapshot.hasError) return const Center(child: Text('Error loading data.'));
+                      if (snapshot.hasError){
+                        return const Center(child: Text('Error loading data.'));
+                      } 
                       if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
 
                       var allActiveTreChildren = snapshot.data!.docs;

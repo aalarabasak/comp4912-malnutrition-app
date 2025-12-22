@@ -140,7 +140,10 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
                   }).toList(); //convert  filtered results as a list
                 }
 
+                if (filteredlist.isEmpty){
+                  return const Center(child: Text("No children found."));
 
+                }
 
                 return ListView.builder( //if the data comes successfullt, then execute below lines
 
@@ -160,7 +163,7 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
                     String temp = childData['dateofBirth'];
                     String age = calculateAge(temp);
 
-                    String riskstatus = childData['currentRiskStatus'];//get current status from child's data firebase
+                    String riskstatus = childData['currentRiskStatus'] ?? "";//get current status from child's data firebase
                     String risk ="";
                     Color riskcolor;
                     if(riskstatus.contains('High Risk')){
@@ -171,9 +174,13 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
                       risk = "Moderate";
                       riskcolor = Colors.amber.shade700;
                     }
-                    else{
+                    else if(riskstatus.contains('Healthy - No Risk')){
                       risk = "Healthy";
                       riskcolor = Colors.green.shade600;
+                    }
+                    else{
+                      risk = "No data";
+                      riskcolor = Colors.grey;
                     }
 
 
@@ -194,7 +201,7 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
                           context,
                           MaterialPageRoute(builder: (context)=> NOChildProfileScreen(childId: childdoc.id)));
 
-                        debugPrint("Tıklanan çocuk: $name");
+                        debugPrint("selected child: $name");
                       },
                     );
                  
