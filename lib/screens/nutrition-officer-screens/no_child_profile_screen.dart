@@ -79,7 +79,7 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
       backgroundColor: Colors.transparent, 
        actions: [
         //View AI feedback button
-        Padding(padding: const EdgeInsets.only(right: 30.0),
+        Padding(padding: const EdgeInsets.only(right: 23.0),
         child: AiFeedbackButton(//goes to ../widgets/ai_feedback_button.dart to draw button
           onPressed: () => handleAiFeedback(context), //this hadnleaifeedback function is above of this dart script
           )

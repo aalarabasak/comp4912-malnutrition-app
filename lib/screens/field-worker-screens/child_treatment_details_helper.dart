@@ -281,7 +281,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
                   Expanded(//profile buttonnn
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                        backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),
                         foregroundColor: Colors.black87,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -330,7 +330,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
       //undo the delivered item
       if (isfinallydeliver) {
         return {
-          'color': Colors.orange.shade300,
+          'color': Colors.orange.shade300.withOpacity(0.5),
           'text': "Undo Delivery",
           'icon': Icons.undo,
           'action': restore,//call the undo func
@@ -338,7 +338,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
       }
       //deliver mode
       return {
-        'color': Colors.green.withOpacity(0.5),
+        'color': Colors.green.withOpacity(0.4),
         'text': "Mark as Delivered",
         'icon': Icons.check_circle_outline,
         'action': deliver, //call the deliver func

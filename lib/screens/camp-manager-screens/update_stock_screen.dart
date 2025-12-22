@@ -187,12 +187,10 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
                       ButtonSegment<Stockcategory>(
                         value: Stockcategory.rutf,
                         label: Text("RUTF Items"),
-                        icon: Icon(Icons.medical_services_outlined),
                       ),
                       ButtonSegment<Stockcategory>(
                         value: Stockcategory.supplement,
                         label: Text("Supplements"),
-                        icon: Icon(Icons.apple_outlined, color: Color.fromARGB(255, 110, 110, 110),),
                       ),
                     ],
 
@@ -317,7 +315,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                         )
                       ),
                       onPressed:() {
@@ -336,7 +334,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(20),
                           )
                         ),
                         onPressed:() {

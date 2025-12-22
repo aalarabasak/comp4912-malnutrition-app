@@ -44,7 +44,7 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
         FocusScope.of(context).unfocus();
       },
     child:SafeArea(child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: Form(
         key: formkey,
         child: ListView(
@@ -172,8 +172,9 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 176, 174, 174),
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 25),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
                     textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
                   ),
                   onPressed:() {
                     Navigator.of(context).pop(); //closes the current screen and returns  to the previous screen.
@@ -185,10 +186,11 @@ class _AddTestResultsScreenState extends State <AddTestResultsScreen>{
 
                   Expanded(child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                      backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.8),
                       foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 25),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
                       textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
                     ),
                     onPressed:() async{
                       // This command runs all validator functions.

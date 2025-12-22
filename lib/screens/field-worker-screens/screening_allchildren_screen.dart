@@ -30,7 +30,7 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
   Widget build(BuildContext context){
     
     
-    return Padding(padding: const EdgeInsets.symmetric(horizontal: 25.0),
+    return Padding(padding: const EdgeInsets.symmetric(horizontal: 18.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, // Aligns all children horizontally to the left side.
         children: [
@@ -45,7 +45,7 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
               ////2nd element - add child + button
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                  backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.8),
                   foregroundColor: Colors.black,
                   textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),

@@ -35,7 +35,7 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false, //avoid the presence of back button
       actions: [
-        Padding(padding: const EdgeInsets.only(right: 30.0),
+        Padding(padding: const EdgeInsets.only(right: 18.0),
          child:ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(255, 203, 202, 202),
@@ -61,7 +61,7 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
     ),
     
     body: SafeArea(
-      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 30.0),
+      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 18.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, // Aligns all children horizontally to the left side.
         children: [

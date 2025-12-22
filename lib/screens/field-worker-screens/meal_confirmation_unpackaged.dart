@@ -195,7 +195,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
             Container(
               padding: EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 140, 193, 142).withOpacity(0.6),
+                color: const Color.fromARGB(255, 140, 193, 142).withOpacity(0.5),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(
@@ -213,7 +213,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
             Container(
               padding: EdgeInsets.all(15.0),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 234, 184, 110).withOpacity(0.6),
+                color: const Color.fromARGB(255, 234, 184, 110).withOpacity(0.5),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(
@@ -251,7 +251,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
             Container(
               padding: EdgeInsets.all(15.0),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 209, 185, 177).withOpacity(0.7),
+                color: const Color.fromARGB(255, 209, 185, 177).withOpacity(0.5),
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: Column(
@@ -269,7 +269,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
                       //- portion size button
                       IconButton(
                         onPressed:() => updateportion(-1.0), 
-                        icon: Icon(Icons.remove_circle, size: 40, color: Colors.red,)),
+                        icon: Icon(Icons.remove_circle, size: 40, color: Colors.red.shade400,)),
 
 
                       //number of packets that is selected by the user
@@ -279,7 +279,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
 
                       //+ portion size button
                       IconButton(onPressed:() => updateportion(1.0), 
-                      icon: Icon(Icons.add_circle, size: 40, color: Colors.green,)),
+                      icon: Icon(Icons.add_circle, size: 40, color: Colors.green.shade400,)),
                     ],
                   ),
 
@@ -302,10 +302,11 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
                       //cancel button
                       Expanded(child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 176, 174, 174),
+                          backgroundColor: const Color.fromARGB(255, 176, 174, 174).withOpacity(0.5),
                           foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(vertical: 25),
+                          padding: const EdgeInsets.symmetric(vertical: 20),
                           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
                         ),
                         onPressed:() {
                           Navigator.of(context).pop();//closes the current screen and returns  to the previous screen.
@@ -317,10 +318,11 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
                         //SAVE meal button
                         Expanded(child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                            backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),
                             foregroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(vertical: 25),
+                            padding: const EdgeInsets.symmetric(vertical: 20),
                             textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
                           ),
                           onPressed:() => registerMealtoChild(), 
                           child: Text('Save Meal') )),

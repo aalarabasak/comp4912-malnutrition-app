@@ -67,7 +67,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
       automaticallyImplyLeading: false, //avoid the presence of back button
     ),
     body: SafeArea(child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: Form(
         key: _formkey,
         child: ListView(
@@ -231,8 +231,9 @@ class _AddChildScreenState extends State <AddChildScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 176, 174, 174),
                       foregroundColor: Colors.black, 
-                      padding: const EdgeInsets.symmetric(vertical: 25),//height of button
-                      textStyle: const TextStyle( fontSize: 15, fontWeight: FontWeight.bold)
+                      padding: const EdgeInsets.symmetric(vertical: 20),//height of button
+                      textStyle: const TextStyle( fontSize: 15, fontWeight: FontWeight.bold),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -247,10 +248,11 @@ class _AddChildScreenState extends State <AddChildScreen> {
                   //Save button 
                   Expanded(child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 229, 142, 171),
+                      backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.8),
                       foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 25),//height of button
-                      textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)
+                      padding: const EdgeInsets.symmetric(vertical: 20),//height of button
+                      textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
                     ),
                     onPressed: () async{
                       // This command runs all 'validator' functions.
