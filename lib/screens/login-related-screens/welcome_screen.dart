@@ -15,25 +15,27 @@ class WelcomeScreen extends StatelessWidget {
         
         child : Padding(padding: const EdgeInsets.symmetric(horizontal: 40.0),
         child: Center(
-          // Column : alt alta dizeceğimizi söyler.
-          child: Column(// Center: ekranın ortasına hizalar.
-            // mainAxisAlignment dikey olarak ortalamak için.
-            mainAxisAlignment: MainAxisAlignment.center, 
-            children: [
-              //1.eleman fotoğraf
+          
+          child: SingleChildScrollView(
+            child: Column(
+              
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+              //photo
               Image.asset('assets/images/IMG_8656.JPG', height:300,),
               // https://www.pinterest.com/pin/680606562448569845/sent/?invite_code=b7e2fd4dbf5b4b75823f47b656cd5a59&sender=857091510242561090&sfo=1
 
 
               SizedBox(height: 40,),
 
-              //2. eleman
+              //2nd
               Text(
                 'Welcome',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold), 
               ),
 
-              // 3. eleman 
+              //3rd elemnt 
               Text(
                 'Start with sign in or sign up',
                 style: TextStyle(fontSize: 20), 
@@ -42,7 +44,7 @@ class WelcomeScreen extends StatelessWidget {
               
               SizedBox(height: 50), 
 
-            // 4. eleman sign up butonu
+            //4th sign in 
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -61,7 +63,7 @@ class WelcomeScreen extends StatelessWidget {
               
               SizedBox(height: 20),
 
-            // 5. eleman sign in butonu
+            //sign up button
             SizedBox(
               width: double.infinity,
               child:ElevatedButton(
@@ -81,7 +83,7 @@ class WelcomeScreen extends StatelessWidget {
 
               SizedBox(height: 30),
 
-              // 6. eleman Guest User Butonu
+              //guest user button
               TextButton(
                 onPressed: () {
                   Navigator.push(
@@ -95,6 +97,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),

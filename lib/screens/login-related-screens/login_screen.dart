@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen>{
     }
 
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => screen),
-       // (Route<dynamic> route) => false, ); // erases all history
+
       (Route<dynamic> route) => route.isFirst, ); //keep the WelcomeScreen to allow clean logout later.
   }
 

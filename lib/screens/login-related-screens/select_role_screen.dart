@@ -25,9 +25,11 @@ class SelectRoleScreen extends StatelessWidget{
     body: SafeArea(child: Padding( 
       padding:const EdgeInsets.symmetric(horizontal: 40.0), 
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
 
             //first element
             Text(
@@ -98,8 +100,7 @@ class SelectRoleScreen extends StatelessWidget{
 
 
         ),
-
-
+        ),
       ),
 
     

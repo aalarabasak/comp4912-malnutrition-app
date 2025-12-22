@@ -20,7 +20,6 @@ class _SignUpScreenState extends State<SignUpScreen>{
 
   //controllers for firebase connection 
   final _emailcontroller = TextEditingController();
-  final _usernamecontroller = TextEditingController();
   final _passwordcontroller = TextEditingController();
 
 
@@ -39,7 +38,11 @@ class _SignUpScreenState extends State<SignUpScreen>{
 
       backgroundColor: Colors.transparent, 
     ),
-    body: SafeArea(child: Padding(
+    body: SafeArea(
+      child: Center(child: SingleChildScrollView(
+
+      
+      child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40.0), 
       child: Center(
         child: Form(key: _formkey,
@@ -68,22 +71,9 @@ class _SignUpScreenState extends State<SignUpScreen>{
 
             SizedBox(height: 20),
 
-            //3rd element
-            TextFormField(decoration: InputDecoration(
-              labelText: 'Username',
-              prefixIcon: Icon(Icons.person_outline),
-              border: OutlineInputBorder(),
-            ),
-            controller: _usernamecontroller,
-            validator: (value){
-              if(value == null || value.isEmpty){
-                return "This field is required.";
-              }
-              return null;
-            },
-            ),
+            
 
-            SizedBox(height: 20),
+            
 
             //4th element
             PasswordToggleField(
@@ -129,7 +119,6 @@ class _SignUpScreenState extends State<SignUpScreen>{
                       .set({
                         'email':_emailcontroller.text.trim(),
                         'role': widget.selectedrole,
-                        'username': _usernamecontroller.text.trim(),
                         'createdat': FieldValue.serverTimestamp(),});
 
                     // Hide loading indicator
@@ -183,6 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen>{
       ),
         
       ),
+      ),)
           
       ),
 
