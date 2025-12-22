@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/helper-widgets/password_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../field-worker-screens/field_worker_home.dart';
-import '../camp-manager-screens/CampManagerHome.dart';
+import '../camp-manager-screens/camp_manager_home.dart';
 import '../nutrition-officer-screens/nutrition_officer_home.dart';
 
 class LoginScreen extends StatefulWidget{

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../login-related-screens/welcome_screen.dart';
 import 'distribution_list.dart';
 import 'stock_list_screen.dart';
+import '../../widgets/helper-widgets/lowstock_notification_button.dart';
 
 class CampManagerHome extends StatefulWidget{
 
@@ -25,6 +26,13 @@ class CampManagerHomeState extends State<CampManagerHome>{
     return Scaffold(
       backgroundColor:const Color(0xFFF5F7FB) ,
       appBar: AppBar(
+        //notification button 
+        leading: const Padding(padding: EdgeInsets.only(left: 8.0),
+          child: LowstockNotificationButton(),
+        ),
+        leadingWidth: 50, //button width
+
+
         title: const Icon(Icons.monitor_heart_outlined, color: Colors.black),
         centerTitle: true,
         backgroundColor: Colors.transparent,
