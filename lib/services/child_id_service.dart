@@ -12,8 +12,9 @@ class ChildIdService {
 
     String id= _generaterawid();
     bool isunique = false;
+    int attempts = 0;
 
-    while(!isunique){
+    while(!isunique && attempts<5){
 
       final QuerySnapshot result = await firestore.collection('children').where('childID', isEqualTo: id).limit(1).get();
 
@@ -21,6 +22,7 @@ class ChildIdService {
         isunique =true;
       }
       else{
+        attempts++;
         id = _generaterawid();
       }
     }
