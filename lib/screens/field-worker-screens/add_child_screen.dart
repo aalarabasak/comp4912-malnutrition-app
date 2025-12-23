@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/helper-widgets/date_picker_field.dart';
-import 'dart:math';
+
+import '../../services/child_id_service.dart';
 
 class AddChildScreen extends StatefulWidget{
   const AddChildScreen({super.key});
@@ -12,6 +13,9 @@ class AddChildScreen extends StatefulWidget{
 }
 
 class _AddChildScreenState extends State <AddChildScreen> {
+
+  final ChildIdService childidservice = ChildIdService();
+  bool isloadingid = true;
   
   final _formkey = GlobalKey<FormState>(); //to control form state of each box
 
@@ -28,23 +32,38 @@ class _AddChildScreenState extends State <AddChildScreen> {
   final _caregivercontroller= TextEditingController();
   final _disabilityexplanationController = TextEditingController();
 
-  String generateNewchildID(){
-    final random = Random();
-    // Generate 8 random digits (00000000 to 99999999)
-    String id = '';
-    for(int i = 0; i < 8; i++){
-      id += random.nextInt(10).toString();
-    }
-    return id;
-  }
+  
 
   @override
   void initState(){
     super.initState();
     // set the Child ID when screen initializes
-    final newID = generateNewchildID();
-    _childIDcontroller.text = newID;
+    getuniquechildid();
 
+
+  }
+
+  Future<void> getuniquechildid() async {
+    try {
+      String uniqueid = await childidservice.getuniqueid();
+      
+      if (mounted) {
+        setState(() {
+          _childIDcontroller.text = uniqueid;
+          isloadingid = false; 
+        });
+      }
+    }
+     catch (e) {
+      
+      if (mounted) {
+        setState(() {
+          _childIDcontroller.text = "Error generating ID";
+          isloadingid = false;
+        });
+      }
+
+    }
   }
 
   //cleaning function
@@ -86,7 +105,12 @@ class _AddChildScreenState extends State <AddChildScreen> {
               readOnly: true,
               enableInteractiveSelection: false, //prevents crashing due to appearing on long-press or double-tap
               decoration: InputDecoration(
-              prefixText: 'Child ID: ',
+              labelText: 'Child ID: ',
+              suffixIcon: isloadingid
+                        ? const Padding(
+                            padding: EdgeInsets.all(12.0), 
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ): null,
               border: OutlineInputBorder(),
               filled: true,
               fillColor: Colors.grey[100],
@@ -268,20 +292,11 @@ class _AddChildScreenState extends State <AddChildScreen> {
                         //https://firebase.google.com/docs/firestore/manage-data/add-data#set_a_document
                         try{
 
-                          String childID = _childIDcontroller.text.trim(); // to make sure ID is unique, first I need to get it
-                          final check = await FirebaseFirestore.instance //Look firestore if it exists, search
-                            .collection('children')
-                            .where('childID', isEqualTo: childID)
-                            .get();
                           
-                          // If ID exists, generate a new one
-                          if(check.docs.isNotEmpty){
-                            childID = generateNewchildID();
-                            _childIDcontroller.text = childID;
-                          }
+                          
                           
                           Map<String, dynamic> childdata = {
-                            'childID': childID,
+                            'childID': _childIDcontroller.text.trim(),
                             'fullName': _fullNamecontroller.text.trim(),
                             'gender': _selectedgender,
                             'dateofBirth' : _datecontroller.text.trim(),
