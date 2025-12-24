@@ -17,7 +17,7 @@ class RiskStatisticCard extends StatelessWidget{
   
   Widget build(BuildContext context){
     return Container(
-      padding: EdgeInsets.all(17.5),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -36,7 +36,7 @@ class RiskStatisticCard extends StatelessWidget{
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(//icon container
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10.9),
             decoration: BoxDecoration(
               color: themecolor.withOpacity(0.1), 
               borderRadius: BorderRadius.circular(12),
@@ -55,7 +55,7 @@ class RiskStatisticCard extends StatelessWidget{
 
               const SizedBox(height: 4,),
 
-              Text(value, style: TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold),
+              Text(value, style: TextStyle(fontSize: 12.3, color: Colors.black87, fontWeight: FontWeight.bold),
                   //maxLines: 2,
                   overflow: TextOverflow.ellipsis,//??
                 )

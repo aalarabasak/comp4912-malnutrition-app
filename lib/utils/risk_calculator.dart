@@ -70,6 +70,10 @@ class RiskCalculator {
         textStatus = 'High Risk'; //bump risk from yellow to red
         reason += '+Weight loss >5%'; //update the reason
       }
+      else if(textStatus == 'High Risk'){
+        reason += '+Weight loss >5%';
+      }
+
     }
 
     return{

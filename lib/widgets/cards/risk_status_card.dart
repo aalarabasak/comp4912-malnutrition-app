@@ -108,7 +108,7 @@ class RiskStatusCard extends StatelessWidget{
                     children: [
                       Icon(Icons.info_outline, size: 16, color: Colors.black54,),
                       SizedBox(width: 5,),
-                      Text(reason, style: TextStyle(fontSize: 15),),
+                      Text(reason, style: TextStyle(fontSize: 14),),
                     ],
                   )
                 ],
