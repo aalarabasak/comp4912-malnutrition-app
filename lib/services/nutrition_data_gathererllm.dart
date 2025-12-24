@@ -58,10 +58,10 @@ class NutritionDataGathererllm {
       Map<String,dynamic> weeklytargets = NutritionValuesCalculator.calculateweeklytargets(weight, birthDate, childdata['gender']);
 
       NutritionValues targetvalues = NutritionValues(
-        calories: (weeklytargets['targetKcal'] ?? 0),
-        protein: (weeklytargets['targetProtein'] ?? 0),
-        fat: (weeklytargets['targetFat'] ?? 0),
-        carbs: (weeklytargets['targetFat'] ?? 0),
+        calories: (weeklytargets['kcal'] ?? 0),
+        protein: (weeklytargets['protein'] ?? 0),
+        fat: (weeklytargets['fat'] ?? 0),
+        carbs: (weeklytargets['carbs'] ?? 0),
       );
 
       //---
