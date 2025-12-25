@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:malnutrition_app/widgets/helper-widgets/info_display_widgets.dart';
 import 'package:malnutrition_app/services/treatment_service.dart';//for any kind of firebase functions is here
 
+import 'package:malnutrition_app/services/nutrition_data_gathererllm.dart'; 
+import 'package:malnutrition_app/services/nutrition_datamodels.dart'; 
+
 class CreateTreatmentPlan extends StatefulWidget{
 
   final String childId;
@@ -25,10 +28,16 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
   final TreatmentService treatmentservice = TreatmentService();
   String? riskstatus; //to keep rsikstatus
 
+  //for getting rutfproducts name and details from firestore and for getting supp names
+  List<Map<String,dynamic>> rutfproducts = [];
+  List<Map<String, dynamic>> supplements = [];
+  bool isfoodloading = true;
+
   @override
   void initState() {
     super.initState();
     loadriskstatus();
+    loadfooddata();
   }
 
   Future<void> loadriskstatus() async {
@@ -50,38 +59,56 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
 
 }
 
-  // rutf datas
-  final List<Map<String, dynamic>> _rutfProducts = [
-    {
-      "name": "Plumpy'Nut",
-      "kcal": 500,
-      "prot": 13,
-      "carb": 46,
-      "fat": 33,
-    },
-    {
-      "name": "Valid P-RUTF",
-      "kcal": 535,
-      "prot": 14,
-      "carb": 44,
-      "fat": 34,
-    },
-    {
-      "name": "eeZeePaste NUT",
-      "kcal": 500,
-      "prot": 13,
-      "carb": 45,
-      "fat": 30,
-    },
-  ];
+Future <void> loadfooddata() async{
+  try{
+    NutritionDataGathererllm datagatherer = NutritionDataGathererllm();
 
-  // supplement datas
-  final List<Map<String, String>> _supplements = [
-    {"name": "Banana", "icon": "🍌"},
-    {"name": "Apple", "icon": "🍎"},
-    {"name": "Carrot", "icon": "🥕"},
-    {"name": "Orange", "icon": "🍊"},
-  ];
+    List<FoodItem> rutfitems = await datagatherer.getfoodcollection('RUTF_products');
+    List<FoodItem> suppitems = await datagatherer.getfoodcollection('unpackaged_foods');
+
+    if (!mounted) return;
+
+    setState(() {
+      rutfproducts = rutfitems.map((item) {
+        return {
+          "name": item.name,
+            "kcal": item.values.calories, 
+            "prot": item.values.protein,  
+            "carb": item.values.carbs,   
+            "fat": item.values.fat,       
+        };
+      }).toList();
+
+      supplements= suppitems.map((item) {
+        return{
+          "name" : item.name,
+          "icon": geticonforsupplement(item.name),
+        };
+      }).toList();
+
+      isfoodloading= false;
+
+    });
+  }
+  catch(e){
+    if (mounted) {
+       setState(() {
+         isfoodloading = false;
+       });
+      }
+  }
+}
+
+  
+ 
+ String geticonforsupplement(String name){
+  name = name.toLowerCase();
+  if(name.contains('banana')) return "🍌";
+  if (name.contains('apple')) return "🍎";
+  if (name.contains('carrot')) return "🥕";
+  if (name.contains('orange')) return "🍊";
+  return "";
+ }
 
 
   //helper functions
@@ -150,7 +177,7 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
     try{
       Map<String, dynamic>? rutfdata;
       if(selectedRUTFindex != null){
-        final product = _rutfProducts[selectedRUTFindex!];
+        final product = rutfproducts[selectedRUTFindex!];
 
         rutfdata={
           'productName': product['name'],
@@ -216,7 +243,8 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
         backgroundColor: Colors.transparent, 
       ),
 
-      body: SingleChildScrollView(//makes the content scrollable
+      body: isfoodloading ? Center(child: CircularProgressIndicator())
+      :SingleChildScrollView(//makes the content scrollable
        padding: const EdgeInsets.only(bottom: 100),//adds bottom padding so content isn't hidden by buttons.
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,9 +313,9 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
                     child: ListView.builder(//horizontal scrollable list with fixed height.
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       scrollDirection: Axis.horizontal,
-                      itemCount: _rutfProducts.length,
+                      itemCount: rutfproducts.length,
                       itemBuilder:(context, index) {
-                        final product = _rutfProducts[index];
+                        final product = rutfproducts[index];
                         final isselected = selectedRUTFindex == index;
                         //builds one item per product -isselected checks if this item is selected
 
@@ -395,7 +423,7 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
                       runSpacing: 10,//vertical space btw lines
 
                       //go through every item in the supplements list
-                      children: _supplements.map((item) {//maps each supplement to a widget 
+                      children: supplements.map((item) {//maps each supplement to a widget 
                         final isselected = selectedsupplements.contains(item['name']);//returns true if selected false if not
                         return FilterChip(
                           label: Text("${item['icon']}  ${item['name']}"), //show the icon and the name of the supplement
