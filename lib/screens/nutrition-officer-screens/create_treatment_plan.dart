@@ -351,6 +351,7 @@ Future <void> loadfooddata() async{
                                   ? [BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))]//make a box shadow
                                   : [], //otherwise do not put
                             ),
+                            
                             //inside of the container textes etc->>
                             child: Column(//product name -nutrition infos below it
                               crossAxisAlignment: CrossAxisAlignment.start,

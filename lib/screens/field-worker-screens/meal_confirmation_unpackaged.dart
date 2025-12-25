@@ -70,7 +70,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
   void updateportion(double change){
     setState(() {
       final newCount = portioncount + change;
-      if(newCount >= 0.5){
+      if(newCount >= 1.0){
         portioncount = newCount;
         portionerror = null;
       }
@@ -170,7 +170,10 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
         backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false, //avoid the presence of back button
       ),
-      body: SafeArea(
+      body: SingleChildScrollView(
+
+      
+      child:SafeArea(
         child: Padding(padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -269,7 +272,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
                       //- portion size button
                       IconButton(
                         onPressed:() => updateportion(-1.0), 
-                        icon: Icon(Icons.remove_circle, size: 40, color: Colors.red.shade400,)),
+                        icon: Icon(Icons.remove_circle_outline, size: 40, color: Colors.grey,)),
 
 
                       //number of packets that is selected by the user
@@ -331,6 +334,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
           ],
         ),
         )
+        ),
         ),
     );
 

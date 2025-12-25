@@ -51,12 +51,12 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
   void updateportion(double change){
     setState(() {
       final newCount = portioncount + change;
-      if(newCount >= 0.1){
+      if(newCount >= 1.0){
         portioncount = newCount;
         portionerror = null;
       }
-      else if(newCount < 0.1){
-        portionerror = 'Portion must be at least 0.5';
+      else if(newCount < 1.0){
+        portionerror = 'Portion must be at least 1.0';
       }
     });
   }
@@ -236,8 +236,8 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
                     children: [
                       //- portion size button
                       IconButton(
-                        onPressed:() => updateportion(-0.5), 
-                        icon: Icon(Icons.remove_circle, size: 40, color: Colors.red.shade400,)),
+                        onPressed:() => updateportion(-1.0), 
+                        icon: Icon(Icons.remove_circle_outline, size: 40, color: Colors.grey,)),
 
 
                       //number of packets that is selected by the user
@@ -246,7 +246,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
 
                       //+ portion size button
-                      IconButton(onPressed:() => updateportion(0.5), 
+                      IconButton(onPressed:() => updateportion(1.0), 
                       icon: Icon(Icons.add_circle, size: 40, color: Colors.green.shade400,)),
                     ],
                   ),
