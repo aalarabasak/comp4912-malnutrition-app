@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/stock_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum Stockcategory {rutf, supplement} //for segmented button widget
 
@@ -23,15 +24,34 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
   final TextEditingController quantitycontroller = TextEditingController();
   final TextEditingController expirydatecontroller = TextEditingController();
 
+  List<String> rutfoptions =[];
 
-  final List<String> rutfOptions = [
-    "Plumpy'Nut",
-    "Valid P-RUTF",
-    "eeZeePaste NUT",
-  ];
 
+  
   String? selectedrutfname; //chosen from dropdown menu
   DateTime? selecteddate;//chosen expiry date for rutf
+
+  @override
+  void initState(){
+    super.initState();
+    getrutfnames();
+  }
+
+  Future<void> getrutfnames() async{
+   
+   QuerySnapshot snapshot =await FirebaseFirestore.instance.collection('RUTF_products').get();
+
+   //get inside to every document in the snapshot and get only name fields and make it a list
+   List<String> names = snapshot.docs.map((doc) {
+    return doc['name'] as String;
+   }).toList();
+
+   if(mounted){
+    setState(() {
+      rutfoptions = names;
+    });
+   }
+  }
 
   @override
   void dispose() {
@@ -253,7 +273,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
                       DropdownButtonFormField<String>(
                         value: selectedrutfname,
                         decoration: inputdecoration("Select RUTF Product", Icons.medical_services),
-                        items: rutfOptions.map((name) => DropdownMenuItem(value: name, child: Text(name))).toList(),
+                        items: rutfoptions.map((name) => DropdownMenuItem(value: name, child: Text(name))).toList(),
                         onChanged:(value) {
                           setState(() {
                             selectedrutfname = value;
