@@ -144,7 +144,7 @@ Future <void> loadfooddata() async{
     final DateTime? picked = await showDatePicker(//shows the date picker and waits for the result.
       context: context, 
       firstDate: DateTime.now(), //start date of the date picker is current day 
-      lastDate: DateTime.now().add(const Duration(days: 365)), //make the last choosanable date to 1 year later
+      lastDate: DateTime.now().add(const Duration(days: 95)), //make the last choosanable date to 1 year later
     );
 
     if(picked != null && picked != selecteddate){
@@ -157,18 +157,18 @@ Future <void> loadfooddata() async{
   //saving treatment plan to firebase
   Future<void> handlesave() async{
     if(selecteddate == null){//warn if date not selected
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Please select a next visit date!') ));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Please select a next visit date!') , backgroundColor: Colors.red,));
       return;
      
     }
 
     if(selectedsupplements.isNotEmpty &&(supplementquantity == 0 || supplementduration == 0) ){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter quantity for supplements!')));
+      ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text('Please enter fields for supplements!'), backgroundColor: Colors.red));
        return;
     }
 
     if(selectedRUTFindex != null && (quantityperday == 0 || durationweeks == 0)){
-       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter quantity for RUTF!')));
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please enter fields for RUTF!'), backgroundColor: Colors.red));
        return;
     }
 

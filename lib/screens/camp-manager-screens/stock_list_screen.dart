@@ -14,6 +14,13 @@ class StockListScreenState extends State<StockListScreen>{
 
   final searchcontroller = TextEditingController();//a controller to read and manage the text in the search textfield
   String searchquery = "";//variable to store the current search query entered by the user
+  late Stream<QuerySnapshot> stocksstream;
+
+  @override
+  void initState() {
+    super.initState();
+    stocksstream = FirebaseFirestore.instance.collection('stocks') .where('quantity', isGreaterThan: 0).snapshots();
+  }
 
   @override
   void dispose(){
@@ -38,7 +45,7 @@ class StockListScreenState extends State<StockListScreen>{
     }
   }
 
-  void sortStocks(List <QueryDocumentSnapshot> stocks){
+  void sortStocks(List <QueryDocumentSnapshot> stocks){//to sort as lowest to highes stock
 
     stocks.sort((a,b) {
 
@@ -78,7 +85,7 @@ class StockListScreenState extends State<StockListScreen>{
 
 
     return StreamBuilder(
-            stream: FirebaseFirestore.instance.collection('stocks').where('quantity', isGreaterThan: 0).snapshots(),
+            stream: stocksstream,
             builder:(context, snapshot) {
               
               if (snapshot.hasError) {
@@ -91,11 +98,12 @@ class StockListScreenState extends State<StockListScreen>{
 
               var docs = snapshot.data!.docs;//data ready
 
-              ///getting ready for summary card----
+              ///getting ready for summary card---
               int totalitems = docs.length; //total items count for summary card
 
               int lowstockcount = docs.where((doc) {
-                int amount = doc.data()['quantity'];
+                final data = doc.data() as Map<String, dynamic>?;
+                int amount = (data?['quantity'] ?? 0) as int;
                 return getstockstatus(amount) == "Low";
               }).length; //count the low ones for summary card
               //----
@@ -103,8 +111,9 @@ class StockListScreenState extends State<StockListScreen>{
               //search logic
               final filteredstocks = docs.where((doc) {
 
-                final data = doc.data();
-                final productname = data['productName'].toString().toLowerCase();
+                final data = doc.data() as Map<String, dynamic>?;
+                if (data == null) return false;
+                final productname = (data['productName'] ?? "").toString().toLowerCase();
                 final lotnumber = (data['lotNumber'] ?? "").toString().toLowerCase();
 
                 return productname.contains(searchquery) || lotnumber.contains(searchquery);
@@ -115,7 +124,7 @@ class StockListScreenState extends State<StockListScreen>{
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 13.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start, // Aligns all children horizontally to the left side.
+                  crossAxisAlignment: CrossAxisAlignment.start, 
 
                   children: [
                     //top part - title and button
@@ -188,9 +197,9 @@ class StockListScreenState extends State<StockListScreen>{
                         border: OutlineInputBorder(),
                     ),
                                 
-                      onChanged: (value) { //tells Flutter to rebuild the screen because our search query changed.
+                      onChanged: (value) { //tells  to rebuild the screen because our search query changed.
                         setState(() {
-                          searchquery = value.toLowerCase();// Store the query in lowercase for easier matching
+                          searchquery = value.toLowerCase();//store the query in lowercase for easier matching
                         });
                       },
 
@@ -199,7 +208,7 @@ class StockListScreenState extends State<StockListScreen>{
                   
                   const SizedBox(height: 17),
 
-                  //list titles (or name of the columns)
+                  //name of the columns
                   const Row(
                       children: [//expanded-> it takes up the remaininng horizontal space
                       //flex-> shows how the space can be shared
@@ -210,7 +219,7 @@ class StockListScreenState extends State<StockListScreen>{
                       ],
                     ),
 
-                  const Divider(thickness: 1, color: Colors.black87,), //horizontal line that separates titles from datas
+                  const Divider(thickness: 1, color: Colors.black87,), 
 
                   //stock list
                   Expanded(
@@ -222,18 +231,21 @@ class StockListScreenState extends State<StockListScreen>{
                           itemCount: filteredstocks.length,
                           itemBuilder:(context, index) {
                             
-                            var data = filteredstocks[index].data(); //get data
+                            var data = filteredstocks[index].data() as Map<String, dynamic>?; //get data
+                            if (data == null) {
+                              return const SizedBox.shrink(); // Skip if data is null
+                            }
 
                             //get necessary data
-                            int quantity = data['quantity'];
+                            int quantity = (data['quantity'] ?? 0) as int;
                             String status = getstockstatus(quantity);
                             Color statuscolor = getstatuscolor(status);
 
                             //to get lot number need to look at category
-                            String category = data['category'];
+                            String category = (data['category'] ?? "").toString();
                             String lot = "";
                             if(category != "Supplement"){
-                              lot = data['lotNumber'];
+                              lot = (data['lotNumber'] ?? "").toString();
                             }
 
                             return ListTile(
@@ -242,7 +254,7 @@ class StockListScreenState extends State<StockListScreen>{
                               title: Row(
                                 children: [
                                   //product name
-                                  Expanded(flex: 3,child: Text(data["productName"], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                  Expanded(flex: 3,child: Text((data["productName"] ?? "").toString(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                                     overflow: TextOverflow.ellipsis,),
                                     ),
                                   

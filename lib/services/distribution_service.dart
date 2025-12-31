@@ -127,7 +127,7 @@ class DistributionService {
     });
   }
 
-  //used in child_treatment_detailshelper
+  //used in child_treatment_detailshelper for undo
   Future <void> reversedistribution(String treatmentPlanId) async{
 
     //get data
