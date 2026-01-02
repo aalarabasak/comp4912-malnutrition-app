@@ -130,15 +130,14 @@ class DistributionService {
   //used in child_treatment_detailshelper for undo
   Future <void> reversedistribution(String treatmentPlanId) async{
 
-    //get data - query distributions OUTSIDE transaction
+    
     final querydistribution = await firestore.collection('distributions').where('treatmentPlanId', isEqualTo: treatmentPlanId).get();
     
     if(querydistribution.docs.isEmpty){
-      return; //nothing to reverse
+      return; 
     }
 
-    //gather all stock references OUTSIDE the transaction to avoid transaction isolation issues
-    //this map holds: distribution doc id -> stock document reference (if found)
+    //gather all stock references outside the transaction to avoid transaction isolation issues
     Map<String, DocumentReference?> stockReferencesMap = {};
     Map<String, int> quantitiesToRestore = {};
 
