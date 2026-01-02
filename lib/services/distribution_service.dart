@@ -130,39 +130,66 @@ class DistributionService {
   //used in child_treatment_detailshelper for undo
   Future <void> reversedistribution(String treatmentPlanId) async{
 
-    //get data
+    //get data - query distributions OUTSIDE transaction
     final querydistribution = await firestore.collection('distributions').where('treatmentPlanId', isEqualTo: treatmentPlanId).get();
     
-    //atomic process 
+    if(querydistribution.docs.isEmpty){
+      return; //nothing to reverse
+    }
+
+    //gather all stock references OUTSIDE the transaction to avoid transaction isolation issues
+    //this map holds: distribution doc id -> stock document reference (if found)
+    Map<String, DocumentReference?> stockReferencesMap = {};
+    Map<String, int> quantitiesToRestore = {};
+
+    for(var distributiondoc in querydistribution.docs){
+      var distributiondata = distributiondoc.data();
+      String productname = distributiondata['itemName'];
+      int quantity = distributiondata['quantity'];
+      String? lotnumber = distributiondata['lotNumber'];
+
+      QuerySnapshot stocksnapshot;
+
+      if(lotnumber != null){
+        //if it's rutf find it by lot num
+        stocksnapshot = await firestore.collection('stocks').where('productName', isEqualTo: productname)
+          .where('lotNumber', isEqualTo: lotnumber).limit(1).get();
+      }
+      else{
+        //if it is supplement find it by only name
+        stocksnapshot = await firestore.collection('stocks').where('productName', isEqualTo: productname).limit(1).get();
+      }
+
+      if(stocksnapshot.docs.isNotEmpty){
+        stockReferencesMap[distributiondoc.id] = stocksnapshot.docs.first.reference;
+      } else {
+        stockReferencesMap[distributiondoc.id] = null;
+      }
+      quantitiesToRestore[distributiondoc.id] = quantity;
+    }
+
+    //atomic process - now all reads are done, only writes inside transaction
     await firestore.runTransaction((transaction) async{
 
+      //first, read all stock documents inside the transaction for consistency
+      Map<String, DocumentSnapshot> stockSnapshots = {};
+      for(var entry in stockReferencesMap.entries){
+        if(entry.value != null){
+          stockSnapshots[entry.key] = await transaction.get(entry.value!);
+        }
+      }
+
+      //now perform all writes
       for(var distributiondoc in querydistribution.docs){
+        String docId = distributiondoc.id;
+        DocumentReference? stockRef = stockReferencesMap[docId];
+        int quantity = quantitiesToRestore[docId] ?? 0;
 
-        var distributiondata = distributiondoc.data();
-        String productname = distributiondata['itemName'];
-        int quantity= distributiondata['quantity'];
-        String? lotnumber = distributiondata['lotNumber'];
-
-        QuerySnapshot stocksnapshot;//to find the correct stock of restore
-
-        if(lotnumber != null){
-          //if it s rutf find it by lot num
-          stocksnapshot = await firestore.collection('stocks').where('productName', isEqualTo: productname)
-            .where('lotNumber', isEqualTo: lotnumber).limit(1).get();
-        }
-        else{
-          //if it is supplement find it by only name
-          stocksnapshot = await firestore.collection('stocks').where('productName', isEqualTo: productname).limit(1).get();
-        }
-
-        if(stocksnapshot.docs.isNotEmpty){//stock record is found and update it
-
-          DocumentReference stockreference = stocksnapshot.docs.first.reference; 
-
-          DocumentSnapshot lateststocksnap = await transaction.get(stockreference); //read the current stock value
+        if(stockRef != null && stockSnapshots.containsKey(docId)){
+          DocumentSnapshot lateststocksnap = stockSnapshots[docId]!;
           if(lateststocksnap.exists){
             int currentstockquantity = lateststocksnap['quantity'];
-            transaction.update(stockreference, {'quantity': currentstockquantity + quantity});
+            transaction.update(stockRef, {'quantity': currentstockquantity + quantity});
           }
         }
 
@@ -170,8 +197,5 @@ class DistributionService {
         transaction.delete(distributiondoc.reference);
       }
     });
-
-
-
   }
 }
