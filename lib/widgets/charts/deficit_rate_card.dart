@@ -27,10 +27,10 @@ class DeficitRateCard extends StatelessWidget{
       ),
       child: Column(
         children: [
-          //title
+    
           Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
           const SizedBox(height: 8),
-          //value
+        
           Text("${(deficit*100).round()}%", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),)
 
         ],

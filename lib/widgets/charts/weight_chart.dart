@@ -15,7 +15,7 @@ class WeightChart extends StatelessWidget{
       return const Center(child: Text("No weight data available yet."));
     }
 
-    //use helpers for dynamic, grid-aligned axes.
+  
     final yscale = calculatedynamicYBounds(spots);
     final double miny = yscale.miny;
     final double maxy = yscale.maxy;
@@ -36,10 +36,10 @@ class WeightChart extends StatelessWidget{
         ],     
       ),
       child: AspectRatio(
-        aspectRatio: 1.5,//width/height ratio is 1.5
+        aspectRatio: 1.5,
         child: Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 16.0),
-          child:  LineChart( LineChartData(//actual graphic starts here
+          child:  LineChart( LineChartData(
 
                 borderData: FlBorderData(//remove top and right border lines
                   show: true,
@@ -51,7 +51,7 @@ class WeightChart extends StatelessWidget{
                   ),
                 ),
 
-                //grid lines -yatay ızgara çizgileri
+                //grid lines
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
@@ -70,7 +70,7 @@ class WeightChart extends StatelessWidget{
                   rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
 
                   topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false, 
-                    reservedSize: 30//increased space at top for Y-axis label visibility
+                    reservedSize: 30
                   ),                ),
 
                   bottomTitles:AxisTitles(
@@ -81,8 +81,8 @@ class WeightChart extends StatelessWidget{
                       getTitlesWidget: (value, meta) {
                         final i =value.toInt();
                         if(i >= 0 && i < dates.length){
-                          // Check if this is a whole number (not a decimal)
-                        if (value == value.toInt().toDouble()) { //Prevents double writing on the x-axis
+                          //check if this is a whole number 
+                        if (value == value.toInt().toDouble()) { //prevents double writing on the x-axis
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(dates[i],style: const TextStyle(color: Colors.grey,fontSize: 10,
@@ -103,7 +103,7 @@ class WeightChart extends StatelessWidget{
                     reservedSize: 40,
                     interval: yinterval, //calculated interval
                     getTitlesWidget: (value, meta) {
-                      if (value % 1 == 0) {//if it is an integer-> write it without fractions, otherwise write it with a comma
+                      if (value % 1 == 0) {//write integers without fraction
                         return Text(value.toInt().toString(),
                           style: const TextStyle(color: Colors.grey, fontSize: 10),
                         );
@@ -138,13 +138,13 @@ class WeightChart extends StatelessWidget{
               ),
             ],
 
-            // Min and max values for yaxis
+           
             minY: miny,
             maxY: maxy,
-            // Min and max values for xaxis with padding
+         
             minX: -0.5,
             maxX: spots.length.toDouble() - 0.5,
-//-  0.5->prevent the first,last dots from sticking to the glass of the graphic leave some space 
+
             ),
               
             ),

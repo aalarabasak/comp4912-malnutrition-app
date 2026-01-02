@@ -14,11 +14,11 @@ class RiskCalculator {
     }
     else if(textStatus == "Moderate Risk"){
       statusColor = const Color.fromARGB(255, 157, 125, 29);
-      gaugevalue = 1.5;//for needle pointer of gauge chart
+      gaugevalue = 1.5;
     }
     else{
       statusColor = Colors.green;
-      gaugevalue = 0.5;//for needle pointer of gauge chart
+      gaugevalue = 0.5;
     }
     return{
       'statusColor': statusColor,
@@ -30,21 +30,21 @@ class RiskCalculator {
     String textStatus;
     String reason;
     
-    //1st rule- if edema yes, it is directly high risk
-    if(edema == 'Yes'){//if edema is present, it is always high risk
+    //if edema yes, it is directly high risk
+    if(edema == 'Yes'){
       return {
-        'textStatus':'High Risk',//need for uı and for database
+        'textStatus':'High Risk',
         'reason': 'Edema detected',
       };
     }
     
-    //2nd rule- MUAC control
-    if(muac < 115){//MUAC less than 115mm shows high malnutrition  
-      textStatus ='High Risk';//need for uı and for database
+    //MUAC control
+    if(muac < 115){
+      textStatus ='High Risk';
       reason = 'MUAC: $muac mm (<115)';
     }
-    else if(muac >= 115 && muac < 125){// MUAC between 115 and 125 shows moderate malnutrition
-      textStatus = 'Moderate Risk';//need for uı and for database
+    else if(muac >= 115 && muac < 125){
+      textStatus = 'Moderate Risk';
       reason = 'MUAC: $muac mm';
     }
     else{//the child is healhty, normal. no risk
@@ -53,22 +53,22 @@ class RiskCalculator {
     }
 
 
-    //3rd rule weight loss detection duration 4 week
+    //weight loss detection duration 4 week
     if(weightLossDetected){
       if(textStatus == 'Healthy - No Risk'){
         if(preRiskstatus == 'Moderate Risk'){
-          //if new MUAC results says healthy but the child was already at Moderate risk,  a bump to High.
+          
           textStatus = 'High Risk'; //bump risk from yellow to red
           reason = ' Weight loss detected (>5%)'; //update the reason
         }
         else{
           textStatus = 'Moderate Risk'; //bump risk from green to yellow
-          reason = 'Weight loss detected (>5%)'; //update the reason
+          reason = 'Weight loss detected (>5%)'; 
         }
       }
       else if(textStatus == 'Moderate Risk'){
         textStatus = 'High Risk'; //bump risk from yellow to red
-        reason += '+Weight loss >5%'; //update the reason
+        reason += '+Weight loss >5%'; 
       }
       else if(textStatus == 'High Risk'){
         reason += '+Weight loss >5%';
@@ -95,13 +95,13 @@ class RiskCalculator {
       String datestring = data['dateofMeasurement'].toString();
       
       DateTime testdate = parseDateString(datestring);
-      int daysdiff = latestdate.difference(testdate).inDays;//// Find the difference in days between two dates
+      int daysdiff = latestdate.difference(testdate).inDays;
 
-      if(daysdiff >= 21 && daysdiff <= 35){//Search 21 to 35 days about 1 month
+      if(daysdiff >= 21 && daysdiff <= 35){//Search 
         pastweight = double.tryParse(data['weight'].toString());
 
         if(pastweight != null && pastweight >0){
-          //If the weight was entered on that date -> use it as a reference and finish t
+          
           break;
         }
 
@@ -110,11 +110,11 @@ class RiskCalculator {
     }
     //If past weight is found check the 5% rule
     if(pastweight != null && pastweight>0){
-      double percentage = (pastweight-currentweight)/pastweight; //apply formula
-      if(percentage >= 0.05){//if it is 0.05 or greater , make it true
+      double percentage = (pastweight-currentweight)/pastweight; 
+      if(percentage >= 0.05){
         return true;// Risk detected
       }
     }
-    return false;//no risk
+    return false;
   }
 }

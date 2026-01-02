@@ -17,16 +17,16 @@ class _AddChildScreenState extends State <AddChildScreen> {
   final ChildIdService childidservice = ChildIdService();
   bool isloadingid = true;
   
-  final _formkey = GlobalKey<FormState>(); //to control form state of each box
+  final _formkey = GlobalKey<FormState>(); //control form state of each box
 
-  //at first, there is no selection on dropdowns, so string has "?". 
+
   String? _selectedgender;
   String? _selectedcampblock;
   bool _hasdisability = false;
   
-  //This is where I create the remote control for the DatePickerField.
+
   final _datecontroller = TextEditingController();
-  //for firebase connection
+
   final _childIDcontroller = TextEditingController();
   final _fullNamecontroller = TextEditingController();
   final _caregivercontroller= TextEditingController();
@@ -37,7 +37,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
   @override
   void initState(){
     super.initState();
-    // set the Child ID when screen initializes
+    //set the Child ID when screen begins
     getuniquechildid();
 
 
@@ -69,7 +69,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
   //cleaning function
   @override
   void dispose() {
-    _datecontroller.dispose();//Destroy the remote if the screen is turned off.
+    _datecontroller.dispose();
     _childIDcontroller.dispose();
     _fullNamecontroller.dispose();
     _caregivercontroller.dispose();
@@ -93,17 +93,17 @@ class _AddChildScreenState extends State <AddChildScreen> {
         child: ListView(
           children: [
 
-            //1st element
+       
             Text('Please fill in the details below.', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.left),
             
             const SizedBox(height: 30),
 
-            //2nd element
+          
             TextFormField(
               controller: _childIDcontroller,
               readOnly: true,
-              enableInteractiveSelection: false, //prevents crashing due to appearing on long-press or double-tap
+              enableInteractiveSelection: false, 
               decoration: InputDecoration(
               labelText: 'Child ID: ',
               suffixIcon: isloadingid
@@ -119,7 +119,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
             const SizedBox(height: 16),
 
-            //3rd element
+       
             TextFormField(
               controller: _fullNamecontroller,
               decoration: InputDecoration(
@@ -135,7 +135,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
             const SizedBox(height: 16),
 
-            //4th element
+         
             DropdownButtonFormField <String>(
               initialValue: _selectedgender,
               decoration: const InputDecoration(
@@ -162,7 +162,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
             const SizedBox(height: 16),
 
 
-            //5th element date picker
+           
             DatePickerField(
               controller: _datecontroller, 
               labelText: 'Date of Birth', 
@@ -177,7 +177,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
               const SizedBox(height: 16),
 
-            //6th element
+           
             TextFormField(
               controller: _caregivercontroller,
               decoration: InputDecoration(
@@ -193,7 +193,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
             const SizedBox(height: 16),
 
-            //7th element
+         
             DropdownButtonFormField <String>(
               initialValue: _selectedcampblock,
               decoration: const InputDecoration(
@@ -220,7 +220,7 @@ class _AddChildScreenState extends State <AddChildScreen> {
 
               const SizedBox(height: 16),
 
-              //8 th element
+             
               CheckboxListTile(
                 title: const Text('Has Disability'),
                 value: _hasdisability, 
@@ -230,28 +230,27 @@ class _AddChildScreenState extends State <AddChildScreen> {
                   });
                 },
 
-                controlAffinity: ListTileControlAffinity.leading, //Put the box at the beginning of the text
+                controlAffinity: ListTileControlAffinity.leading, //put the box the beginning of the text
                 
-                contentPadding: EdgeInsets.zero, // it aligns with the others
+                contentPadding: EdgeInsets.zero, 
                 ),
                 
 
-                //if child has disability, the explanation code is below.
+
                 if(_hasdisability)
                   TextFormField(controller: _disabilityexplanationController,
                     decoration: InputDecoration(
                     labelText: 'If yes, explain..',
-                    //border: OutlineInputBorder(),
+
                   ),
                   ),
                
               const SizedBox(height: 16),
 
-              //I used row-expanded-elevatedbutton idea from this link
-              //https://stackoverflow.com/questions/71197549/how-to-create-a-row-with-2-buttons-that-take-up-the-entire-row-placed-at-the-b
+              
               Row(
                 children: [
-                  //Cancel button
+                
                   Expanded(child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 176, 174, 174),
@@ -262,15 +261,15 @@ class _AddChildScreenState extends State <AddChildScreen> {
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      //closes the current screen and returns  to the previous screen.
+       
                     },
                     child: const Text('Cancel'),
                     )
                   ),
 
-                  const SizedBox(width: 20),//space btw two buttons
+                  const SizedBox(width: 20),
 
-                  //Save button 
+                 
                   Expanded(child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.8),
@@ -280,16 +279,15 @@ class _AddChildScreenState extends State <AddChildScreen> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
                     ),
                     onPressed: () async{
-                      // This command runs all 'validator' functions.
+                      //runs all validator functions
                       bool isValid = _formkey.currentState!.validate();
 
-                      //if everything is okay->>
+  
                       if(isValid){
-                        //shows loading signs after user completely filled the form
+                        //shows loading signs after user filled the form
                         showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator(),));
 
-                        // Source for saving and preparing data to Cloud Firestore:
-                        //https://firebase.google.com/docs/firestore/manage-data/add-data#set_a_document
+        
                         try{
 
                           
@@ -311,22 +309,22 @@ class _AddChildScreenState extends State <AddChildScreen> {
                           //add data to firestore
                           await FirebaseFirestore.instance.collection('children').add(childdata);
 
-                          //if thr saving process is successful ->>
+
                           if(context.mounted){
-                            Navigator.pop(context); //close loading sign
+                            Navigator.pop(context); 
 
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               content: Text('Child registered successfully.'),
                               backgroundColor: Colors.green,),
                             );
 
-                            Navigator.pop(context); //close add child screen, backs to the child list screen(fieldworker_home)
+                            Navigator.pop(context); //backs to the child list screen
                           }
 
                         } catch (err){
 
                           if(context.mounted){
-                            Navigator.pop(context); //close loading sign
+                            Navigator.pop(context); 
 
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('Failed to save child.'),

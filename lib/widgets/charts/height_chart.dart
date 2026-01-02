@@ -15,14 +15,14 @@ class HeightChart extends StatelessWidget{
       return const Center(child: Text("No height data available yet."));
     }
 
-    //use helpers for dynamic, grid-aligned axes.
+    
     final yscale = calculatedynamicYBounds(spots);
     final double minY = yscale.miny;
     final double maxY = yscale.maxy;
     final double yinterval = yscale.interval;
     final double xinterval = calculatedynamicXInterval(dates.length);
 
-    const Color maincolor = Colors.teal;//the theme color of the chart
+    const Color maincolor = Colors.teal;
 
     return Container(
       padding: const EdgeInsets.all(8.0), //8units of space from the inside
@@ -38,10 +38,10 @@ class HeightChart extends StatelessWidget{
         ],     
       ),
       child: AspectRatio(
-        aspectRatio: 1.5,//width/height ratio is 1.5
+        aspectRatio: 1.5,
         child: Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child:  LineChart( LineChartData(//actual graphic starts here
+          child:  LineChart( LineChartData(
 
                 borderData: FlBorderData(//remove top and right border lines
                   show: true,
@@ -53,7 +53,7 @@ class HeightChart extends StatelessWidget{
                   ),
                 ),
 
-                //grid lines -yatay ızgara çizgileri
+                //grid lines
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
@@ -105,7 +105,7 @@ class HeightChart extends StatelessWidget{
                     reservedSize: 40,
                     interval: yinterval, //calculated interval
                     getTitlesWidget: (value, meta) {
-                       if (value % 1 == 0) {//if it is an integer-> write it without fractions, otherwise write it with a comma
+                       if (value % 1 == 0) {//if it is an integer-> write it without fractions
                         return Text(value.toInt().toString(),
                           style: const TextStyle(color: Colors.grey, fontSize: 10),
                         );
@@ -140,13 +140,13 @@ class HeightChart extends StatelessWidget{
               ),
             ],
 
-            // Min and max values for Y-axis
+          
             minY: minY,
             maxY: maxY,
-            // Min and max values for X-axis with padding
+           
             minX: -0.5,
             maxX: spots.length.toDouble() - 0.5,
-            //- + 0.5->prevent the first,last dots from sticking to the glass of the graphic leave some space 
+            
 
             ),
               

@@ -12,8 +12,8 @@ class StockListScreen extends StatefulWidget{
 
 class StockListScreenState extends State<StockListScreen>{
 
-  final searchcontroller = TextEditingController();//a controller to read and manage the text in the search textfield
-  String searchquery = "";//variable to store the current search query entered by the user
+  final searchcontroller = TextEditingController();//read the text in  search field
+  String searchquery = "";//store the current search query 
   late Stream<QuerySnapshot> stocksstream;
 
   @override
@@ -27,7 +27,7 @@ class StockListScreenState extends State<StockListScreen>{
     searchcontroller.dispose();
     super.dispose();
   }
-  //helper function to specify status column in list
+  //specify status column in list
   String getstockstatus(int quantity){
     
     if(quantity <50) return "Low";
@@ -35,7 +35,7 @@ class StockListScreenState extends State<StockListScreen>{
     return "Normal";
   } 
 
-  //helper function to get status color
+  //get status color
   Color getstatuscolor(String status){
     switch(status){
       case "Low": return Colors.red.shade800;
@@ -45,7 +45,7 @@ class StockListScreenState extends State<StockListScreen>{
     }
   }
 
-  void sortStocks(List <QueryDocumentSnapshot> stocks){//to sort as lowest to highes stock
+  void sortStocks(List <QueryDocumentSnapshot> stocks){//sort as lowest to highes stock
 
     stocks.sort((a,b) {
 
@@ -99,13 +99,13 @@ class StockListScreenState extends State<StockListScreen>{
               var docs = snapshot.data!.docs;//data ready
 
               ///getting ready for summary card---
-              int totalitems = docs.length; //total items count for summary card
+              int totalitems = docs.length; 
 
               int lowstockcount = docs.where((doc) {
                 final data = doc.data() as Map<String, dynamic>?;
                 int amount = (data?['quantity'] ?? 0) as int;
                 return getstockstatus(amount) == "Low";
-              }).length; //count the low ones for summary card
+              }).length; 
               //----
 
               //search logic
@@ -127,15 +127,14 @@ class StockListScreenState extends State<StockListScreen>{
                   crossAxisAlignment: CrossAxisAlignment.start, 
 
                   children: [
-                    //top part - title and button
+                 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween, //put space btw child list title and add child button
                       children: [
-                        //first row 
-                        ////1st element - title
+                        
                         const Text('Current Stocks', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),),
 
-                        ////2nd element - update stock + button
+                   
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.8),
@@ -155,7 +154,7 @@ class StockListScreenState extends State<StockListScreen>{
 
                     const SizedBox(height: 18),
                     
-                  //stock status summary card is here
+             
                   Container(
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
@@ -174,7 +173,7 @@ class StockListScreenState extends State<StockListScreen>{
                             ],
                           ),
 
-                          //how many items is in a low condition
+                          
                           Row(
                             children: [
                               Text("Low Stock Items: ", style: TextStyle(color: Colors.red)),
@@ -187,7 +186,7 @@ class StockListScreenState extends State<StockListScreen>{
 
                     
                     const SizedBox(height: 10),
-                    //search bar
+               
                     TextFormField(
                       controller: searchcontroller,
                       decoration: InputDecoration(
@@ -197,9 +196,9 @@ class StockListScreenState extends State<StockListScreen>{
                         border: OutlineInputBorder(),
                     ),
                                 
-                      onChanged: (value) { //tells  to rebuild the screen because our search query changed.
+                      onChanged: (value) { //runs when search query changed.
                         setState(() {
-                          searchquery = value.toLowerCase();//store the query in lowercase for easier matching
+                          searchquery = value.toLowerCase();//store in lowercase 
                         });
                       },
 
@@ -210,8 +209,7 @@ class StockListScreenState extends State<StockListScreen>{
 
                   //name of the columns
                   const Row(
-                      children: [//expanded-> it takes up the remaininng horizontal space
-                      //flex-> shows how the space can be shared
+                      children: [
                         Expanded(flex: 3, child: Text('Product', style: TextStyle(fontWeight: FontWeight.bold))),
                         Expanded(flex: 2, child: Text('Lot No', style: TextStyle(fontWeight: FontWeight.bold))),
                         Expanded(flex: 2, child: Text('Quantity', style: TextStyle(fontWeight: FontWeight.bold))),
@@ -231,17 +229,17 @@ class StockListScreenState extends State<StockListScreen>{
                           itemCount: filteredstocks.length,
                           itemBuilder:(context, index) {
                             
-                            var data = filteredstocks[index].data() as Map<String, dynamic>?; //get data
+                            var data = filteredstocks[index].data() as Map<String, dynamic>?;//get data
                             if (data == null) {
-                              return const SizedBox.shrink(); // Skip if data is null
+                              return const SizedBox.shrink(); //skip if data is null
                             }
 
-                            //get necessary data
+   
                             int quantity = (data['quantity'] ?? 0) as int;
                             String status = getstockstatus(quantity);
                             Color statuscolor = getstatuscolor(status);
 
-                            //to get lot number need to look at category
+                            //for get lot number need to look at category
                             String category = (data['category'] ?? "").toString();
                             String lot = "";
                             if(category != "Supplement"){
@@ -249,7 +247,7 @@ class StockListScreenState extends State<StockListScreen>{
                             }
 
                             return ListTile(
-                              contentPadding: EdgeInsets.zero,//This ensures that the row's content aligns perfectly with the headings above.
+                              contentPadding: EdgeInsets.zero,
 
                               title: Row(
                                 children: [

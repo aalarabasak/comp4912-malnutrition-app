@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:malnutrition_app/widgets/helper-widgets/info_display_widgets.dart';
-import 'package:malnutrition_app/services/treatment_service.dart';//for any kind of firebase functions is here
+import 'package:malnutrition_app/services/treatment_service.dart';
 
 import 'package:malnutrition_app/services/nutrition_data_gathererllm.dart'; 
 import 'package:malnutrition_app/services/nutrition_datamodels.dart'; 
@@ -16,17 +16,17 @@ class CreateTreatmentPlan extends StatefulWidget{
 }
 
 class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
-  //state variables:
+
   DateTime? selecteddate;
-  int? selectedRUTFindex; //which RUTF product is chosen
-  int quantityperday = 0; //default quantity
-  int durationweeks = 0;//default duration
+  int? selectedRUTFindex; 
+  int quantityperday = 0; 
+  int durationweeks = 0;
   final Set<String> selectedsupplements ={};//supplemantary food choices multiple choices
-  int supplementquantity = 0; //supplement quantity per day
-  int supplementduration =0;//supplement kaç hafta sürecek
+  int supplementquantity = 0; 
+  int supplementduration =0;
   bool isloading = false;
   final TreatmentService treatmentservice = TreatmentService();
-  String? riskstatus; //to keep rsikstatus
+  String? riskstatus; //keep rsikstatus
 
   //for getting rutfproducts name and details from firestore and for getting supp names
   List<Map<String,dynamic>> rutfproducts = [];
@@ -50,7 +50,7 @@ class CreateTreatmentPlanState extends State<CreateTreatmentPlan>{
       });
     }
   } catch (e) {
-    if (mounted) {// Handle error if needed
+    if (mounted) {
       setState(() {
         riskstatus = null;
       });
@@ -111,7 +111,7 @@ Future <void> loadfooddata() async{
  }
 
 
-  //helper functions
+
   Color getriskcolor(){
     switch(riskstatus){//returns a color based on risk status
       case "High Risk" : return Colors.red.shade100;
@@ -139,12 +139,12 @@ Future <void> loadfooddata() async{
   }
   
 
-  //date picker
+  
   Future <void> pickdateinFuture(BuildContext context) async{
-    final DateTime? picked = await showDatePicker(//shows the date picker and waits for the result.
+    final DateTime? picked = await showDatePicker(//shows the date picker and waits for the result
       context: context, 
-      firstDate: DateTime.now(), //start date of the date picker is current day 
-      lastDate: DateTime.now().add(const Duration(days: 95)), //make the last choosanable date to 1 year later
+      firstDate: DateTime.now(),  
+      lastDate: DateTime.now().add(const Duration(days: 95)), //make the last choosanable date to 3 moths later
     );
 
     if(picked != null && picked != selecteddate){
@@ -208,7 +208,7 @@ Future <void> loadfooddata() async{
         supplements: supplementdata,
         );
 
-        if (mounted) {//if saving process is succesful
+        if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Plan saved successfully!'), backgroundColor: Colors.green),
         );
@@ -245,11 +245,11 @@ Future <void> loadfooddata() async{
 
       body: isfoodloading ? Center(child: CircularProgressIndicator())
       :SingleChildScrollView(//makes the content scrollable
-       padding: const EdgeInsets.only(bottom: 100),//adds bottom padding so content isn't hidden by buttons.
+       padding: const EdgeInsets.only(bottom: 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //1st part diagnosis header
+            
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(20),
@@ -266,7 +266,7 @@ Future <void> loadfooddata() async{
 
             const SizedBox(height: 20),
 
-            //2nd part next visit date 
+        
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -275,7 +275,7 @@ Future <void> loadfooddata() async{
                   const Text("Next Visit Date", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
 
-                  InkWell(//makes the container clickable with a ripple effect
+                  InkWell(//makes the container clickable 
                     onTap: () => pickdateinFuture(context),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
@@ -289,7 +289,7 @@ Future <void> loadfooddata() async{
                           const SizedBox(width: 10),
                           Text(
                             selecteddate == null ? "Tap to select a date..." : "${selecteddate!.day}/${selecteddate!.month}/${selecteddate!.year}",
-                            //iff selecteddate is null then show the text, otherwise show the selected date
+                            
                             style: TextStyle(color: selecteddate == null ? Colors.grey : Colors.black87,fontSize: 16,
                             ),
                           ),
@@ -300,24 +300,24 @@ Future <void> loadfooddata() async{
 
                   const Divider(height: 40),
 
-                  //3rd part rutf Prescription
+                  
                   Padding(padding: const EdgeInsets.symmetric(horizontal: 2),
                     child: const Text("Therapeutic Food (RUTF)", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
 
                   const SizedBox(height: 10),
-                  //containerss rutf
+                
                   SizedBox(
                     height: 160,
 
-                    child: ListView.builder(//horizontal scrollable list with fixed height.
+                    child: ListView.builder(//horizontal scrollable list 
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       scrollDirection: Axis.horizontal,
                       itemCount: rutfproducts.length,
                       itemBuilder:(context, index) {
                         final product = rutfproducts[index];
                         final isselected = selectedRUTFindex == index;
-                        //builds one item per product -isselected checks if this item is selected
+                      
 
                         return GestureDetector(
                           onTap: () {
@@ -339,7 +339,7 @@ Future <void> loadfooddata() async{
                             margin: const EdgeInsets.only(right: 12),
                             padding: const EdgeInsets.all(12),
 
-                            decoration: BoxDecoration(//conditional styling based on selection.
+                            decoration: BoxDecoration(
                               color: isselected ? Colors.blue.shade50 : Colors.white,
                               //if there is a selection make it blue othervise white
                               border: Border.all(
@@ -347,13 +347,13 @@ Future <void> loadfooddata() async{
                                 width: isselected ? 2 : 1,),
                                 //if there is a selection make color blue and width 2 otherwise make them white and 1
                               borderRadius: BorderRadius.circular(12),
-                              boxShadow: isselected//if there is a selection
+                              boxShadow: isselected
                                   ? [BoxShadow(color: Colors.blue.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))]//make a box shadow
-                                  : [], //otherwise do not put
+                                  : [], 
                             ),
                             
                             //inside of the container textes etc->>
-                            child: Column(//product name -nutrition infos below it
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text( product['name'],style: TextStyle(fontWeight: FontWeight.bold,color:  Colors.black87,),
@@ -362,7 +362,7 @@ Future <void> loadfooddata() async{
                                 ),
 
                                 const Spacer(),//line
-                                //values of the rutf uses info display widget .dart
+                                //uses info display widget .dart
                                 buildnutrientrow("Kcal", "${product['kcal']}"),
                                 buildnutrientrow("Prot", "${product['prot']}g"),
                                 buildnutrientrow("Carb", "${product['carb']}g"),
@@ -378,9 +378,9 @@ Future <void> loadfooddata() async{
                     ),
                   ),
 
-                  //quantity and duration settings of rutf
+                
                   if(selectedRUTFindex != null) ...[
-                    //only if any rutf is selected otherwise, the list cannot be seen
+                    //shows the list if rutf is selected
                     const SizedBox(height: 20,),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -409,7 +409,7 @@ Future <void> loadfooddata() async{
                   ],
 
                   const Divider(height: 40),
-                  //4th part supplementary food section
+                
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: const Text("Dietary Supplements", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -420,31 +420,31 @@ Future <void> loadfooddata() async{
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Wrap(
                       //arranges items horizontally and moves to the next line if there is no space
-                      spacing: 10,//horizontal space btw cards
-                      runSpacing: 10,//vertical space btw lines
+                      spacing: 10,
+                      runSpacing: 10,
 
                       //go through every item in the supplements list
                       children: supplements.map((item) {//maps each supplement to a widget 
-                        final isselected = selectedsupplements.contains(item['name']);//returns true if selected false if not
+                        final isselected = selectedsupplements.contains(item['name']);
                         return FilterChip(
-                          label: Text("${item['icon']}  ${item['name']}"), //show the icon and the name of the supplement
+                          label: Text("${item['icon']}  ${item['name']}"), 
 
                           selected: isselected,
-                          onSelected:(bool selected) {//what happens when the user taps the chip
+                          onSelected:(bool selected) {
                             setState(() {
                               if(selected){
                                 selectedsupplements.add(item['name']!);
-                                //if tapped to select -> Add to the list
+                                //if tapped to select -> add to the list
                               }
                               else{
                                 selectedsupplements.remove(item['name']!);
-                                //if tapped to deselect -> Remove from the list
+                                //if tapped to deselect -> remove from the list
                               }
                             });
                           },
                           backgroundColor:Colors.grey.shade100, 
                           selectedColor: Colors.green.shade100,
-                          checkmarkColor: Colors.green,//color of the little check icon
+                          checkmarkColor: Colors.green,
                           labelStyle: TextStyle(color: isselected ? Colors.green.shade900 : Colors.black87,),//conditional styling for selected unselected states.
                           //dark green text if selected,black if not
 
@@ -453,15 +453,15 @@ Future <void> loadfooddata() async{
                             side: BorderSide(color: isselected ? Colors.green.shade200 : Colors.grey.shade300,)),
                                 //green border if selected grey if not
                         );
-                      }).toList(),//convert the map result back to a list of widgets
-                      //if do not make list, then it gives errorr
+                      }).toList(),
+                      
 
                     ),
 
                     
                   ),
 
-                  //show this card if at least one supplement is selected
+                  //show this card if  supplement is selected
                   if(selectedsupplements.isNotEmpty)...[
 
                     const SizedBox(height: 20),
@@ -476,12 +476,12 @@ Future <void> loadfooddata() async{
 
                       child: Column(
                         children: [
-                          // Supplement quantity
+                          
                           buildcounterrow("Quantity per day", "Items", supplementquantity, (val) {
                             setState(() => supplementquantity = val);
                           }),
                           const Divider(),
-                          // duration
+                          
                           buildcounterrow("Duration", "Weeks", supplementduration, (val) {
                             setState(() => supplementduration = val);
                           }),
@@ -508,7 +508,7 @@ Future <void> loadfooddata() async{
         ),
       ),
 
-      //cancel - save buttonssss
+
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 23.0, vertical: 12.0),
         decoration: BoxDecoration(
@@ -525,7 +525,7 @@ Future <void> loadfooddata() async{
         child: SafeArea(
           child: Row(
             children: [
-                  //cancel button
+                
                   Expanded(
                               child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -542,7 +542,7 @@ Future <void> loadfooddata() async{
                             )
                           ),
 
-                          const SizedBox(width: 20), // Space between buttons
+                          const SizedBox(width: 20),
 
                         //save button
                           Expanded(

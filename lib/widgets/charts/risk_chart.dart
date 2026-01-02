@@ -11,7 +11,7 @@ class RiskChart extends StatelessWidget{
     super.key, 
     required this.dates, 
     required this.spots,
-    this.onPointTapped,//parent screen wants to know when a dot is clicked, can be null
+    this.onPointTapped,
   });
 
   @override
@@ -157,10 +157,10 @@ class RiskChart extends StatelessWidget{
 
             //touch handling
             lineTouchData: LineTouchData(
-              handleBuiltInTouches: true,//show standard tooltip bubble
+              handleBuiltInTouches: true,
               //detect clicks-called on any touch event.
               touchCallback: (FlTouchEvent event, LineTouchResponse? touchresponse) {
-                // FlTapUpEvent means user lifted their finger finished tap
+               
                 if (event is FlTapUpEvent && touchresponse != null) {
                   
                   // Get the spot that was touched
@@ -168,12 +168,12 @@ class RiskChart extends StatelessWidget{
                   
                   
                   // Double check nulls
-                  if (spot != null && onPointTapped != null) {//if spot exists and onPointTapped is not null
+                  if (spot != null && onPointTapped != null) {
                     final index = spot.x.toInt();//get index from spot.x
                     
                     
-                    if (index >= 0 && index < spots.length) {//if index is valid
-                      onPointTapped!(index);//notifies the screen which point was tapped
+                    if (index >= 0 && index < spots.length) {
+                      onPointTapped!(index);//notifies the screen 
                     }
                   }
                 }

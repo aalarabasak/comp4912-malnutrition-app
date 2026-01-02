@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';//for converting expiry date to string from datetime
+import 'package:intl/intl.dart';
 
 class StockService {
 
@@ -14,20 +14,20 @@ class StockService {
   }) async{
 
     CollectionReference stockreference = firestore.collection('stocks');//reference to the stock collection in fb
-    String formatteddate = DateFormat('dd/MM/yyyy').format(expirydate);//convert date to string
+    String formatteddate = DateFormat('dd/MM/yyyy').format(expirydate);
 
-    QuerySnapshot? searchresult; //variable to store search result
+    QuerySnapshot? searchresult; //store search result
 
     
 
-      ///check if item exists in fb- find the document
+      ///check if item exists 
       if(category == "RUTF"){
 
         searchresult = await stockreference.where('lotNumber', isEqualTo: lotnumber).limit(1).get();
-        //look for the lot number bcs in rutf packages lotnumber is unique
+        
       }
       else{
-        //bcs supplements dont have lot num -> look for product name
+        
         searchresult = await stockreference.where('productName', isEqualTo: productname)
           .where('category', isEqualTo: 'Supplement').limit(1).get();
 
@@ -35,13 +35,13 @@ class StockService {
 
       ///decide what to do below: update or add
       if(searchresult.docs.isNotEmpty){
-        //here-> if item found,lockit and update it with transaction
+        //item found,lockit and update it with transaction
 
         DocumentReference documentReference = searchresult.docs.first.reference;
 
-        //atomic transaction starts here
+        //atomic 
         await firestore.runTransaction((transaction) async {
-          //read the document again inside the transaction to ensure get the latest data
+          
           DocumentSnapshot latestsnapshot = await transaction.get(documentReference);//lock the document
 
           if(!latestsnapshot.exists){
@@ -64,7 +64,7 @@ class StockService {
       }
       else{
         //item does not exist -> creatte new
-        //bcs its a new item, there is no  race condition.
+      
 
         await stockreference.add({
         'category': category,

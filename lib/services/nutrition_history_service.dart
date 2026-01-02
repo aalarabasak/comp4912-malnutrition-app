@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/nutrition_values_calculator.dart';
 
-//this scipt is only used by nutriiton history chart screen
+
 class NutritionHistoryService {
   //gets and processes nutrition data for last 5weeks
   static Future<List<Map<String,dynamic>> >getWeeklyNutritiondata(String childId) async{
@@ -18,11 +18,11 @@ class NutritionHistoryService {
       final QuerySnapshot latestmeasurement = await FirebaseFirestore.instance
       .collection('children').doc(childId)
       .collection('measurements').orderBy('recordedAt', descending: true).limit(1).get();
-      final Map<String,dynamic> measurementdata = latestmeasurement.docs.first.data() as Map<String,dynamic> ;//fill measurement data map with firebase values
+      final Map<String,dynamic> measurementdata = latestmeasurement.docs.first.data() as Map<String,dynamic> ;//fill measurement data map 
       final double weight = measurementdata['weight'];
 
       //calculate weekly targets based on the data that I get above- weight. birthdate, gender     
-      //what the child should eat in a week
+  
       final Map<String,double> weeklytargets = NutritionValuesCalculator.calculateweeklytargets(weight, birthdate, gender);
 
       //get all mealintakes for child 
@@ -31,24 +31,23 @@ class NutritionHistoryService {
         .collection('mealIntakes').orderBy('date',descending: true).get();
       
       final DateTime rawNow = DateTime.now();
-      //set the time to 00:00:00 so  it covers the entire day no matter what time of day 
+     
       final DateTime now = DateTime(rawNow.year, rawNow.month, rawNow.day);
 
-      // Find the Monday of the CURRENT week
-      // weekday: 1 (Mon) ... 7 (Sun), subtract (weekday-1) days to get Monday
+      //find the Monday of the current week
       final DateTime currentweekmonday = now.subtract(Duration(days: now.weekday - 1));
       
       // 5 weeks total: 4 past weeks +current week
-      final DateTime startdatechart = currentweekmonday.subtract(const Duration(days: 28));//calculate the start label of the chart
+      final DateTime startdatechart = currentweekmonday.subtract(const Duration(days: 28));
 
-      //1st group 5weeks- convert Firestore documents to a list of meal data
-      final List<Map<String,dynamic>> allmeals = [];//create empty list
+      //group 5weeks- convert Firestore documents to a list of meal data
+      final List<Map<String,dynamic>> allmeals = [];
       for(var doc in snapshot.docs){
         final Map<String,dynamic> mealdata = doc.data() as Map<String, dynamic>;
-        final DateTime mealdate = DateTime.parse(mealdata['date']);//get the date part from datetime attribute
+        final DateTime mealdate = DateTime.parse(mealdata['date']);
 
         if(mealdate.isAfter(startdatechart.subtract(const Duration(seconds: 1)))){//include meals from the last 5 weeks
-         //subtract 1 second to make the comparison inclusive for the exact start moment
+      
          
           allmeals.add({
             'date': mealdate,
@@ -60,14 +59,14 @@ class NutritionHistoryService {
 
         }
       }
-      //------
+  
       //2nd group meals by week -oldest to newest
-      final List<Map<String,dynamic>> weeklydata = [];//create empty list
-      //create 5 weeks starting from 5 weeks ago
+      final List<Map<String,dynamic>> weeklydata = [];
+      
       for(int i =0; i<5; i++){
         //calculate grouping dates
-        final DateTime weekstart = startdatechart.add(Duration(days: i *7)); //calculate start day of week
-        final DateTime weekend = weekstart.add(Duration(days: 6)); //calculate end day of week - 6 days later
+        final DateTime weekstart = startdatechart.add(Duration(days: i *7)); 
+        final DateTime weekend = weekstart.add(Duration(days: 6)); 
 
         //for uncompleted weeks - their end date
         DateTime displayend = weekend;
@@ -79,8 +78,8 @@ class NutritionHistoryService {
         final List<Map<String, dynamic>> weekmeals = allmeals.where((meal) {
           final DateTime mealDate = meal['date'];
 
-          return mealDate.isAfter(weekstart.subtract(const Duration(seconds: 1))) &&//to include first day of week
-            mealDate.isBefore(weekend.add(const Duration(days: 1)));//to include last day of week add 1 day
+          return mealDate.isAfter(weekstart.subtract(const Duration(seconds: 1))) &&
+            mealDate.isBefore(weekend.add(const Duration(days: 1)));
         }   ).toList();
 
         //sum up all nutrients for this week
@@ -88,7 +87,7 @@ class NutritionHistoryService {
         double weekprotein = 0;
         double weekcarbs = 0;
         double weekfat = 0;
-        //calculate
+    
         for(var meal in weekmeals){
           weekkcal+= meal['totalKcal'] ; 
           weekprotein += meal['totalProteinG'] ;
@@ -108,19 +107,19 @@ class NutritionHistoryService {
         }//to prevent overflow used clamp func
         if(weeklytargets['protein']! >0){
           proteinpercentage = (weekprotein/weeklytargets['protein']!);
-        }//to prevent overflow used clamp func
+        }
         if(weeklytargets['carbs']! >0){
           carbspercentage = (weekcarbs/weeklytargets['carbs']!);
-        }//to prevent overflow used clamp func
+        }
         if(weeklytargets['fat']! >0){
           fatpercentage = (weekfat/weeklytargets['fat']!);
-        }//to prevent overflow used clamp func
+        }
 
         final String daterangestring = formatdaterange(weekstart, displayend);
-        //---
-        //Add this week's data to our list
+
+        //add this week's data to our list
         weeklydata.add({
-          'dateRange': daterangestring, //for x axis labels for line chart
+          'dateRange': daterangestring, 
           'calPercent': calpercentage,
           'proPercent': proteinpercentage,
           'carbPercent': carbspercentage,
@@ -133,16 +132,16 @@ class NutritionHistoryService {
 
       }
 
-      return weeklydata;//return the list oldest week first- newest last
+      return weeklydata;
 
 
 
     }catch(error){
       print('Error fetching nutrition history: $error');
-      return [];//return empty list if there's an error
+      return [];
     }
   }
-//helper func to format date range 
+//format date range 
   static String formatdaterange(DateTime start, DateTime end){
     if(start.month == end.month){
       return '${start.day}-${end.day} ${getmonthAbvn(end.month)}'; //format: 20-26 Oct same month

@@ -46,9 +46,9 @@ class RiskStatisticCard extends StatelessWidget{
 
           const SizedBox(width: 12,),
 
-          Expanded(//wrap the text column with expanded so it can use remaining space
+          Expanded(
             child: Column(
-            //title and value
+        
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title, style: TextStyle(fontSize: 15.5, color: Colors.grey[500], fontWeight: FontWeight.w600),),
@@ -56,8 +56,8 @@ class RiskStatisticCard extends StatelessWidget{
               const SizedBox(height: 4,),
 
               Text(value, style: TextStyle(fontSize: 12.3, color: Colors.black87, fontWeight: FontWeight.bold),
-                  //maxLines: 2,
-                  overflow: TextOverflow.ellipsis,//??
+              
+                  overflow: TextOverflow.ellipsis,
                 )
             ],
           )

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:malnutrition_app/widgets/charts/risk_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';//helps format dates like Aug 31, 2025
+import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:malnutrition_app/utils/formatting_helpers.dart';
 import 'package:malnutrition_app/widgets/charts/risk_statistic_card.dart';
@@ -11,12 +11,12 @@ class RiskStatusHistoryScreen extends StatefulWidget{
   const RiskStatusHistoryScreen({super.key, required this.childid});
 
   @override
-  State<RiskStatusHistoryScreen> createState() => RiskStatusHistoryScreenState();//tells Flutter which state class manages this widget
+  State<RiskStatusHistoryScreen> createState() => RiskStatusHistoryScreenState();
 }
 
 class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
 
-  int selectedindex = -1;//stores which point on the chart is selected, -1> nothing selected yet by default
+  int selectedindex = -1;//nothing selected yet by default
 
   @override
   Widget build (BuildContext context){
@@ -32,7 +32,7 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
-              StreamBuilder <QuerySnapshot>(//listens to a stream of data from firestore
+              StreamBuilder <QuerySnapshot>(//listens to data changes
                 stream: FirebaseFirestore.instance
                 .collection('children')
                 .doc(widget.childid)
@@ -52,7 +52,7 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
                   }
 
                   // data processing
-                  var docs = snapshot.data!.docs;//list of measurement documents from firestore
+                  var docs = snapshot.data!.docs;
                   List <Map<String, dynamic>> timelinedata = [];//new list where stored cleaned and processed data
 
                   for(var doc in docs){
@@ -61,8 +61,8 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
 
                     DateTime date = parseDateString(data['dateofMeasurement']);
 
-                    String riskstatus = data['calculatedRiskStatus'];// text stored in firestore
-                    int riskvalue = 0; //numeric value to draw in the chart 0,1,2 -default shoulf be 0
+                    String riskstatus = data['calculatedRiskStatus'];
+                    int riskvalue = 0; //value to draw in the chart 0,1,2 
                     
                     if(riskstatus.contains("High Risk")) {
                       riskvalue = 2;
@@ -71,7 +71,7 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
                       riskvalue = 1;
                     }
                     else{
-                      riskvalue = 0; //means Healthy - No Risk
+                      riskvalue = 0; //means No Risk
                     }
 
                     timelinedata.add({//put a clean map into timelinedata for each measurement
@@ -85,23 +85,22 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
                   timelinedata.sort((a,b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime));//sort by Date Oldest to Newest
 
                   //create empty lists for charts
-                  List<FlSpot> spots = [];//list of y points for the chart
-                  List<String> dates = [];//list of xaxis labels formatted date strings
+                  List<FlSpot> spots = [];//y points 
+                  List<String> dates = [];//xaxis labels 
 
-                  //fill x and y values to the empty lists for later use of charts
+                  //fill empty lists 
                   for(int i =0; i< timelinedata.length; i++){
 
-                    var chartdata = timelinedata[i];//one map from timelinedata
-                    //y axis values 0,1,2 -> riskvalues
+                    var chartdata = timelinedata[i];
+   
                     double yaxisvalue = (chartdata['riskvalue'] as int).toDouble();
                     spots.add(FlSpot(i.toDouble(), yaxisvalue));
 
-                    //x axis dates e.g Nov 26 format
                     String label =  DateFormat("MMM d").format(chartdata['date']);
                     dates.add(label);
 
                   }
-                  // Only set default to last measurement if nothing is selected yet
+                  //set  last measurement if nothing is selected
                     if (selectedindex == -1) {
                       selectedindex = dates.length-1;
                     }
@@ -109,20 +108,19 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
                   return SingleChildScrollView(
                     child: Column(
                       children: [
-                        // Chart with tap callback
+
                         RiskChart(dates: dates, spots: spots,
                           onPointTapped: (int index) {
                             setState(() {
                               selectedindex = index;
                             });
-                            //saves which data point was tapped -triggers rebuild so new details appear
+         
                           },
                         ),
                         
                         const SizedBox(height: 20),
-                        
-                        //information cards that appear when a point is selected
-                        if(selectedindex >= 0 && selectedindex < timelinedata.length)//if selectedindex is valid
+     
+                        if(selectedindex >= 0 && selectedindex < timelinedata.length)//check if valid selectedindex 
                           buildriskDetailCards(timelinedata[selectedindex])
                       ],
                     ),
@@ -138,14 +136,14 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
     );
   }
 
-  // Build detail cards showing risk date, status and reason
+  //build detail cards showing risk date, status and reason
   Widget buildriskDetailCards(Map<String, dynamic> selectedData) {
     
     final String riskstatus = selectedData['riskstatus'];
     final String reason = selectedData['reason'];
     final DateTime date = selectedData['date'];
 
-    //choose color  icon based on status
+    
     Color statuscolor;
     IconData statusicon;
     if (riskstatus.contains('High Risk')) {
@@ -164,13 +162,13 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 2.0),
       child: GridView.count(
-        crossAxisCount: 1,//one column
+        crossAxisCount: 1,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        childAspectRatio: 3.5,//width/height ratio
-        mainAxisSpacing: 18,//equal vertical space between the three cards
+        childAspectRatio: 3.5,
+        mainAxisSpacing: 18,
       children: [
-        //date measurement card
+     
         RiskStatisticCard(
           title: "Date of Measurement", 
           icon: Icons.date_range_outlined, 
@@ -178,7 +176,7 @@ class RiskStatusHistoryScreenState extends State<RiskStatusHistoryScreen>{
           value: DateFormat("MMM d, yyyy").format(date),
         ),
 
-        //risk status card
+   
         RiskStatisticCard(
           title: "Risk Status", 
           icon: statusicon, 

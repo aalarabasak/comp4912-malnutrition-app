@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen>{
 
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => screen),
 
-      (Route<dynamic> route) => route.isFirst, ); //keep the WelcomeScreen to allow clean logout later.
+      (Route<dynamic> route) => route.isFirst, ); //keep the WelcomeScreen clean logout later
   }
 
 
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen>{
     return Scaffold(
       appBar: AppBar(leading: IconButton(icon: Icon(Icons.arrow_back),
         onPressed: () {
-          //this part will be back to welcome screen
+       
           Navigator.of(context).pop();
         },
       ),
@@ -70,13 +70,13 @@ class _LoginScreenState extends State<LoginScreen>{
 
               SizedBox(height: 30), 
 
-              //1st element
+        
               Text(
                 'Login',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold), 
               ),
 
-              //2nd element
+            
               Text(
                 'Sign in to continue',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal), 
@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen>{
 
               SizedBox(height: 40), 
 
-              //3rd element
+          
               TextFormField(
                 decoration: InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email), border: OutlineInputBorder(),),
                 controller: _emailcontroller,
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen>{
 
                SizedBox(height: 20), 
 
-              //4th element
+      
               PasswordToggleField(
                 controller: _passwordcontroller,
                 validator: (value){
@@ -111,21 +111,19 @@ class _LoginScreenState extends State<LoginScreen>{
 
               SizedBox(height: 40),
 
-              //5th element
+         
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 54, 136, 203),
                                   foregroundColor: Colors.white),
                        onPressed: () async{
-                        //Source for validation pattern in this onPressed() method:
-                        //https://docs.flutter.dev/cookbook/forms/validation
+                    
                           if(_formkey.currentState!.validate()){
                             showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator(),));
 
-                            //I used this link as a reference of try-catch block for firebase authentication
-                            //https://firebase.google.com/docs/auth/flutter/password-auth
+                          
                             try{
-                              // Create user in Firebase
+                              //create user in Firebase
                              UserCredential usercredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
                               email: _emailcontroller.text.trim(),
                               password: _passwordcontroller.text.trim(),);
@@ -134,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen>{
                               if(context.mounted){
                                 Navigator.pop(context);
 
-                                //read the role from firestore and navigate accordingly after successful login 
+                                //read the role from firestore and navigate accordingly after login 
                                 String uid = usercredential.user!.uid;
 
                                 DocumentSnapshot userdocument = await FirebaseFirestore.instance
@@ -151,15 +149,12 @@ class _LoginScreenState extends State<LoginScreen>{
                               
                             }on FirebaseAuthException catch (err){
 
-                              // hide loading sign
+                              //hide loading sign
                               if(context.mounted){
                                 Navigator.pop(context);
                               }
 
-                              //print("FIREBASE ERROR: ${err.code}"); //for debug
-
-                              // Source for error codes:
-                              // https://firebase.google.com/docs/auth/admin/errors
+                      
 
                               String errormessage = "Login failed. Please try again.";
                               if (err.code == 'invalid-credential') {
@@ -176,8 +171,8 @@ class _LoginScreenState extends State<LoginScreen>{
                                 ) 
                                  );
                               }
-                          } // end of try-on
-                       }// end of if
+                          } 
+                       }
                       },
                        child: Text('LOGIN'),
                 ),

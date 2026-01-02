@@ -1,4 +1,4 @@
-//this script is just for sending llm datas in a correct way
+//sending llm datas in a correct way
 
 class NutritionValues{
   final double calories;

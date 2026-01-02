@@ -17,9 +17,9 @@ class _TreatmentListScreenState extends State <TreatmentListScreen> {
 
     final TreatmentService treatmentservice = TreatmentService();//call treatment service for getting latest measurement
 
-  final searchcontroller = TextEditingController(); //a controller to read and manage the text in the search textfield
+  final searchcontroller = TextEditingController(); //read  text in the search field
 
-  String searchquery ="";//a  variable to store the current search query entered by the user.
+  String searchquery ="";//store the current search query
 
   @override
   void dispose(){
@@ -36,7 +36,7 @@ void initState() {
   
 }
 
-  bool showonlytoday = false;//for filter: today only
+  bool showonlytoday = false;
  
 
   @override
@@ -55,7 +55,7 @@ void initState() {
                 Row(
                   
                   children: [
-                    //search bar
+                   
                     Expanded(
                       child: TextFormField(
                       controller: searchcontroller,
@@ -66,9 +66,9 @@ void initState() {
                         border: OutlineInputBorder(),
                       ),
                       
-                      onChanged: (value) { //tells Flutter to rebuild the screen because our search query changed.
+                      onChanged: (value) { //rebuild the screen  search query changed
                         setState(() {
-                          searchquery = value.toLowerCase();//store the query in lowercase for easier matching
+                          searchquery = value.toLowerCase();//store the query in lowercase 
                         });
                       },
 
@@ -76,7 +76,7 @@ void initState() {
 
                     ),
                     SizedBox(width: 5,),
-                    //today filter
+               
                     FilterChip(
                       padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 6),
                       label: Text("Filter Today Only", style: TextStyle(color: const Color.fromARGB(255, 86, 86, 86), fontSize: 14),),
@@ -104,9 +104,9 @@ void initState() {
 
 
 
-                //list titles (or name of the columns)
+                //or name of the columns
                 const Row(
-                  children: [ //expanded-> it takes up the remaininng horizontal space
+                  children: [ 
                   //flex-> shows how the space can be shared
                     Expanded( flex: 1 ,child: Text('Name', style: TextStyle(fontWeight: FontWeight.bold),)),
                     Expanded( flex: 1 ,child: Text('Next Visit', style: TextStyle(fontWeight: FontWeight.bold),)),
@@ -114,10 +114,10 @@ void initState() {
                   ],
                 ),
 
-                 const Divider(thickness: 1, color: Colors.black87,), //horizontal line that separates titles from datas
+                 const Divider(thickness: 1, color: Colors.black87,), 
 
                 //child list datas
-                Expanded(//It takes up all the remaining vertical space.
+                Expanded(
                   child: StreamBuilder(
                     stream: FirebaseFirestore.instance.collection('children').where('registeredBy', isEqualTo: currentuserid)
                     .where('treatmentStatus', isEqualTo: 'Active').snapshots(),
@@ -154,11 +154,11 @@ void initState() {
 
                           String fullName = childdata['fullName'];//get fullname 
 
-                          // Check if name  starts with the search query
+                          //check if name  starts with the search query
                           bool namematches = fullName.toLowerCase().startsWith(searchquery); //case-sensitive logic
 
-                          return namematches;//Add to list if it is matched
-                        }).toList(); //convert  filtered results as a list
+                          return namematches;//add to list if it is matched
+                        }).toList(); 
                        }
 
                        
@@ -189,7 +189,7 @@ void initState() {
                             children: [
                               Icon(Icons.event_available, size: 50, color: Colors.grey.shade300),
                               const SizedBox(height: 10),
-                              //Text(showonlytoday ? "No visits scheduled for today." : "No active treatments.",style: TextStyle(color: Colors.grey.shade500),
+                           
                               Text("No active treatments pending.",style: TextStyle(color: Colors.grey.shade500),)
                               
                             ],

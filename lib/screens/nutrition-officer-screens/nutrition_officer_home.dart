@@ -16,9 +16,9 @@ class NutritionOfficerHome extends StatefulWidget{
 
 class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
 
-  final searchcontroller = TextEditingController(); //A controller to read and manage the text in the search textfield
+  final searchcontroller = TextEditingController(); //read  text in the search field
 
-  String searchquery ="";//A  variable to store the current search query entered by the user.
+  String searchquery ="";//store the current search query 
 
   @override
   void dispose(){
@@ -42,13 +42,13 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
             foregroundColor: Colors.black87,
             textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
           ),
-          onPressed: () async{ //it means it is a method needs waiting -> async
+          onPressed: () async{ 
             
             await FirebaseAuth.instance.signOut(); //log out using firebase auth
 
             if(context.mounted){
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-               (route) => false); //Erases ALL history 
+               (route) => false); //erases all history 
             }
           
           },   
@@ -63,15 +63,15 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
     body: SafeArea(
       child: Padding(padding: const EdgeInsets.symmetric(horizontal: 18.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Aligns all children horizontally to the left side.
+        crossAxisAlignment: CrossAxisAlignment.start, 
         children: [
 
-          ////1st element - child list title
+         
               const Text('Child List', style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),),
  
-          const SizedBox(height: 20),//space between title row and search bar
+          const SizedBox(height: 20),
 
-          //search bar
+          
           TextFormField(
             controller: searchcontroller,
             decoration: InputDecoration(
@@ -79,9 +79,9 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(),
             ),
-            onChanged: (value) { //tells Flutter to rebuild the screen because our search query changed.
+            onChanged: (value) { //rebuild the screen  search query changed.
               setState(() {
-                searchquery = value.toLowerCase();// Store the query in lowercase for easier matching
+                searchquery = value.toLowerCase();// Store the query in lowercase 
               });
             },
 
@@ -89,9 +89,9 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
 
           const SizedBox(height: 20),
 
-          //list titles (or name of the columns)
+          // name of the columns
           const Row(
-            children: [ //expanded-> it takes up the remaininng horizontal space
+            children: [ 
             //flex-> shows how the space can be shared
               Expanded( flex: 3 ,child: Text('Name', style: TextStyle(fontWeight: FontWeight.bold),)),
               Expanded( flex: 2 ,child: Text('Age', style: TextStyle(fontWeight: FontWeight.bold),)),
@@ -99,15 +99,15 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
             ],
           ),
 
-          const Divider(thickness: 1, color: Colors.black87,), //horizontal line that separates titles from datas
+          const Divider(thickness: 1, color: Colors.black87,), 
 
           //child list datas
-          Expanded(//It takes up all the remaining vertical space.
+          Expanded(
              child: StreamBuilder <QuerySnapshot>(
               stream: FirebaseFirestore.instance
                 .collection('children')
                 .orderBy('createdAt', descending: true)
-                .snapshots(), //provides live streaming, if new data comes to the firebase, immediately is shown in list screen.
+                .snapshots(), //provides live streaming
 
               builder: (context, snapshot) {
                 if(snapshot.hasError){
@@ -120,7 +120,7 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
                   return Center(child: CircularProgressIndicator(),);
                 }
 
-                final allchildren = snapshot.data!.docs; // Get all documents from the snapshot, firestore
+                final allchildren = snapshot.data!.docs; //get all documents from the snapshot
 
                 final List<DocumentSnapshot> filteredlist; //prepare a empty list for now
 
@@ -137,7 +137,7 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
                     bool name_matches = fullName.toLowerCase().startsWith(searchquery); //case-sensitive logic
 
                     return name_matches;//Add to list if it is matched
-                  }).toList(); //convert  filtered results as a list
+                  }).toList(); 
                 }
 
                 if (filteredlist.isEmpty){
@@ -145,17 +145,17 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
 
                 }
 
-                return ListView.builder( //if the data comes successfullt, then execute below lines
+                return ListView.builder( 
 
-                  //Tells the list to create rows based on the number of  documents of the filtered list
+                  
                   itemCount: filteredlist.length,
 
-                  //it shows how the each row of the list will be drawn
+                 
                   itemBuilder: (context, index) {
 
                     
                     var childdoc= filteredlist[index];//get child from list
-                    //this maps converts the data to usable format
+                    //converts the data to usable format
                     Map<String, dynamic> childData = childdoc.data() as Map<String, dynamic>;
 
                     String name = childData['fullName'];
@@ -163,12 +163,12 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
                     String temp = childData['dateofBirth'];
                     String age = calculateAge(temp);
 
-                    String riskstatus = childData['currentRiskStatus'] ?? "";//get current status from child's data firebase
+                    String riskstatus = childData['currentRiskStatus'] ?? "";//get current status  
                     String risk ="";
                     Color riskcolor;
                     if(riskstatus.contains('High Risk')){
                       risk = "High"; //status text
-                      riskcolor = Colors.red.shade700;//status color
+                      riskcolor = Colors.red.shade700;
                     }
                     else if(riskstatus.contains('Moderate Risk')){
                       risk = "Moderate";
@@ -185,7 +185,7 @@ class _NutritionOfficerHomeState extends State<NutritionOfficerHome>{
 
 
                     return ListTile(
-                      //This ensures that the row's content aligns perfectly with the headings above.
+                      
                       contentPadding: EdgeInsets.zero, 
                       title: Row(
                         

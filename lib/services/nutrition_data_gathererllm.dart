@@ -54,7 +54,7 @@ class NutritionDataGathererllm {
         riskReason: measurementdata['riskReason'],
       );
 
-      //calculate weekly target nutri values , which is the values a specific child should get
+      //calculate weekly target nutri values 
       Map<String,dynamic> weeklytargets = NutritionValuesCalculator.calculateweeklytargets(weight, birthDate, childdata['gender']);
 
       NutritionValues targetvalues = NutritionValues(
@@ -65,7 +65,7 @@ class NutritionDataGathererllm {
       );
 
       //---
-      //now, get the consumed mealintakes last 7 days
+      //get the consumed mealintakes last 7 days
       double totalkcal = 0;
       double totalprotein = 0;
       double totalfat = 0;
@@ -93,7 +93,7 @@ class NutritionDataGathererllm {
         carbs: totalcarbs);
 
 
-      //now prepare request packaged that will go to with LLM api
+      //prepare request packaged that will go to with LLM api
       return FullAdviceRequest(
         child: profile, 
         targetvalues: targetvalues, 

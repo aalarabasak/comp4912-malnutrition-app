@@ -16,8 +16,8 @@ class RiskStatusCard extends StatelessWidget{
     
     var data = latestdoc.data() as Map<String, dynamic>;
     
-    String textStatus = data['calculatedRiskStatus'] ?? 'Healthy'; //healthy is insurance
-    String reason = data['riskReason'] ?? 'No previous risk data available'; //no data available is insurance
+    String textStatus = data['calculatedRiskStatus'] ?? 'Healthy'; 
+    String reason = data['riskReason'] ?? 'No previous risk data available'; 
 
     var resultGaugeDetails = RiskCalculator.calculateGaugeValueandColor(textStatus);
   
@@ -31,7 +31,7 @@ class RiskStatusCard extends StatelessWidget{
         width: double.infinity,
         margin: EdgeInsets.only(top: 15.0),
         padding: EdgeInsets.all(10.0),
-        decoration: BoxDecoration(// Card styling (background color, borders, shadow)
+        decoration: BoxDecoration(
           color: const Color.fromARGB(255, 226, 237, 240),
           borderRadius: BorderRadius.circular(10.0),
           border: Border.all(color: Colors.grey[400]!),          
@@ -45,7 +45,7 @@ class RiskStatusCard extends StatelessWidget{
                 Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey[400],),
               ],
             ),
-            // The Radial Gauge Widget
+            
             SizedBox(
               height: 150,
               child: SfRadialGauge(
@@ -68,14 +68,14 @@ class RiskStatusCard extends StatelessWidget{
                   GaugeRange(startValue: 2, endValue: 3, color: Colors.red, startWidth: 0.2, endWidth: 0.2, sizeUnit: GaugeSizeUnit.factor,),
                 ],
                 pointers: <GaugePointer>[
-                  NeedlePointer(// The needle pointing to current status
+                  NeedlePointer(//needle pointing to current status
                     value: resultGaugeDetails['gaugevalue'],
                     needleColor: Colors.black87,
                     enableAnimation: true,
                     knobStyle: KnobStyle(color: Colors.black87),
                   )
                 ],
-                annotations: <GaugeAnnotation>[// Text displayed in the center of the gauge
+                annotations: <GaugeAnnotation>[
                   GaugeAnnotation(
                     widget: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -96,8 +96,8 @@ class RiskStatusCard extends StatelessWidget{
 
             //----
 
-            Divider(),//separator line
-            //reasons part of the card
+            Divider(),
+       
             Align(
               alignment: Alignment.centerLeft,
               child: Column(

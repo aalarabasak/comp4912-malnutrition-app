@@ -10,9 +10,8 @@ import 'package:connectivity_plus/connectivity_plus.dart'; //internet connection
 
 void main() async{ 
 
-  //This initialization code is taken from the official Firebase documentation:
-  //https://firebase.google.com/docs/flutter/setup?platform=ios#initialize_firebase
-  WidgetsFlutterBinding.ensureInitialized(); //to ensure flutter is ready
+
+  WidgetsFlutterBinding.ensureInitialized(); 
   // initialize Firebase 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -24,7 +23,7 @@ void main() async{
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,7 +42,7 @@ class MyApp extends StatelessWidget {
           stream: Connectivity().onConnectivityChanged,
           builder:(context, snapshot) {
             
-            bool isoffline= false;//to check wheter internet is on or off
+            bool isoffline= false;//to check internet is on or off
 
             if(snapshot.hasData){
               final result = snapshot.data!;
@@ -54,7 +53,7 @@ class MyApp extends StatelessWidget {
 
             return Stack(
               children: [
-                if(child != null) child, //if there is no error then the app will work correctly
+                if(child != null) child, 
 
                 if(isoffline)//red messsage
                 Positioned(

@@ -9,13 +9,13 @@ class GuestDashboardService {
   Future<int> getchildcount(String period) async{//used to get registered child count
     Query query = firestore.collection('children');
 
-    AggregateQuerySnapshot snapshot = await query.count().get(); //this aggre just brings the number not the data content
+    AggregateQuerySnapshot snapshot = await query.count().get(); //brings the number not the data content
 
     return snapshot.count ?? 0;
 
   }
 
-  //risk status distribution card
+  
   Future<Map<String,double>> getriskvalues(String period) async{
 
     int redcount =0;
@@ -53,7 +53,7 @@ class GuestDashboardService {
         date = DateTime.now().subtract(const Duration(days: 30));
       }
 
-      Map<String, Map<String, dynamic>> childreports = {}; //empty map , only store unique ones a child should only one report
+      Map<String, Map<String, dynamic>> childreports = {}; //empty map store unique ones 
 
       for(var doc in allmeasurements.docs){
         var data = doc.data() as Map<String, dynamic>;

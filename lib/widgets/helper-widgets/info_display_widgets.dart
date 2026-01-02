@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-//this is for 1st information card of the child, it is a helper function - used in child profile screen etc.
+
 // creates a simple row widget with a bold label and a normal value
   Widget buildinformationrow(String label, String value){
 
@@ -20,13 +20,13 @@ import 'package:flutter/material.dart';
       );
   }
 
-  // this function creates the basic structure for informational cards risk status, nutrition summary, recent activities cards.
+  //creates the basic structure for information cards 
   Widget buildCards(String title, String text){
 
     return Container(
       width: double.infinity,//covers the full width of the screen
       margin: EdgeInsets.only(top: 15.0), //put space above card
-      padding: EdgeInsets.all(10.0),//Internal padding around the content
+      padding: EdgeInsets.all(10.0),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[400]!),
         borderRadius: BorderRadius.circular(10.0),
@@ -35,27 +35,26 @@ import 'package:flutter/material.dart';
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,// Align content to the left.
         children: [
-          //title like risk status
+          
           Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
 
           const SizedBox(height: 10),
 
-          //contents
+        
           Text(text, style: TextStyle(fontSize: 15, color: Colors.black54),)
         ],
       ),
     );
   }
 
-  // This function creates a single line of text by combining a bold label a value and an optional suffix like kg
-  //it is used to be able to write kg, cm etc in a combined text type structure
+  // creates  line of text by combining a label a value and a suffix like kg
   Widget buildRichText(String label, String value, {String suffix = ''}) {
-    return Text.rich(//uses Text.rich to apply two different styles in one widget.
+    return Text.rich(//uses Text.rich two different styles in one widget
       TextSpan(
-        //1st part label -bold
+     
         text: '$label: ',style: TextStyle(fontSize: 15, color: Colors.black87, fontWeight: FontWeight.bold),
         children: [
-          TextSpan(//2nd part value and suffix
+          TextSpan(
             text: '$value$suffix', style: TextStyle(fontWeight: FontWeight.normal),
           ),
         ],
@@ -63,16 +62,15 @@ import 'package:flutter/material.dart';
     );
   }
 
-//helper widget to create small color box plus text
-//used in muac_chart , nutrition_line_chart
+// create small color box plus text
 Widget buildlegend(Color color, String text){
   return Row(
     children: [
-      Container(//the color container indicator
+      Container(
         width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.rectangle),
       ),
       const SizedBox(width: 4),
-      Text(text, style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w500),) //text
+      Text(text, style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.w500),) 
     ],
   );
 }
@@ -80,7 +78,7 @@ Widget buildlegend(Color color, String text){
 Widget buildlegendwithvalue(Color color, String text, int value){
   return Row(
     children: [
-      Container(//the color container indicator
+      Container(
         width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.rectangle),
       ),
       const SizedBox(width: 4),

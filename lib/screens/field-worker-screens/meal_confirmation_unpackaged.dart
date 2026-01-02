@@ -36,15 +36,15 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
     getProductData();
   }
 
-  //this method is  and getting product data to the app from firebase
+  //getting product data to the app 
   Future <void> getProductData() async{
 
       try{
         String detectedfood = widget.fooddata['class']?.toString() ?? '';//the name comes from api
 
-        String docid = detectedfood.toLowerCase();//firebase id's are generally lower case
+        String docid = detectedfood.toLowerCase();
 
-        //get document by detected food name from unpackaged_foods collection from firebase
+        //get document by detected food name  from firebase
         final snapshot = await FirebaseFirestore.instance.collection('unpackaged_foods').doc(docid).get();
 
         if(snapshot.exists){
@@ -90,7 +90,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
     final totalCarbs = data['carbsG'] * portion;
     final totalFat = data['fatG'] * portion;
 
-    //Create a map of meal data to record
+    //create a map of meal data to record
     final mealdata = {
       'date': DateTime.now().toIso8601String(),
       'productName': data['name'], //it is directly taken 
@@ -103,12 +103,12 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
 
     //firebase registration
     try{
-      //Add a new document to the child's  subcollection as mealintakes
+      //add a new document to the child's  subcollection as mealintakes
       await FirebaseFirestore.instance
-        .collection('children')// go to main collection children
-        .doc(widget.childid)//find the related child
-        .collection('mealIntakes')//create subcollection
-        .add(mealdata);// fill the data
+        .collection('children')
+        .doc(widget.childid)
+        .collection('mealIntakes')
+        .add(mealdata);
 
       //add new acitivity to user's subcollection
       await UserService().addactivity(childId: widget.childid, activitytype: "Meal", description: "${data['name']} added");
@@ -178,10 +178,10 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            //title
+            
             Text('Meal Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
             const SizedBox(height: 15),
-            //image
+     
             ClipRRect(
                   borderRadius: BorderRadius.circular(9),
                   child: Image.file(
@@ -250,7 +250,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
 
             const SizedBox(height: 15,),
 
-            //portion size titler
+           
             Container(
               padding: EdgeInsets.all(15.0),
               decoration: BoxDecoration(
@@ -299,10 +299,10 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
 
                   const SizedBox(height: 20),
 
-                  //buttons Cancel - Save Meal
+           
                   Row(
                     children: [
-                      //cancel button
+                    
                       Expanded(child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color.fromARGB(255, 176, 174, 174).withOpacity(0.5),
@@ -318,7 +318,7 @@ class _MealConfirmationUnpackagedState  extends State<MealConfirmationUnpackaged
 
                         const SizedBox(width: 20),
 
-                        //SAVE meal button
+                 
                         Expanded(child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),

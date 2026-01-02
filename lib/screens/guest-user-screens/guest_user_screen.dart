@@ -107,15 +107,15 @@ class GuestDashboardState extends State<GuestDashboard>{
                   )
                   
                 ],
-                selected: <Timefilter> {selectedfilter}, //which one is chosen now
+                selected: <Timefilter> {selectedfilter}, // chosen one
 
-                //what happen if change happen
+            
                 onSelectionChanged:(Set<Timefilter> newSelection) {
                   setState(() {//get the first and only element in the set
                     selectedfilter = newSelection.first;
                   });
 
-                  getdata(); //if the tab changes then the data should chnged
+                  getdata(); //data changes when tab changes
                   
                 },
 

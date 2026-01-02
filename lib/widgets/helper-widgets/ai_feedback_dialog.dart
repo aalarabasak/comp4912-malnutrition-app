@@ -25,7 +25,7 @@ class AiFeedbackDialog extends StatelessWidget{
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //title
+         
           const Text("NutriAI Analysis", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black87),),
 
           //gif link: https://tr.pinterest.com/pin/1055599906171556/
@@ -39,14 +39,14 @@ class AiFeedbackDialog extends StatelessWidget{
           Stack(
             clipBehavior: Clip.none,
             children: [
-              //text container
+            
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(13),
                 decoration: BoxDecoration(
                   color: Colors.white, //inside color of container
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: bordercolor, width: 2), // pink frame
+                  border: Border.all(color: bordercolor, width: 2), 
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.1),
@@ -70,7 +70,7 @@ class AiFeedbackDialog extends StatelessWidget{
                     height: 18,
                     decoration: BoxDecoration(
                       color: Colors.white,//white inside remove the edge of the box
-                      border: Border(//add lines to the top and left edges look like upward pointing arrow
+                      border: Border(
                         top: BorderSide(color: bordercolor, width: 2),
                         left: BorderSide(color: bordercolor, width: 2),
                       )
@@ -85,7 +85,7 @@ class AiFeedbackDialog extends StatelessWidget{
 
           const SizedBox(height: 25,),
 
-          //down infos
+        
           Divider(thickness: 1, color:Colors.grey),
           const SizedBox(height: 8),
 

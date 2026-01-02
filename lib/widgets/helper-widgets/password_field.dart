@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//I got this piece of code from the link below:
+//reference:
 //https://medium.com/@applelappala/show-hide-password-in-flutter-how-i-do-it-1000e94e7574
 
 class PasswordToggleField extends StatefulWidget {
@@ -17,7 +17,7 @@ class PasswordToggleField extends StatefulWidget {
 
 class _PasswordToggleFieldState extends State<PasswordToggleField> {
   
-  bool isPasswordHidden = true; //true -> no visible, false -> visible
+  bool isPasswordHidden = true; //true means no visible, false means visible
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class _PasswordToggleFieldState extends State<PasswordToggleField> {
           icon: Icon(
             isPasswordHidden ? Icons.visibility_off : Icons.visibility,
             //if isPasswordhidden is true, then the password is no visible; 
-            //if it is false, thenn the password is visible
+  
           ),
           onPressed: () {
             //updates memory

@@ -11,26 +11,26 @@ class TreatmentDetailsSheet extends StatelessWidget{
   final int? suppquantity;
   final int? suppduration;
 
-  final Widget? footeraction; //this is for field worker to rich this class with a button function 
+  final Widget? footeraction; //for field worker's button function 
 
   const TreatmentDetailsSheet({super.key, required this.diagnosis, this.productname, this.dailyquantity, this.durationweeks,
   this.totaltarget,required this.nextvisitdate, this.supplements =const[], this.suppduration, this.suppquantity,this.footeraction,
-  });//constructor of class
+  });
 
   @override
   Widget build(BuildContext context){
     return Container(
       padding: const EdgeInsets.all(24),
-      //padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),//bu field worker için (buton ekleyeceği için alta)duruma göre sil
+      
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,//take up as much space as the content
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //üst tutamaç- small grey thing
+        
           Center(
             child: Container(
               width: 40,
@@ -43,15 +43,15 @@ class TreatmentDetailsSheet extends StatelessWidget{
             ),
           ),
 
-          //title and diagnosis
+   
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              //title
+           
               Text("Treatment Details", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
 
 
-              //diagnosis 
+          
               builddiagnosiscontainer(diagnosis),
             ],
           ),
@@ -76,7 +76,7 @@ class TreatmentDetailsSheet extends StatelessWidget{
                 color: Colors.blue.shade50,
                 borderRadius: BorderRadius.circular(8),
               ),
-            //I calculated this field in create_treatment_plan.drt --'totalTarget': quantityperday*7*durationweeks,//total quantity
+            //totaltarget calculated in createtreatment 
               child: Row(
                 children: [
                   const Icon(Icons.inventory_2_outlined, size: 20, color: Colors.blue),
@@ -91,25 +91,25 @@ class TreatmentDetailsSheet extends StatelessWidget{
 
           //supplements if any
           if(supplements.isNotEmpty)...[
-            //title
+        
             Text("Supplements", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey)),
             const SizedBox(height: 10),
 
             Wrap(
-              //widget arranges items horizontally and moves to the next line if there is no space
-              spacing: 2,//no horizontal gap between chips
+             
+              spacing: 2,
 
               children: supplements.map((s) => Chip(//loop through the supplements list and convert each item into a chip widget
-                label: Text(s),//showthe supplement name inside the chip
+                label: Text(s),
                 backgroundColor: Colors.green.shade50,
-                labelStyle: TextStyle(color: Colors.green.shade900) )).toList(),//convert the map result back to a list of widgets
+                labelStyle: TextStyle(color: Colors.green.shade900) )).toList(),
             ),
 
             const SizedBox(height: 5),
-              // Duration Info
+           
               builddetailrow(Icons.access_time, "Duration", "$suppduration Weeks"),
 
-              // Daily Dose Info
+      
               builddetailrow(Icons.onetwothree, "Daily Dose", "$suppquantity item(s) / type"),
             
            
@@ -126,11 +126,11 @@ class TreatmentDetailsSheet extends StatelessWidget{
             const SizedBox(height: 30),
 
 
-            //this is only for field worker roleee!!!!!1
+            // only for field worker roleee
             if(footeraction != null)...[
               const Divider(),
               const SizedBox(height: 10),
-              footeraction!,//show that it is not null with an ünlem bcs it is inside an if
+              footeraction!,
             ]
           ]
       ),
@@ -159,20 +159,20 @@ class TreatmentDetailsSheet extends StatelessWidget{
     );
   }
 
-  //Icon + label + value
+
   Widget builddetailrow(IconData icon, String label, String value){
     return Padding(
       padding: EdgeInsets.only(bottom: 8.0),
       child: Row(
         children: [
-          //icon
+          
           Icon(icon, size: 20, color: Colors.grey.shade600),
           const SizedBox(width: 12),
 
-          //label
+         
           Text("$label: ", style: TextStyle(color: Colors.grey.shade600)),
 
-          //value
+          
           Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
 
         ],

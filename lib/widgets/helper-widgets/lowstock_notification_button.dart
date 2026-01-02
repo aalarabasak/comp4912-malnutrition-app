@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class LowstockNotificationButton extends StatelessWidget{
   const LowstockNotificationButton({super.key});
 
-  //helper function to specify status column in list
+  //get status column 
   String getstockstatus(int quantity){
     
     if(quantity <50) return "Low";
@@ -38,9 +38,9 @@ class LowstockNotificationButton extends StatelessWidget{
           onPressed:() {
             showlowstockalert(context, lowstockitems);
           }, 
-          icon: Badge(//used badge class https://api.flutter.dev/flutter/material/Badge-class.html
+          icon: Badge(
             isLabelVisible: lowstockcount>0,
-            label: Text("$lowstockcount"),//above badge number shows how many items in low stock
+            label: Text("$lowstockcount"),// shows how many items in low stock
             backgroundColor: Colors.red,
             child: const Icon(Icons.notifications_outlined, color: Colors.black, size: 28,),
           )
@@ -57,7 +57,7 @@ class LowstockNotificationButton extends StatelessWidget{
         return AlertDialog(
 
           title: Row(
-            //warning icon and title
+          
             children: [
               Icon(Icons.warning_amber_rounded, color: Colors.red),
               SizedBox(width: 10),

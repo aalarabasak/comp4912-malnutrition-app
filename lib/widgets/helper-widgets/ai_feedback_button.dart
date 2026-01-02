@@ -1,12 +1,12 @@
-//this widget class is used in field worker's and Nutrition Officer's child profile page 
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 class AiFeedbackButton extends StatefulWidget{
 
-  final VoidCallback onPressed; // will get what happens when clicked from outside of the class
+  final VoidCallback onPressed; 
 
-  const AiFeedbackButton({super.key, required this.onPressed});//constructor of the class
+  const AiFeedbackButton({super.key, required this.onPressed});
 
   @override
   State <AiFeedbackButton> createState() => AiFeedbackButtonState();
@@ -14,19 +14,19 @@ class AiFeedbackButton extends StatefulWidget{
 
 class AiFeedbackButtonState extends State<AiFeedbackButton>{
   
-  bool isexpanded = false; //Holds the value of whether the button is fully open or closed
+  bool isexpanded = false; //holds the value whether the button is open or closed
   Timer? closeWritingTimer;
 
   void _handleTap(){
-    if(isexpanded){//2nd situation- if the button is open, then navigate to the screen
+    if(isexpanded){//navigate to the screenif the button is open
       widget.onPressed();
     }
     else{
       setState(() {
-        isexpanded = true;//if the button is closed, then just expand it
+        isexpanded = true;//expand it if the button is closed
       });
       
-      startCloseWritingTimer(); //if the user does nothing minimize the button automatic after 4 seconds
+      startCloseWritingTimer(); //close after 4 seconds
     }
   }
 
@@ -53,10 +53,10 @@ class AiFeedbackButtonState extends State<AiFeedbackButton>{
   Widget build(BuildContext context){
     return GestureDetector(
       onTap: () => _handleTap(),
-      child: AnimatedContainer(duration: const Duration(milliseconds: 300),//animation takes 0.3 seconds to complete
+      child: AnimatedContainer(duration: const Duration(milliseconds: 300),//takes 0.3 seconds to complete
         curve: Curves.easeInOut,
 
-        width: isexpanded ? 170.0: 48.0,// if open, it will be wide, if closed, it will be only as wide as the icon.
+        width: isexpanded ? 170.0: 48.0,
         height: 40.0,
         decoration: BoxDecoration(
           color: const Color(0xFF9FA8DA).withOpacity(0.5), 
@@ -71,11 +71,11 @@ class AiFeedbackButtonState extends State<AiFeedbackButton>{
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            //icon part
+         
             Icon(Icons.psychology, color: Colors.black87, size: 24,),
 
-            //writing part of the icon
-            //used Flexible and Overflow so that there is no overflow error during the animation.
+            
+     
             if(isexpanded)
               Flexible(child: Padding(padding: EdgeInsets.only(left: 8.0),
                 child: Text('View AI Feedback', maxLines: 1,

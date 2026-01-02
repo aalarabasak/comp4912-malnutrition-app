@@ -28,10 +28,10 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
     getProductData();
   }
 
-  //this method is for controlling barcode id and getting product data to the app from firebase
+  //controlling barcode id and getting product data to the app from firebase
   Future <void> getProductData() async{
     
-      //fetch document by barcode id from RUTF_products collection from firebase
+      //getdocument by barcode id 
       final snapshot = await FirebaseFirestore.instance.collection('RUTF_products').doc(widget.barcodeId).get();
 
       if(snapshot.exists){
@@ -71,7 +71,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
     final totalCarbs = data['carbsG'] * portion;
     final totalFat = data['fatG'] * portion;
 
-    //Create a map of meal data to record
+    //create a map of meal data to record
     final mealdata = {
       'date': DateTime.now().toIso8601String(),
       'productName': data['name'], //it is directly taken 
@@ -85,12 +85,12 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
     //firebase registration
     try{
-      //Add a new document to the child's  subcollection as mealintakes
+      //add a new document to the child's  subcollection as mealintakes
       await FirebaseFirestore.instance
-        .collection('children')// go to main collection children
-        .doc(widget.childid)//find the related child
-        .collection('mealIntakes')//create subcollection
-        .add(mealdata);// fill the data
+        .collection('children')
+        .doc(widget.childid)
+        .collection('mealIntakes')
+        .add(mealdata);
       
       //add new acitivity to user's subcollection
       await UserService().addactivity(childId: widget.childid, activitytype: "Meal", description: "${data['name']} added");
@@ -100,7 +100,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Meal added successfully.'),
         backgroundColor: Colors.green,));
 
-      Navigator.of(context).pop(); //closes this confirmation screen and backs to child's profile page
+      Navigator.of(context).pop(); 
       
                                  
     }catch(error){
@@ -119,14 +119,14 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
   @override
   Widget build(BuildContext context) {
-    //if it is still in loading phase
+ 
     if(isloading){
       return Scaffold(
         body: Center(child: CircularProgressIndicator(),),
       );
     }
 
-    //if there is a error
+
     if(errorMessage != null){
       return Scaffold(
         appBar: AppBar(title: Text('Error!'),),
@@ -139,7 +139,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
       );
     }
 
-    //if this is  successfull
+   
     return Scaffold(
       appBar: AppBar(
         title: Icon(Icons.monitor_heart_outlined, color: Colors.black,),
@@ -156,7 +156,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
             const SizedBox(height: 45,),
 
-            //Product Details card
+      
             Container(
               padding: EdgeInsets.all(15),
               decoration: BoxDecoration(
@@ -176,7 +176,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
             const SizedBox(height: 35,),
 
-            //nutritional information card
+     
             Container(
               padding: EdgeInsets.all(15.0),
               decoration: BoxDecoration(
@@ -186,11 +186,11 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //title of the card
+                  
                   Text('Nutritional Information', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
                   const SizedBox(height: 5,),
                   
-                  Row(//1st row of nutritional contents
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Energy: ${productdata!['kcal']} kcal'),
@@ -199,7 +199,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
                   ),
         
                   const SizedBox(height: 5),
-                  Row( //2nd row of nutritional content
+                  Row( 
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Carbs: ${productdata!['carbsG']} g'),
@@ -214,7 +214,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
             const SizedBox(height: 35,),
 
-            //portion size titler
+            
             Container(
               padding: EdgeInsets.all(15.0),
               decoration: BoxDecoration(
@@ -224,7 +224,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //title of the selection
+                  
                   const Text('Portion Size ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
                   const SizedBox(height: 10),
 
@@ -233,24 +233,24 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                     children: [
-                      //- portion size button
+                    
                       IconButton(
                         onPressed:() => updateportion(-1.0), 
                         icon: Icon(Icons.remove_circle_outline, size: 40, color: Colors.grey,)),
 
 
-                      //number of packets that is selected by the user
+                
                       Text('${portioncount.toStringAsFixed(1)} packets', 
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
 
 
-                      //+ portion size button
+                
                       IconButton(onPressed:() => updateportion(1.0), 
                       icon: Icon(Icons.add_circle, size: 40, color: Colors.green.shade400,)),
                     ],
                   ),
 
-                  //error message
+            
                   if(portionerror != null)
                     Center(
                       child: Text(portionerror!, style: TextStyle(color: Colors.red),),
@@ -263,10 +263,10 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
                   const SizedBox(height: 50),
 
-                  //buttons Cancel - Save Meal
+       
                   Row(
                     children: [
-                      //cancel button
+              
                       Expanded(child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color.fromARGB(255, 176, 174, 174).withOpacity(0.5),
@@ -282,7 +282,7 @@ class _MealConfirmationPackagedState  extends State<MealConfirmationScreenPackag
 
                         const SizedBox(width: 20),
 
-                        //SAVE meal button
+                   
                         Expanded(child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.8),

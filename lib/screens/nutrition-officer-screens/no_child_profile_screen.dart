@@ -11,7 +11,7 @@ import '../../widgets/cards/latest_measurement_card.dart';
 import 'package:malnutrition_app/widgets/helper-widgets/ai_feedback_button.dart';
 import 'package:malnutrition_app/widgets/helper-widgets/ai_feedback_dialog.dart';
 
-import 'package:malnutrition_app/services/api_service.dart';//it is for llm short advice
+import 'package:malnutrition_app/services/api_service.dart';//for llm short advice
 import 'package:malnutrition_app/services/nutrition_data_gathererllm.dart';
 
 import '../../widgets/helper-widgets/info_display_widgets.dart';
@@ -43,15 +43,15 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
       builder:(ctx) => const Center(child: CircularProgressIndicator())
     );
 
-    //first, take the datas gather them as packet
+    //take the datas gather them as packet
     final request = await datagatherer.prepareadviceRequest(widget.childId);
 
     String? advice;
-    if(request != null){//if the gathering data as packet process is successful, then go to api service
+    if(request != null){
       advice = await apiService.getAiAdvice(request);
     }
 
-    if(context.mounted) Navigator.pop(context); //close the loading sign
+    if(context.mounted) Navigator.pop(context); //
 
     //show the advice , show the result
     if(advice != null && context.mounted){
@@ -69,7 +69,7 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
   @override
   Widget build(BuildContext context){
     double availableWidth = MediaQuery.of(context).size.width - 46;
-    //take the screen width and remove the paddings (23+23=46) so that the horizontal scrollable cards fit perfectly
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FB),
       appBar: AppBar(
@@ -78,10 +78,10 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
         
       backgroundColor: Colors.transparent, 
        actions: [
-        //View AI feedback button
+       
         Padding(padding: const EdgeInsets.only(right: 23.0),
         child: AiFeedbackButton(//goes to ../widgets/ai_feedback_button.dart to draw button
-          onPressed: () => handleAiFeedback(context), //this hadnleaifeedback function is above of this dart script
+          onPressed: () => handleAiFeedback(context), 
           )
         )
       ],
@@ -104,7 +104,7 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
           child: SizedBox( 
             width: double.infinity,
             height: 56,
-                  //create treatment plan button
+                  
                   child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),
@@ -132,7 +132,7 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
       ),
 
       body: StreamBuilder<DocumentSnapshot> (
-        stream: FirebaseFirestore.instance //this time, we get the specific child from firestore with childId that we get through home page
+        stream: FirebaseFirestore.instance //get the specific child  with childId 
           .collection('children')
           .doc(widget.childId)
           .snapshots(),
@@ -165,20 +165,20 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
              disabilityexplanation = childdata['disabilityExplanation'];
           }
 
-          // measurements StreamBuilder inside the child data StreamBuilder
+          
           return StreamBuilder<QuerySnapshot>(
-            //  Fetch once for both cards -latest measurement card and risk status card
-            //also I need to pass the current latest weight to the nutrition summary card for daily need calc
+            //get  for both cards -latest measurement card and risk status card
+            //pass the current latest weight to the nutrition summary card for daily need calc
             stream: FirebaseFirestore.instance
                 .collection('children')
                 .doc(widget.childId)
                 .collection('measurements')
                 .orderBy('recordedAt', descending: true)
                 .limit(1)
-                .snapshots(), // getting the last record
+                .snapshots(), 
 
             builder: (context, measurementsSnapshot) {
-              // error and loading checks for measurements
+             
               if (measurementsSnapshot.hasError) {
                 return Center(child: Text("Error loading measurements"));
               }
@@ -192,16 +192,16 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 23.0),
                   child: ListView(
-                    children: [ //lots of elements from top the down
-                      //Header row : name of child + profile icon 
+                    children: [ 
+                      
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [ //there are two elements in this row
-                          //name of the child
+                        children: [ 
+                       
                           Expanded(child: Text(name, style: TextStyle(
                             fontSize: 22, fontWeight: FontWeight.w600 ),)),
 
-                          //profile icon
+                     
                           Icon(Icons.person, size: 60, color: const Color.fromARGB(255, 110, 109, 109), ),
                         ],
                       ),
@@ -248,14 +248,14 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                         height: 420,
                         child: ListView(
                           scrollDirection: Axis.horizontal,
-                          //physics: PageScrollPhysics(),
+                     
                           children: [
-                            //part 1 risk status card + latest measurement card alt alta
+                        
                             SizedBox(
                               width: availableWidth,
                               child: Column(
                                 children: [
-                                  //top card: risk
+                                  
                                   //give the last data to card for showing the latest risk result
                                   RiskStatusCard(latestdoc: docs.first, childId: widget.childId),
                                 
@@ -266,7 +266,7 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
                               ),
                             ),
 
-                            const SizedBox(width: 15), //space btw two big columns
+                            const SizedBox(width: 15), 
 
                             SizedBox(
                               width: availableWidth,
@@ -286,7 +286,7 @@ class _NOChildProfileScreenState extends State<NOChildProfileScreen> {
 
                       //horizontal scrollable area ends hereeee
                       const Divider(),
-                      ], //if-else line ends here
+                      ], 
 
                      
 

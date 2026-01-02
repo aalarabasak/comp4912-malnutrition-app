@@ -39,12 +39,12 @@ class _FieldWorkerHomeState extends State<FieldWorkerHome>{
                 foregroundColor: Colors.black87,
                 textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
               ),
-              onPressed:() async{//it means it is a method needs waiting -> async
+              onPressed:() async{
                 await FirebaseAuth.instance.signOut(); //log out using firebase auth
 
                 if(context.mounted){
                   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder:(context) => const WelcomeScreen()), 
-                  (route)=> false); //Erases ALL history
+                  (route)=> false); //erases aLL history
                 }
               }, 
               label: const Text('Log Out'),

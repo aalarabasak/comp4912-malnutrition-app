@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../screens/child-profile-history-screens/measurements_history_screen.dart'; 
-import '../helper-widgets/info_display_widgets.dart'; // Import helper widgets for displaying rows and cards ( buildCards, buildRichText)
+import '../helper-widgets/info_display_widgets.dart'; 
 
-
-class LatestMeasurementCard extends StatelessWidget{// This class is a StatelessWidget that receives data instead of fetching it
-  final QueryDocumentSnapshot latestDoc; // Receiving just a single document is enough
+class LatestMeasurementCard extends StatelessWidget{
+  final QueryDocumentSnapshot latestDoc; 
   final String childId; //need for navigation
 
   const LatestMeasurementCard({super.key,required this.latestDoc,required this.childId,});
@@ -13,7 +12,7 @@ class LatestMeasurementCard extends StatelessWidget{// This class is a Stateless
   @override
   Widget build(BuildContext context){
     
-    // Convert the Firestore document data into a readable Map structure.
+    //convert the doc to Map 
     Map<String, dynamic> measurementdata = latestDoc.data() as Map<String, dynamic>;
 
     String muac = measurementdata['muac'].toString();
@@ -23,14 +22,14 @@ class LatestMeasurementCard extends StatelessWidget{// This class is a Stateless
     String date = measurementdata['dateofMeasurement'].toString();
     String notes = measurementdata['notes']?.toString() ?? '';
 
-      //display part
+      
       return GestureDetector(
-        onTap: () {//entire card should navigate to the history screen when tapped
+        onTap: () {//navigate to the history screen when tapped
           Navigator.push(context, MaterialPageRoute(builder: (context) => MeasurementsHistoryScreen(childid: childId)));
         },
         child: Container(
           width: double.infinity,
-          margin: EdgeInsets.only(top: 15.0),//put space above card
+          margin: EdgeInsets.only(top: 15.0),
           padding: EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey[400]!),
@@ -50,14 +49,14 @@ class LatestMeasurementCard extends StatelessWidget{// This class is a Stateless
               
               const SizedBox(height: 5,),
 
-              Row(//1st row MUAC-weight side by side
+              Row(
                 children: [
                   Expanded(flex: 1,child: buildRichText("MUAC", muac, suffix: " mm"),),
                   Expanded(flex: 1,child: buildRichText("Weight", weight, suffix: " kg"), )
                 ],              
               ),
 
-              Row(//2nd row height-edema side by side
+              Row(
                 children: [
                   Expanded(flex: 1,child: buildRichText("Height", height, suffix: " cm"),),
                   Expanded(flex: 1,child:  buildRichText("Edema", edema),),

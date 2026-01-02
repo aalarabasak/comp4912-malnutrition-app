@@ -3,8 +3,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'meal_confirmation_screen_packaged.dart';
 import 'dart:async'; //for timer
 
-//// Uses mobile_scanner package: https://pub.dev/packages/mobile_scanner
-///https://stackoverflow.com/questions/78805452/how-to-create-a-barcode-scanner-in-flutter-that-displays-a-sticky-square-around
+
 
 
 class ScanBarcodeScreen extends StatefulWidget{
@@ -19,21 +18,21 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>{
 
   Timer? _timer;
 
-  // Initialize the MobileScannerController to manage the camera and scanning process.
+  //initialize the MobileScannerController 
   final MobileScannerController controller = MobileScannerController(
     detectionSpeed: DetectionSpeed.normal, //speed of the barcode
     facing: CameraFacing.back, //use back camera
     formats: [BarcodeFormat.ean13, BarcodeFormat.upcA], //barcode types
   );
 
-  //this method is for starting timer
+  //starts timer
   @override
   void initState(){
     super.initState();
     startTimer();
   }
 
-  // This method is called when the widget is removed from the widget tree.
+
   @override
   void dispose(){
     _timer?.cancel();
@@ -41,36 +40,36 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>{
     super.dispose();
   }
 
-  // A callback function executed when a barcode is successfully detected.
+  //runs when a barcode is detected
   void onDetect_barcode(BarcodeCapture barcodeCapture){
     final List<Barcode> barcodes = barcodeCapture.barcodes;
 
-    if(!mounted) return; //check if the widget is still on the screen
+    if(!mounted) return; 
 
     if(barcodes.isNotEmpty){
       final String? barcode_value = barcodes.first.rawValue;
-      if(barcode_value != null && barcode_value.isNotEmpty){ //isnotempty looks at if the string has characters or not 
-                                                            // if it is like this " " , this cannot be accepted.
+      if(barcode_value != null && barcode_value.isNotEmpty){ //looks at if the string has characters or not 
+                                                           
         _timer?.cancel();
         debugPrint('DEBUG: Successfully Scanned ID: $barcode_value');
-        controller.stop(); //stop the scanner because barcode is detected
+        controller.stop(); //stop the scanner 
 
         //navigate to the confirmation page
          Navigator.pushReplacement(context, MaterialPageRoute(
         builder: (context) => MealConfirmationScreenPackaged(barcodeId: barcode_value, childid: widget.childId,)));
       }
       else{
-        showError(); //show error because barcode could not be recognized. 
+        showError(); //barcode not detected
       }
 
     }
 
   }
-  //It will give a timeout error after 10 seconds.
+  //give a timeout error after 10 seconds
   void startTimer(){
     _timer = Timer(Duration(seconds: 10), () {
       if(mounted){
-        showError();//show the error because of time is up.
+        showError();
       }
     });
   }
@@ -104,22 +103,22 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>{
         title: Text('Scan Barcode'),
         backgroundColor: Colors.redAccent,
       ),
-      body: Stack( // The body uses a Stack to layer widgets on top of each other.
+      body: Stack( 
         children: [
 
-          MobileScanner(// This is the camera view widget
+          MobileScanner(// camera view widget
             controller: controller,
             onDetect: onDetect_barcode,
           ),
 
-          Center( // Center the scanning frame on the screen.
+          Center( //
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.8, //this is the width of the square
-              height: MediaQuery.of(context).size.width * 0.4,//this is the height of the square
+              width: MediaQuery.of(context).size.width * 0.8, 
+              height: MediaQuery.of(context).size.width * 0.4,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Colors.white, //this is the frame line color
-                  width: 4.0,//this is the thickness of the line
+                  color: Colors.white, 
+                  width: 4.0,
                 ),
                 borderRadius: BorderRadius.circular(12.0),
               ),
@@ -127,9 +126,9 @@ class _ScanBarcodeScreenState extends State<ScanBarcodeScreen>{
             ),
           ),
 
-          //this is for bottom text -help text to user-
+         
           Positioned(
-            bottom: 100, // Position 100 pixels from the bottom edge.
+            bottom: 100, 
             left: 0,
             right: 0,
             child: Center(

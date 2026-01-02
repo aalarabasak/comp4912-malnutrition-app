@@ -9,7 +9,7 @@ class SelectRoleScreen extends StatelessWidget{
     return Scaffold(
        appBar: AppBar(leading: IconButton(icon: Icon(Icons.arrow_back),
         onPressed: () {
-          //this part will be back to welcome screen
+  
           Navigator.of(context).pop();
         },
       ),
@@ -31,7 +31,7 @@ class SelectRoleScreen extends StatelessWidget{
             mainAxisSize: MainAxisSize.min,
             children: [
 
-            //first element
+            
             Text(
               'Please choose your role...', 
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -40,7 +40,7 @@ class SelectRoleScreen extends StatelessWidget{
 
             SizedBox(height: 50), 
 
-            //Second element
+            
             SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 229, 186, 121),
@@ -59,7 +59,7 @@ class SelectRoleScreen extends StatelessWidget{
 
             SizedBox(height: 20), 
 
-            //third element
+            
             SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 168, 167, 167),
@@ -78,7 +78,7 @@ class SelectRoleScreen extends StatelessWidget{
 
             SizedBox(height: 20), 
 
-            //fourth element
+            
             SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 118, 193, 120),

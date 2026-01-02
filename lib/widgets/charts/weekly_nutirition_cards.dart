@@ -151,7 +151,7 @@ class WeeklyNutiritionCards extends StatelessWidget{
       children: [
         Text(title,style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),),
         const SizedBox(height: 10),
-        //https://stackoverflow.com/questions/74216632/how-can-i-make-a-progress-indicator-using-flutter
+        
         Stack(//nested structures
           alignment: Alignment.center,
           children: [
@@ -183,14 +183,14 @@ class WeeklyNutiritionCards extends StatelessWidget{
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //current value
+             
                 Text("$current" , style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black87),),
 
-                //line fraction
+              
                 Container(margin: const EdgeInsets.symmetric(vertical: 2),height: 1,width: 40,color: Colors.grey.shade400,
                 ),
 
-                //target
+          
                 Text("$target $unit" , style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: Colors.grey.shade600),),
               ],
             ),
@@ -198,7 +198,7 @@ class WeeklyNutiritionCards extends StatelessWidget{
           ],
           
         ),
-        //the percentage writing
+    
         const SizedBox(height: 8),
         Text("${(displaypercent*100).toInt()}%", style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 13),)
       ],

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'child_profile_screen.dart';
-import 'package:malnutrition_app/services/treatment_service.dart';//to get latest treatment plan from Firestore
-import 'package:malnutrition_app/services/distribution_service.dart';//to record distributions and update stock
+import 'package:malnutrition_app/services/treatment_service.dart';
+import 'package:malnutrition_app/services/distribution_service.dart';
 import 'package:malnutrition_app/widgets/cards/treatment_details_bottomsheet.dart';
 import 'package:malnutrition_app/widgets/helper-widgets/info_display_widgets.dart';//used for buildCards
 
@@ -21,11 +21,11 @@ class ChildTreatmentDetailsHelper extends StatefulWidget {
 }
 
 class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelper> {
-  bool isdelivered = false;//tracks if this treatment plan has just been marked as delivered in the current UI session 
-  //used to disable the “Mark as Delivered” button and change its color.
+  bool isdelivered = false;//tracks if this treatment plan has just been marked as delivered  
 
-  bool isprocessing = false;//tracks if the app is currently making Firestore calls to record distributions
-  //when true:show loading spinner ,disable the button to prevent multiple taps
+
+  bool isprocessing = false;//tracks if the app is currently  record distributions
+  bool isUndone = false;//tracks if undo operation was performed in current session 
 
   Future<void> handledelivery({
     required String? productname,
@@ -35,8 +35,8 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
     required int? supplementquantity,
     required String currentPlanId,
   }) async {
-    //process is starting-> lock the button
-    setState(() {
+    
+    setState(() {//lock the button
       isprocessing = true;
     });
 
@@ -63,7 +63,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
         int daily = supplementquantity ?? 1;
         int calculatedsuppqty = daily * 7 * duration;
 
-        // Process supplements sequentially to avoid transaction conflicts
+       
         for (String suppname in supplements) {
           await distributionservice.recorddistribution(
             childname: widget.childName,
@@ -79,8 +79,9 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
       if (mounted) {
         if (itemdistributed) {
           setState(() {
-            isprocessing = false;//turn off isprocessing because işlem bitti
-            isdelivered = true; //to make the button grey-disabled
+            isprocessing = false;//turn off isprocessing because process finish
+            isdelivered = true; //make the button grey disabled
+            isUndone = false; //reset undo state when delivery succeeds
           });
         } else {
           setState(() {
@@ -89,11 +90,11 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
         }
       }
     } catch (errorr) {
-      //if there s an error
+
       if (mounted) {
         setState(() {
-          isprocessing = false;//turn off isprocessing because işlem bitti
-        }); //to make the button green again
+          isprocessing = false;//turn off isprocessing because process done- make button green
+        }); 
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -119,6 +120,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
         setState(() {
           isprocessing = false;
           isdelivered = false; //becomes undelivered reversed
+          isUndone = true;
         });
         
       }
@@ -139,12 +141,12 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
     return StreamBuilder(
       stream: TreatmentService().getlatestTreatmentPlan(widget.childId),//returns latest treatment plan for this child
       builder: (context, snapshot) {
-        if (snapshot.hasError) return const SizedBox(); //if there s error no showing
+        if (snapshot.hasError) return const SizedBox(); 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {//if there is no data
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return buildCards("Treatment Plan", "No available data.");
         }
 
@@ -156,7 +158,6 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
         String? productname = rutfmap?['productName'];
         int? dailyquantity = rutfmap?['dailyQuantity'];
 
-        //supplements – same the structure used in treatment_plan_card.dart
         List<String> supplements = [];
         int? supplementquantity; //quantity per item
         int? supplementduration; //duration in weeks
@@ -189,16 +190,16 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
           nextvisitdate: nextVisitDate,
           totaltarget: totaltarget,
 
-          //special buttons for field worker
           
-          footeraction: FutureBuilder<bool>(//use futurebuilder to check if plan already delivered before by using distributionservice
+          
+          footeraction: FutureBuilder<bool>(//use futurebuilder to check if plan already delivered before
             future: DistributionService().checkIfPlanDelivered(childId: widget.childId,treatmentPlanId: currentPlanId,), 
 
             builder: (context, distributionSnapshot) {
-              //check if still loading
+          
               bool isloading = distributionSnapshot.connectionState == ConnectionState.waiting;
               
-              //senkronizasyon
+              //sync
               bool dbdeliveredornot; //whats the sitation in firestore
               if(distributionSnapshot.data != null){
 
@@ -210,14 +211,18 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
 
               //whats the last decision
               bool isfinallydelivered;
-              if (dbdeliveredornot == true) {
+              if(isUndone == true){
+                isfinallydelivered = false;
+              }
+             
+              else if (dbdeliveredornot == true) {
                 
-                //if db says delivered, its deliverd
+                //db says delivered
                 isfinallydelivered = true;
               } 
               else if (isdelivered == true) {
                 
-                //if db says no delivery, but user clicks the button delivery
+                //db says no delivery, but user clicks the button delivery
                 isfinallydelivered = true;
               } 
               else {
@@ -256,7 +261,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
               return Row(
                 children: [
                   
-                  Expanded(//mark as delivered button
+                  Expanded(
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: buttonproperties['color'],
@@ -271,14 +276,14 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
                         ? const SizedBox(width: 20, height: 20,child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),)
                         : Icon(buttonproperties['icon']),
 
-                      label: Text(buttonproperties['text']),//text on it
-                      onPressed: buttonproperties['action'],//tap thing
+                      label: Text(buttonproperties['text']),
+                      onPressed: buttonproperties['action'],
                     )
                   ),
 
-                  const SizedBox(width: 15),//space between two buttons
+                  const SizedBox(width: 15),
 
-                  Expanded(//profile buttonnn
+                  Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.7),
@@ -287,10 +292,10 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed:() {
-                        Navigator.pop(context); //close the bottom sheet
+                        Navigator.pop(context); 
 
                         Navigator.push(context, MaterialPageRoute(builder: (context) => ChildProfileScreen(childId: widget.childId)));
-                        //then, go to the full profile for the specific child
+                        //go to the profile for the specific child
                       }, 
                       child: const Text("View Profile"),
                     ),
@@ -304,13 +309,13 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
     );
   }
 
-  //button properties
+
     Map<String, dynamic> getbuttonproperty({required bool isprocessing,required bool isloading,required bool nothingtodeliver,required bool isfinallydeliver,
       required VoidCallback deliver, //deliver task
       required VoidCallback restore, //undo task
     }) {
       
-      if (isprocessing || isloading) {//loading situations
+      if (isprocessing || isloading) {
         return {
           'color': Colors.grey,
           'text': "Processing...",
@@ -318,7 +323,7 @@ class _ChildTreatmentDetailsHelperState extends State<ChildTreatmentDetailsHelpe
           'action': null, //cant be clicked
         };
       }    
-     //there is nothing deliver
+    
       if (nothingtodeliver) {
         return {
           'color': Colors.grey.shade400,

@@ -4,29 +4,26 @@ class NutritionValuesCalculator {
 
   static int calculateageinmonths(String birthdatestring){
 
-    final parts = birthdatestring.split('/');//split the string by slash
-    final int day = int.parse(parts[0]); //take the day part
-    final int month = int.parse(parts[1]);//take the month part
-    final int year = int.parse(parts[2]);//take the year part
+    final parts = birthdatestring.split('/');
+    final int day = int.parse(parts[0]); 
+    final int month = int.parse(parts[1]);
+    final int year = int.parse(parts[2]);
 
-    final DateTime birthdate = DateTime(year, month, day);//merge it to real dat type
+    final DateTime birthdate = DateTime(year, month, day);
     final DateTime currentDate = DateTime.now();
     int ageinmonths = (currentDate.year-birthdate.year)*12 + (currentDate.month-birthdate.month); //apply difference formula
 
     if(currentDate.day<birthdate.day){
-      ageinmonths--;//if the day of the month hasnt reached yet -> decrease 1 unit
+      ageinmonths--;
     }
 
-    return ageinmonths < 0 ? 0 : ageinmonths;//prevent ageinmonths being negative
+    return ageinmonths < 0 ? 0 : ageinmonths;
 
 
   }
 
   static Map<String,dynamic> calculatedailyneed(double weightkg, String birthdatestring, String gender){
-    // references
-    //  Kcal: FAO 2004 Report, Table 3.2 & Table 4.5
-    // Protein : WHO TRS 935, Table 33a
-    // fat: FAO FNP 91 (2010), Table 2.2
+    
 
     int ageinmonths = calculateageinmonths(birthdatestring);
     bool isgirl=false;
@@ -108,7 +105,6 @@ class NutritionValuesCalculator {
 
 
     // 1g Carbs = 4 kcal, 1g Fat = 9 kcal
-    //total fat gram-  X% of Total Calories / 9
     double kcalfromfat = totaltargetkcal*fatpercentage;
     double totaltargetfat = kcalfromfat/9;
 
@@ -128,7 +124,7 @@ class NutritionValuesCalculator {
 
   }
 
-  //calculation of weekly needs- use this in nutri sum card
+  //calculation of weekly needs
   static Map<String,double>calculateweeklytargets(double weightkg, String birthdatestring, String gender){
     final dailyneed = calculatedailyneed(weightkg, birthdatestring, gender);
 

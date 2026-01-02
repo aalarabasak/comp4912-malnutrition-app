@@ -6,7 +6,7 @@ import 'package:malnutrition_app/widgets/charts/measurement_statistic_card.dart'
 import 'package:malnutrition_app/widgets/charts/weight_chart.dart';
 import 'package:malnutrition_app/widgets/charts/height_chart.dart';
 
-enum MeasurementType {muac, weight, height }//a simple enum to manage measurement types
+enum MeasurementType {muac, weight, height }//for manage measurement types
 
 class MeasurementsHistoryScreen extends StatefulWidget{
   final String childid;
@@ -18,7 +18,7 @@ class MeasurementsHistoryScreen extends StatefulWidget{
 
 class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
   
-  MeasurementType selectedtype = MeasurementType.muac;//initial selection is muac
+  MeasurementType selectedtype = MeasurementType.muac;//default selection 
 
   @override
   Widget build(BuildContext context){
@@ -34,8 +34,7 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
-              //I got the segmentenbutton code from below link (segments, selected, onselectionchanged):
-              //https://api.flutter.dev/flutter/material/SegmentedButton-class.html
+  
               SegmentedButton <MeasurementType>(
                 showSelectedIcon: false, //remove selection icon
                 segments:  <ButtonSegment<MeasurementType>>[
@@ -53,9 +52,9 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                   )
                   
                 ],
-                selected: <MeasurementType> {selectedtype}, //which one is chosen now
+                selected: <MeasurementType> {selectedtype}, //chosen segment
 
-                //what happen if change happen
+
                 onSelectionChanged:(Set<MeasurementType> newSelection) {
                   setState(() {//get the first and only element in the set
                     selectedtype = newSelection.first;
@@ -99,10 +98,10 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                       return const Center(child: Text("No measurements found."));
                     }
 
-                    //process preparation all measurement data using the service
+                    //process preparation all measurement data 
                     final processedData = MeasurementDataProcessor.processMeasurements(docs);
                     
-                    //get prepared data for access
+                    //get prepared data for access 
                     final muacspots = processedData.muacSpots;
                     final weightspots = processedData.weightSpots;
                     final heightspots = processedData.heightSpots;
@@ -113,10 +112,10 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                     final weightStats = processedData.weightStats;
                     final heightStats = processedData.heightStats;
 
-                return SingleChildScrollView(//made it scrollable
+                return SingleChildScrollView(
                   child: Column(
                     children: [
-                      //if muac is chosen then show the graph
+ 
                     if(selectedtype == MeasurementType.muac)...[
                       MuacChart(spots: muacspots, dates: datelabels),
                       const SizedBox(height: 25,),
@@ -183,7 +182,7 @@ class MeasurementsHistoryScreenState extends State <MeasurementsHistoryScreen>{
                               value: weightStats.current),
 
                             MeasurementStatisticCard(
-                              title: "Total Change", //to show difference btw the last and the first record
+                              title: "Total Change", //show difference btw the last and the first record
                               icon: Icons.trending_up, 
                               themecolor: Colors.green, 
                               value: weightStats.change),

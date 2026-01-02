@@ -17,8 +17,8 @@ class CampManagerHomeState extends State<CampManagerHome>{
 
   int currentindex = 0;
   final List<Widget> pages=[
-    const StockListScreen(), //[0] stock list screen
-    const DistributionList(),//[1] distribution list screen
+    const StockListScreen(), //[0]stock list screen
+    const DistributionList(),//[1]distribution list screen
   ];
 
   @override
@@ -30,7 +30,7 @@ class CampManagerHomeState extends State<CampManagerHome>{
         leading: const Padding(padding: EdgeInsets.only(left: 8.0),
           child: LowstockNotificationButton(),
         ),
-        leadingWidth: 50, //button width
+        leadingWidth: 50, 
 
 
         title: const Icon(Icons.monitor_heart_outlined, color: Colors.black),
@@ -46,12 +46,12 @@ class CampManagerHomeState extends State<CampManagerHome>{
                 foregroundColor: Colors.black87,
                 textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
               ),
-              onPressed:() async{//it means it is a method needs waiting -> async
+              onPressed:() async{
                 await FirebaseAuth.instance.signOut(); //log out using firebase auth
 
                 if(context.mounted){
                   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder:(context) => const WelcomeScreen()), 
-                  (route)=> false); //Erases ALL history
+                  (route)=> false); //erases all history
                 }
               }, 
               label: const Text('Log Out'),

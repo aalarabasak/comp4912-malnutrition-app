@@ -16,9 +16,9 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
 
   final StockService stockservice = StockService();//call the service 
 
-  Set<Stockcategory> selectedview = {Stockcategory.rutf}; //by default it is arranged as rutf
+  Set<Stockcategory> selectedview = {Stockcategory.rutf}; //by default arranged as rutf
 
-  // Controllers
+
   final TextEditingController supplementnamecontroller = TextEditingController();
   final TextEditingController lotnumbercontroller = TextEditingController();
   final TextEditingController quantitycontroller = TextEditingController();
@@ -41,7 +41,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
    
    QuerySnapshot snapshot =await FirebaseFirestore.instance.collection('RUTF_products').get();
 
-   //get inside to every document in the snapshot and get only name fields and make it a list
+   //get inside to every document and get only name fields and make it a list
    List<String> names = snapshot.docs.map((doc) {
     return doc['name'] as String;
    }).toList();
@@ -99,7 +99,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
 
       if (selectedrutfname == null || lotnumbercontroller.text.isEmpty || selecteddate == null) {//if the are empty
          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all RUTF fields!")));
-         //show warning message
+
          return;
       }
 
@@ -123,7 +123,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
     }
 
 
-    //saving to firestore part by using stock_service.dart
+    //saving to firestore  by using stock_service.dart
     try{
       int quantity = int.parse(quantitycontroller.text);
 
@@ -137,17 +137,17 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
       );
 
       if (mounted) {
-        //give success feedback
+
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Saved $productname!"),
           backgroundColor: Colors.green,
         ));
     
-        Navigator.pop(context); //close the screen
+        Navigator.pop(context); 
       }
     } catch (e) {
 
-      //if there is a error show failed message
+
       if (mounted) {
 
 
@@ -180,7 +180,7 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
 
     body: GestureDetector(
       onTap: () {
-        //If click on an empty space on the screen close the keyboard
+        //close the keyboard when click on an empty space 
         FocusScope.of(context).unfocus();
       },
     child:SingleChildScrollView(
@@ -197,8 +197,8 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
                 //segmented buttonn
                 SizedBox(
                   width: double.infinity,
-                  //I got the segmentenbutton code from below link:
-                  //https://api.flutter.dev/flutter/material/SegmentedButton-class.html
+
+      
                   child: SegmentedButton<Stockcategory>(
                     showSelectedIcon: false,
                     multiSelectionEnabled: false,
@@ -227,13 +227,13 @@ class UpdateStockScreenState extends State<UpdateStockScreen>{
                     },
 
                     style: ButtonStyle(
-                      //I got the below code from below link for changing background of selection color
+                      //I got the below code from link for changing background of selection color
                       //https://stackoverflow.com/questions/75271399/how-to-control-selected-and-unselected-background-color-for-the-segmentedbutton
                       backgroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
                       if (states.contains(MaterialState.selected)) {
-                        return const Color.fromARGB(255, 229, 142, 171).withOpacity(0.5); //pink theme color
+                        return const Color.fromARGB(255, 229, 142, 171).withOpacity(0.5); 
                       }
-                      return null;//if it is not selected, then default one
+                      return null;
                     }),
                     ),
                   ),

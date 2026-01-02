@@ -16,9 +16,9 @@ class ScreeningAllChildrenList extends StatefulWidget{
 
 class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
 
-  final searchcontroller = TextEditingController(); //A controller to read and manage the text in the search textfield
+  final searchcontroller = TextEditingController(); //read  text in the search field
 
-  String searchquery ="";//A  variable to store the current search query entered by the user.
+  String searchquery ="";//store the current search query 
 
   @override
   void dispose(){
@@ -35,17 +35,16 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
     
     return Padding(padding: const EdgeInsets.symmetric(horizontal: 18.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Aligns all children horizontally to the left side.
+        crossAxisAlignment: CrossAxisAlignment.start, 
         children: [
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween, //put space btw child list title and add child button
             children: [
-              //first row 
-              ////1st element - child list title
+             
               const Text('Child List', style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),),
 
-              ////2nd element - add child + button
+            
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 229, 142, 171).withOpacity(0.8),
@@ -63,9 +62,9 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
             ],
           ),
  
-          const SizedBox(height: 20),//space between title row and search bar
+          const SizedBox(height: 20),
 
-          //search bar
+          
           TextFormField(
             controller: searchcontroller,
             decoration: InputDecoration(
@@ -73,9 +72,9 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(),
             ),
-            onChanged: (value) { //tells Flutter to rebuild the screen because our search query changed.
+            onChanged: (value) { //rebuild the screen search query changed.
               setState(() {
-                searchquery = value.toLowerCase();// Store the query in lowercase for easier matching
+                searchquery = value.toLowerCase();//store the query in lowercase 
               });
             },
 
@@ -83,9 +82,9 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
 
           const SizedBox(height: 20),
 
-          //list titles (or name of the columns)
+          // name of the columns
           const Row(
-            children: [ //expanded-> it takes up the remaininng horizontal space
+            children: [ 
             //flex-> shows how the space can be shared
               Expanded( flex: 3 ,child: Text('Name', style: TextStyle(fontWeight: FontWeight.bold),)),
               Expanded( flex: 2 ,child: Text('Age', style: TextStyle(fontWeight: FontWeight.bold),)),
@@ -93,16 +92,16 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
             ],
           ),
 
-          const Divider(thickness: 1, color: Colors.black87,), //horizontal line that separates titles from datas
+          const Divider(thickness: 1, color: Colors.black87,), 
 
           //child list datas
-          Expanded(//It takes up all the remaining vertical space.
+          Expanded(
              child: StreamBuilder <QuerySnapshot>(
               stream: FirebaseFirestore.instance
                 .collection('children')
                 .where('registeredBy', isEqualTo: currentuserid)
                 .orderBy('createdAt', descending: true)
-                .snapshots(), //provides live streaming, if new data comes to the firebase, immediately is shown in list screen.
+                .snapshots(), //provides live streaming
 
               builder: (context, snapshot) {
                 if(snapshot.hasError){
@@ -115,7 +114,7 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
                   return Center(child: CircularProgressIndicator(),);
                 }
 
-                final allchildren = snapshot.data!.docs; // Get all documents from the snapshot, firestore
+                final allchildren = snapshot.data!.docs; //get all documents from the snapshot
 
                 final List<DocumentSnapshot> filteredlist; //prepare a empty list for now
 
@@ -128,11 +127,11 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
 
                     String fullName = childdata['fullName'];//get fullname 
 
-                    // Check if name  starts with the search query
+                    //check if name  starts with the search query
                     bool namematches = fullName.toLowerCase().startsWith(searchquery); //case-sensitive logic
 
-                    return namematches;//Add to list if it is matched
-                  }).toList(); //convert  filtered results as a list
+                    return namematches;//add to list if it is matched
+                  }).toList(); 
                 }
 
                 if (filteredlist.isEmpty){
@@ -142,17 +141,17 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
               
 
 
-                return ListView.separated( //if the data comes successfullt, then execute below lines
+                return ListView.separated( 
                   separatorBuilder:(context, index) => Divider(height: 1, color: Colors.grey.shade200),
-                  //Tells the list to create rows based on the number of  documents of the filtered list
+        
                   itemCount: filteredlist.length,
 
-                  //it shows how the each row of the list will be drawn
+       
                   itemBuilder: (context, index) {
 
                     
                     var childdoc= filteredlist[index];//get child from list
-                    //this maps converts the data to usable format
+                    //converts the data to usable format
                     Map<String, dynamic> childData = childdoc.data() as Map<String, dynamic>;
 
                     String name = childData['fullName'];
@@ -160,7 +159,7 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
                     String temp = childData['dateofBirth'];
                     String age = calculateAge(temp);
 
-                    String riskstatus = childData['currentRiskStatus'] ?? "";//get current status from child's data firebase
+                    String riskstatus = childData['currentRiskStatus'] ?? "";//get current status 
                     String risk ="";
                     Color riskcolor;
                     if(riskstatus.contains('High Risk')){
@@ -182,7 +181,7 @@ class _ScreeningAllChildrenListState extends State<ScreeningAllChildrenList>{
 
 
                     return ListTile(
-                      //This ensures that the row's content aligns perfectly with the headings above.
+            
                       contentPadding: EdgeInsets.zero, 
                       title: Row(
                         

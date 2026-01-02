@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:malnutrition_app/widgets/cards/treatment_details_bottomsheet.dart';
 import 'package:malnutrition_app/widgets/helper-widgets/info_display_widgets.dart';
-import 'package:malnutrition_app/services/treatment_service.dart';//get the firebase service
+import 'package:malnutrition_app/services/treatment_service.dart';
 
 
 class TreatmentPlanCard extends StatelessWidget{
@@ -22,12 +22,12 @@ class TreatmentPlanCard extends StatelessWidget{
       stream: treatmentService.getlatestTreatmentPlan(childID), //go treatment_service.dart
       builder:(context, snapshot) {
 
-        if (snapshot.hasError) return const SizedBox(); //if there s error no showing
+        if (snapshot.hasError) return const SizedBox(); 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {//if there is no data
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
          return  buildCards("Treatment Plan", "No available data.");
         }
 
@@ -43,13 +43,13 @@ class TreatmentPlanCard extends StatelessWidget{
         //String -> DateTime
         DateTime nextVisitDate = DateTime.parse(data['nextvisitdate']);
 
-        //Supplements 
-        //initialize variables to hold supplement details
+        
+        
         List<String> supplements =[];
-        int? supplementquantity;// Holds quantity per item
-        int? supplementduration;// Holds duration in weeks
+        int? supplementquantity;//holds quantity per item
+        int? supplementduration;//holds duration in weeks
 
-        var supplementmap = data['supplements'] as Map<String, dynamic>?;//retrieve the supplements field as a Map
+        var supplementmap = data['supplements'] as Map<String, dynamic>?;//get the supplements field as a Map
 
         if(supplementmap != null){
           //extract the list of selected food names 

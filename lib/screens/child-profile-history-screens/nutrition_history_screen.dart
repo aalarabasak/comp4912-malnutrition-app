@@ -14,7 +14,7 @@ class NutritionHistoryScreen extends StatefulWidget{
 
 class NutritionHistoryScreenState extends State<NutritionHistoryScreen> {
 
-  int selectedindex = 4; //by default the screen shows the last week
+  int selectedindex = 4; //default shows the last week
   bool isloading = true;
   List<Map<String, dynamic>> historydata = [];
 
@@ -32,7 +32,7 @@ class NutritionHistoryScreenState extends State<NutritionHistoryScreen> {
         historydata = data;
         isloading=false;
 
-        if(historydata.isNotEmpty){//if data exists ->default selected index to the last element newest week
+        if(historydata.isNotEmpty){//default selected index to the last element newest week
           selectedindex = historydata.length-1;
         }
       });
@@ -42,13 +42,13 @@ class NutritionHistoryScreenState extends State<NutritionHistoryScreen> {
 
   @override
   Widget build(BuildContext context){
-    //loading state
+
     if(isloading){
       return const Scaffold(body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    //empty state
+
     if(historydata.isEmpty){
       return Scaffold(
         appBar: AppBar(title: const Text('Weekly Nutrition Analysis')),
@@ -77,14 +77,14 @@ class NutritionHistoryScreenState extends State<NutritionHistoryScreen> {
               dateLabels: historydata.map((e) => e['dateRange'] as String).toList(),//pass the formatted date strings to the chart
               onPointTapped: (index) {
                 setState(() {
-                  selectedindex = index;//saves which data point was tapped -triggers rebuild so new details appear
+                  selectedindex = index;//saves which data point was tapped 
                 });
               },
               ),
 
               const SizedBox(height: 11),
 
-              //deficit rate cal-protein
+      
               Row(
                 children: [
                   //calorie deficit rate

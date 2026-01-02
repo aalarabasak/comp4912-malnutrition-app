@@ -62,10 +62,10 @@ class TreatmentService {
       .limit(1).snapshots(); //bring just oneeee
   }
 
-  //used in treatment list screen to eliminate overdue visits and treatment plans
+  //used in treatment list screen to remove past  treatment 
   Future<void> checkpastvisits() async {
-    DateTime nowexact = DateTime.now(); //take the today's date
-    DateTime todayStart = DateTime(nowexact.year, nowexact.month, nowexact.day); // made the time 00:00:00 
+    DateTime nowexact = DateTime.now(); 
+    DateTime todayStart = DateTime(nowexact.year, nowexact.month, nowexact.day); 
 
     var snapshot =await firestore.collection('children').where('treatmentStatus', isEqualTo: 'Active').get(); //get the active ones
 
@@ -77,7 +77,7 @@ class TreatmentService {
         //String ->> datetime
         DateTime visitdate = DateTime.parse(data['nextvisitdate']);
 
-        if(visitdate.isBefore(todayStart)){//if the date is older than today
+        if(visitdate.isBefore(todayStart)){
           await doc.reference.update({'treatmentStatus' : 'Passive'});//make the status passive
 
         }

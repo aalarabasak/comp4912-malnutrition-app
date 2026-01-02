@@ -9,7 +9,7 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //scaffold iskelet
+    
     return Scaffold(
       body: SafeArea(
         
@@ -22,20 +22,20 @@ class WelcomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-              //photo
+              
               Image.asset('assets/images/IMG_8656.JPG', height:300,),
               // https://www.pinterest.com/pin/680606562448569845/sent/?invite_code=b7e2fd4dbf5b4b75823f47b656cd5a59&sender=857091510242561090&sfo=1
 
 
               SizedBox(height: 40,),
 
-              //2nd
+             
               Text(
                 'Welcome',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold), 
               ),
 
-              //3rd elemnt 
+             
               Text(
                 'Start with sign in or sign up',
                 style: TextStyle(fontSize: 20), 
@@ -44,15 +44,14 @@ class WelcomeScreen extends StatelessWidget {
               
               SizedBox(height: 50), 
 
-            //4th sign in 
+       
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 54, 136, 203),
                             foregroundColor: Colors.white),
                 onPressed: () {
-                  //I used Flutter’s official website as a reference for this navigation code:
-                  //https://docs.flutter.dev/cookbook/navigation/navigation-basics
+             
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const LoginScreen()));
@@ -70,8 +69,7 @@ class WelcomeScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 54, 136, 203), 
                           foregroundColor: Colors.white,),
                 onPressed: () {
-                  //I used Flutter’s official website as a reference for this navigation code:
-                  //https://docs.flutter.dev/cookbook/navigation/navigation-basics
+      
                   Navigator.push(
                     context, 
                     MaterialPageRoute(builder: (context) => const SelectRoleScreen())

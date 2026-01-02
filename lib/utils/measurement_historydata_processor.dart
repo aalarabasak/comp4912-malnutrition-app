@@ -1,9 +1,9 @@
-import 'package:fl_chart/fl_chart.dart';//charts
+import 'package:fl_chart/fl_chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';//date formatting
+import 'package:intl/intl.dart';
 import 'package:malnutrition_app/utils/formatting_helpers.dart';
 
-class ProcessedMeasurementData {//// Class to store all the final data needed for the charts and ui
+class ProcessedMeasurementData {//store all final data for the charts and ui
   
   //lists of points for the charts
   final List<FlSpot> muacSpots;
@@ -16,7 +16,7 @@ class ProcessedMeasurementData {//// Class to store all the final data needed fo
   final WeightStatistics weightStats;
   final HeightStatistics heightStats;
 
-  ProcessedMeasurementData({//constructor
+  ProcessedMeasurementData({
     required this.muacSpots,
     required this.weightSpots,
     required this.heightSpots,
@@ -28,7 +28,7 @@ class ProcessedMeasurementData {//// Class to store all the final data needed fo
   });
 }
 
-// Simple class to hold  strings for muac stats
+//hold  strings for muac stats
 class MuacStatistics {
   final String current;
   final String average;
@@ -43,9 +43,9 @@ class MuacStatistics {
   });
 }
 
-class WeightStatistics {//Simple class to hold  strings for weight stats
+class WeightStatistics {//hold  strings for weight stats
   final String current;
-  final String change;//// Difference between first and last measurement
+  final String change;
   final String min;
   final String max;
 
@@ -58,7 +58,7 @@ class WeightStatistics {//Simple class to hold  strings for weight stats
 }
 
 
-class HeightStatistics {///simple class to hold  strings for weight stats
+class HeightStatistics {//hold  strings for weight stats
   final String current;
   final String totalGrowth;
   final String avgGrowthRate;
@@ -72,7 +72,7 @@ class HeightStatistics {///simple class to hold  strings for weight stats
   });
 }
 
-// type definiton for stat calculation results 
+//type definiton for stat calculation results 
 typedef StatCalculationResults = ({double min,double max,double current,double average,double change});
 
 
@@ -104,11 +104,11 @@ class MeasurementDataProcessor {
     for (int i = 0; i < processedData.length; i++) {//loop through sorted data to create chart points
       var data = processedData[i];
 
-      // Format date label -e.g. Nov 26
+      
       String label = DateFormat("MMM d").format(data['parseddate']);
       dateLabels.add(label);
 
-      //extract and convert measurement values to doubles
+    
       double muacVal = double.tryParse(data['muac'].toString()) ?? 0;
       double weightVal = double.tryParse(data['weight'].toString()) ?? 0;
       double heightVal = double.tryParse(data['height'].toString()) ?? 0;
@@ -123,7 +123,7 @@ class MeasurementDataProcessor {
     WeightStatistics weightStats = _calculateWeightStatistics(weightSpots);
     HeightStatistics heightStats =_calculateHeightStatistics(heightSpots, processedData);
 
-    return ProcessedMeasurementData(//return thr result
+    return ProcessedMeasurementData(
       muacSpots: muacSpots,
       weightSpots: weightSpots,
       heightSpots: heightSpots,
@@ -134,15 +134,15 @@ class MeasurementDataProcessor {
     );
   }
 
-  //core statistics calculation- min,max,current,average, change
+  //statistics calculation
   static StatCalculationResults _calculateStats(List<FlSpot> spots) {
 
     if (spots.isEmpty) {
-      //return zeros if empty-control
+      
       return (min: 0.0, max: 0.0, current: 0.0, average: 0.0, change: 0.0);
     }
 
-    List<double> values = [];//create empty list to fill later in for below block
+    List<double> values = [];
     for (var spot in spots) {//extract just the y values
       values.add(spot.y);
     }
@@ -155,7 +155,7 @@ class MeasurementDataProcessor {
     double minVal = values.first;
     double maxVal = values.last;
 
-    // Calculate average- 1st find sum
+    //calculate average- 1st find sum
     double sum = 0;
     for (var value in values) {
       sum += value;
@@ -259,20 +259,20 @@ class MeasurementDataProcessor {
 
     DateTime firstDate = processedData.first['parseddate'];
     DateTime lastDate = processedData.last['parseddate'];
-    int daysDifference = lastDate.difference(firstDate).inDays;//get time difference btw first and last measurement
+    int daysDifference = lastDate.difference(firstDate).inDays;
 
     if (daysDifference <= 0) {
       return "-";
     }
-    //convert days to months->
-    double monthsPassed = daysDifference / 30.0; // 30 days = 1 month
+    //convert days to months
+    double monthsPassed = daysDifference / 30.0; 
     double calculatedRate;
 
     if (monthsPassed < 1.0) {
-      // If less than a month, display direct change to avoid misleading
+     
       calculatedRate = change;
     } else {
-      // Otherwise divide by months
+      
       calculatedRate = change / monthsPassed;
     }
 

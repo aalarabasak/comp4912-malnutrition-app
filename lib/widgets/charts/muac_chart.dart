@@ -18,7 +18,7 @@ class MuacChart extends StatelessWidget{
   if(spots.isEmpty){
     return const Center(child: Text("No MUAC data available yet."));
   }
-    //use helper functions at the bottom for dynamic, grid axes.
+
     final yscale = calculatemuacscale(spots);
     final double minY = yscale.minY;//start of Y axis
     final double maxY = yscale.maxY;//end of Y axis
@@ -26,7 +26,7 @@ class MuacChart extends StatelessWidget{
     final double xinterval = calculatexIntervalmuac(dates.length);//calculate how often to show date labels on X axis
 
   return Container(
-    padding: const EdgeInsets.all(8.0), //8units of space from the inside-Padding inside the white card
+    padding: const EdgeInsets.all(8.0), //8units of space
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16.0),
@@ -46,7 +46,7 @@ class MuacChart extends StatelessWidget{
       aspectRatio: 1.5,//width/height ratio is 1.5
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 16.0),
-        child:  LineChart( LineChartData(//actual graphic starts here
+        child:  LineChart( LineChartData(
 
               borderData: FlBorderData(//remove top and right border lines
                 show: true,
@@ -58,7 +58,7 @@ class MuacChart extends StatelessWidget{
                 ),
               ),
 
-              // Background risk zones - colors using RangeAnnotations
+             
               rangeAnnotations: RangeAnnotations(
                 horizontalRangeAnnotations: [
                   HorizontalRangeAnnotation(// red zone high Risk 
@@ -79,11 +79,11 @@ class MuacChart extends StatelessWidget{
                 ]
               ),
 
-              //grid lines -yatay ızgara çizgileri
+              //grid lines 
               gridData: FlGridData(
                 show: true,
                 drawVerticalLine: false,
-                horizontalInterval: yinterval,//fixed interval - 10units
+                horizontalInterval: yinterval,
                 getDrawingHorizontalLine: (value) {
                   return FlLine(
                     color: Colors.grey.withOpacity(0.2), strokeWidth: 1,
@@ -91,7 +91,7 @@ class MuacChart extends StatelessWidget{
                 },
               ),
 
-              //axises
+              
               titlesData: FlTitlesData(
                 show: true,
                 //dont show titles top and right
@@ -108,8 +108,8 @@ class MuacChart extends StatelessWidget{
                     getTitlesWidget: (value, meta) {
                       final i =value.toInt();
                       if(i >= 0 && i < dates.length){
-                        // Check if this is a whole number (not a decimal)
-                      if (value == value.toInt().toDouble()) { //Prevents double writing on the x-axis
+                        //check if this is a whole number (not a decimal)
+                      if (value == value.toInt().toDouble()) { //prevents double writing on the x-axis
                         return Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
@@ -134,7 +134,7 @@ class MuacChart extends StatelessWidget{
                   showTitles: true,
                   reservedSize: 40,
                   interval: yinterval,
-                  getTitlesWidget: (value, meta) {//// Only show whole numbers                     
+                  getTitlesWidget: (value, meta) {//only show whole numbers                     
                         if (value % 1 == 0) {
                           return Text(
                             value.toInt().toString(),
@@ -162,10 +162,10 @@ class MuacChart extends StatelessWidget{
               ),
             ],
 
-            // Min and max values for Y-axis
+     
             minY: minY,
             maxY: maxY,
-            // Min and max values for X-axis
+     
             minX: -0.5,
             maxX: spots.length.toDouble() - 0.5,
 
@@ -182,7 +182,7 @@ class MuacChart extends StatelessWidget{
     ),
 
 
-    Row(//the legend- explanation of colors
+    Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         buildlegend(Colors.red.withOpacity(0.4), "High Risk"),
@@ -205,11 +205,11 @@ class MuacChart extends StatelessWidget{
     final datamin = spots.map((e) => e.y).reduce(min);
     final datamax = spots.map((e) => e.y).reduce(max);
 
-    // define Standard Range-even if user data is 120-130,  show 100-140 context
+    // define Range-if user data is 120-130,  show 100-140 
     const double coremin = 100.0;
     const double coremax = 140.0;
 
-    //if data goes below 100, expand down. If above 140, expand up.
+
     final viewmin = min(coremin, datamin - 5);
     final viewmax = max(coremax, datamax + 5);
 
@@ -222,7 +222,7 @@ class MuacChart extends StatelessWidget{
     return (minY: minY, maxY: maxY, interval: interval);
   }
 
-  //helper for xaxis intervals
+  // xaxis intervals
   double calculatexIntervalmuac(int labelCount) {
     if (labelCount <= 8) return 1;
     return (labelCount / 5).ceilToDouble();

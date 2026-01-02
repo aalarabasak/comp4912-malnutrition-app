@@ -10,19 +10,19 @@ class DistributionService {
   Future<bool> checkIfPlanDelivered({required String childId,required String treatmentPlanId }) async {
 
     try {
-      //query distributions for the specific treatment plan
+      
       final query = await firestore.collection('distributions').where('treatmentPlanId', isEqualTo: treatmentPlanId)
-        .limit(1)//stop after finding just one match
+        .limit(1)
         .get();
 
-      //if we found any records->means plan is  delivered
+      
       return query.docs.isNotEmpty;
     } catch (e) {
-      //if error, return false 
+      
       return false;
     }
 
-    //returns true if there is at least one document, false if none.
+    //returns true if there is at least one document
   }
 
   //used in child_treatment_detailshelper
@@ -33,7 +33,7 @@ class DistributionService {
     //find the product in stocks
     final stockquery = await firestore.collection('stocks')
       .where('productName', isEqualTo: productName)
-      .get();//only filter by productName in firestore and handle the rest in memory with lisst
+      .get();
 
     
     //dont look stocks with quantity <= 0 in memory 
@@ -46,41 +46,41 @@ class DistributionService {
       throw Exception("$productName not found is out of stock!");
     }
 
-    //find the most suitable lot - first in first out-use the one that expires first
+    //find the most suitable lot-fifo
      //list the documents and sort them by date
     List<QueryDocumentSnapshot> sortedstocks = availableStocks;
 
     sortedstocks.sort((a,b) {
-      //convert dates from string to datetime object
+     
       DateTime dateA = parseDateString(a['expirationDate']);
       DateTime dateB = parseDateString(b['expirationDate']);
       return dateA.compareTo(dateB);
 
     });
 
-    DocumentSnapshot? targetstockdoc;//find the stock that is available to meet the need
+    DocumentSnapshot? targetstockdoc;
 
     for(var doc in sortedstocks){
       int currentStock = doc['quantity'];
-      //if the stock in this batch is more than or equal to what is needed-> use it.
+  
       if (currentStock >= quantity) {
         targetstockdoc = doc;
-        break; // found it, exit loop!!!!
+        break; // found the suitable stock
       }
 
     }
 
     if (targetstockdoc == null) {
-      // if there is not sufficient stock in any lot
+  
       throw Exception("Insufficient Stock in single batch! Required: $quantity for $productName");
     }
     
     //reference pattern: https://firebase.google.com/docs/firestore/manage-data/transactions
-    //!!!!!!___!!!!!!!!
+   
     //start transaction
-    await firestore.runTransaction((transaction) async {//ensures all reads/writes inside either all succeed together or fail together atomic
+    await firestore.runTransaction((transaction) async {//atomic
 
-      //read the fresh snapshot of the stock
+      //read the snapshot of the stock
       DocumentSnapshot stocksnapshot = await transaction.get(targetstockdoc!.reference);
 
       if(!stocksnapshot.exists){//double check
@@ -96,7 +96,7 @@ class DistributionService {
         currentlotNumber = stocksnapshot['lotNumber'];
 
       }else{
-        currentlotNumber = null; //if the food is supplement(banana, etc)
+        currentlotNumber = null; //if the food is supplement
       }
 
       //check if enough stock exists - guard code
@@ -123,7 +123,7 @@ class DistributionService {
         distributiondata['lotNumber'] = currentlotNumber;
       }
 
-      transaction.set(newDistributionRef, distributiondata); //end the transaction hereeee
+      transaction.set(newDistributionRef, distributiondata); //end the transaction 
     });
   }
 

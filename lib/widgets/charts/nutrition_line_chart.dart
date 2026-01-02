@@ -14,7 +14,7 @@ class NutritionLineChart extends StatelessWidget{
     required this.caloriespots, 
     required this.proteinspots,
     required this.dateLabels,
-    required this.onPointTapped,//parent screen wants to know when a dot is clicked, can be null
+    required this.onPointTapped,
   });
 
   double calculatemaxY(){
@@ -113,15 +113,15 @@ class NutritionLineChart extends StatelessWidget{
                         return const SizedBox.shrink();
                       }
                        
-                    //ensure draw on the exact integer spot
+                    //ensure  exact integer spot
                       if ((value - value.toInt()).abs() > 0.05) {
                         return const SizedBox.shrink();
                       }
 
                     return Transform.translate(
-                      offset: const Offset(0, 13.3), //push labels down slightly to avoid overlapping the line
+                      offset: const Offset(0, 13.3), 
                       child: Transform.rotate(
-                        angle: -0.8,//Rotate ~45 degrees
+                        angle: -0.8,//Rotate ~45 degrees x labels
                         child: Text(dateLabels[index],style: const TextStyle(color: Colors.grey,fontSize: 10,fontWeight: FontWeight.bold),),
                       ),
                     );
@@ -156,7 +156,7 @@ class NutritionLineChart extends StatelessWidget{
             lineBarsData: [
               LineChartBarData(//calories line
                 spots: caloriespots.asMap().entries.map((e) => FlSpot((e.key + 1).toDouble(), e.value)).toList(),
-                //shift x positions by +1 so data points start at x=1 instead of x=0
+                //shift x positions by +1 
                 isCurved: true,
                 color: Colors.orange,
                 barWidth: 3,
@@ -165,16 +165,16 @@ class NutritionLineChart extends StatelessWidget{
                   show: true,
                   getDotPainter: (spot, percent, barData, index) {
                     return FlDotCirclePainter(
-                      radius: 6, //size
-                      color: Colors.orange, //inside color of the dot
-                      strokeColor: Colors.white,//white frame outside the dot
+                      radius: 6, 
+                      color: Colors.orange, 
+                      strokeColor: Colors.white,
                     );
                   },),
                 belowBarData: BarAreaData(show: false)
               ),
               LineChartBarData(//protein line
                 spots: proteinspots.asMap().entries.map((e) => FlSpot((e.key + 1).toDouble(), e.value)).toList(),
-                //shift x positions by +1 so data points start at x=1 instead of x=0
+                //shift x positions by +1 
                 isCurved: true,
                 color: Colors.redAccent.shade400,
                 barWidth: 3,
@@ -183,9 +183,9 @@ class NutritionLineChart extends StatelessWidget{
                   show: true,
                   getDotPainter: (spot, percent, barData, index) {
                     return FlDotCirclePainter(
-                      radius: 6, //size
-                      color: Colors.redAccent.shade400, //inside color of the dot
-                      strokeColor: Colors.white,//white frame outside the dot
+                      radius: 6, 
+                      color: Colors.redAccent.shade400, 
+                      strokeColor: Colors.white,
                     );
                   },
                   ),
@@ -193,12 +193,12 @@ class NutritionLineChart extends StatelessWidget{
               )
             ],
 
-            //touch handling
+           
             lineTouchData: LineTouchData(
               handleBuiltInTouches: true,//show standard tooltip bubble
               touchTooltipData: LineTouchTooltipData(//for rounded numbers tooltip
                 fitInsideHorizontally: true,
-                //fitInsideVertically: true,
+               
                 tooltipMargin: -0.5,
                 getTooltipColor: (touchedSpot) => Colors.blueGrey.withOpacity(0.8),
                 getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
@@ -216,11 +216,11 @@ class NutritionLineChart extends StatelessWidget{
               touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
                 if(event is FlTapUpEvent && touchResponse != null && touchResponse.lineBarSpots != null){
                   final spot = touchResponse.lineBarSpots!.first;
-                  // Convert shifted x position back to original index (x=1 -> index=0, x=2 -> index=1, etc.)
+              
                   final index = spot.x.toInt() - 1;
 
-                  if (index >= 0 && index < caloriespots.length) {////if index is valid
-                    onPointTapped(index);//notifies the screen which point was tapped
+                  if (index >= 0 && index < caloriespots.length) {
+                    onPointTapped(index);
                   }
                 }
               },
@@ -231,7 +231,7 @@ class NutritionLineChart extends StatelessWidget{
       ),
 
 
-      //legend-explanation of colors
+      
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

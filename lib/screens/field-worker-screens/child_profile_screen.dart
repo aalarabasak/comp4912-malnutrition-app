@@ -27,7 +27,7 @@ class ChildProfileScreen extends StatefulWidget{
   
 class _ChildProfileScreenState extends State<ChildProfileScreen> {
 
-  //this is for add meal button's dialog page
+  //shows add meal button's dialog page
   void showAddMealOptions(BuildContext context){
     showDialog(
       context: context, 
@@ -36,14 +36,14 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
           title: Text('Please choose how you want to add the meal.',
             style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),),
           content: Column(
-            mainAxisSize: MainAxisSize.min, //Adjusts window size according to content
+            mainAxisSize: MainAxisSize.min,//changes window size according to content
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.qr_code_scanner),
                 title: Text('Add Packaged Food'),
                 onTap: () {
-                  Navigator.of(dialogcontext).pop();// first close the dialog
-                  //after that, direct to the barcode screen
+                  Navigator.of(dialogcontext).pop();
+                  //direct to the barcode screen
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>  ScanBarcodeScreen(childId: widget.childId )));
 
 
@@ -55,8 +55,8 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                 leading: Icon(Icons.camera_alt),
                 title: Text('Add Unpackaged Food'),
                 onTap: () {
-                  Navigator.of(dialogcontext).pop();//// first close the dialog
-                  //after that, direct to camera screen to detect food
+                  Navigator.of(dialogcontext).pop();
+                  //direct to camera screen 
                   FoodCameraHelper().captureandAnalyze(context, widget.childId);
                 },
               )
@@ -74,7 +74,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
   @override
   Widget build(BuildContext context){
      double availableWidth = MediaQuery.of(context).size.width - 46;
-    //take the screen width and remove the paddings (23+23=46) so that the horizontal scrollable cards fit perfectly
+    //remove the paddings  
 
     return Scaffold(
       appBar: AppBar(
@@ -100,7 +100,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
         child: SafeArea(
           child: Row(
             children: [
-                  //add test results button
+              
                   Expanded(
                               child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
@@ -122,9 +122,9 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                             )
                           ),
 
-                          const SizedBox(width: 20), // Space between buttons
+                          const SizedBox(width: 20), 
 
-                        //add meal button
+                    
                           Expanded(
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
@@ -149,7 +149,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
       ),
 
       body: StreamBuilder<DocumentSnapshot> (
-        stream: FirebaseFirestore.instance //this time, we get the specific child from firestore with childId that we get through home page
+        stream: FirebaseFirestore.instance //get the specific child with childId 
           .collection('children')
           .doc(widget.childId)
           .snapshots(),
@@ -182,20 +182,20 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
              disabilityexplanation = childdata['disabilityExplanation'];
           }
 
-          // measurements StreamBuilder inside the child data StreamBuilder
+         
           return StreamBuilder<QuerySnapshot>(
-            //  Fetch once for both cards -latest measurement card and risk status card
-            //also I need to pass the current latest weight to the nutrition summary card for daily need calc
+            //fetch once for both cards -latest measurement card and risk status card
+            //pass the current latest weight to the nutrition summary card for daily need calc
             stream: FirebaseFirestore.instance
                 .collection('children')
                 .doc(widget.childId)
                 .collection('measurements')
                 .orderBy('recordedAt', descending: true)
                 .limit(1)
-                .snapshots(), // getting the last record
+                .snapshots(),
 
             builder: (context, measurementsSnapshot) {
-              // error and loading checks for measurements
+           
               if (measurementsSnapshot.hasError) {
                 return Center(child: Text("Error loading measurements"));
               }
@@ -209,23 +209,23 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 23.0),
                   child: ListView(
-                    children: [ //lots of elements from top the down
-                      //Header row : name of child + profile icon 
+                    children: [ 
+                     
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [ //there are two elements in this row
-                          //name of the child
+                        children: [ 
+                         
                           Expanded(child: Text(name, style: TextStyle(
                             fontSize: 22, fontWeight: FontWeight.w600 ),)),
 
-                          //profile icon
+                      
                           Icon(Icons.person, size: 60, color: const Color.fromARGB(255, 110, 109, 109), ),
                         ],
                       ),
 
                       const SizedBox(height: 5),
 
-                      //child's personal information
+                  
                       Container(
                         width: double.infinity,
                         padding: EdgeInsets.all(10.0),
@@ -267,12 +267,12 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                           scrollDirection: Axis.horizontal,
                           
                           children: [
-                            //part 1 risk status card + latest measurement card alt alta
+                          
                             SizedBox(
                               width: availableWidth,
                               child: Column(
                                 children: [
-                                  //top card: risk
+                                  
                                   //give the last data to card for showing the latest risk result
                                   RiskStatusCard(latestdoc: docs.first, childId: widget.childId),
                                 
@@ -283,13 +283,13 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                               ),
                             ),
 
-                            const SizedBox(width: 15), //space btw two big columns
+                            const SizedBox(width: 15), 
 
                             SizedBox(
                               width: availableWidth,
                               child: Column(
                                 children: [
-                                  //Nutrition summary info card
+                                 
                                     NutritionSummaryCard(childID: widget.childId,dateofbirthString: temp,gender: gender,weightkg: docs.first['weight'],),
                                   
                                 ],
@@ -303,11 +303,11 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
 
                       //horizontal scrollable area ends hereeee
                       const Divider(),
-                      ], //if-else line ends here
+                      ], 
 
                     
                       
-                      //recent activities info card
+                  
                       RecentActivitiesCard(childid: widget.childId),
 
                       const SizedBox(height: 10,),                    

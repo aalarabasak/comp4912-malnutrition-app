@@ -6,9 +6,9 @@ import 'package:malnutrition_app/screens/child-profile-history-screens/nutrition
 class NutritionSummaryCard extends StatelessWidget{
 
   final String childID;
-  final double weightkg;//for weekly need calc
-  final String dateofbirthString;//for weekly need calc
-  final String gender;//for weekly need calc
+  final double weightkg;
+  final String dateofbirthString;
+  final String gender;
 
   const NutritionSummaryCard({super.key, required this.childID, required this.dateofbirthString, required this.gender,
   required this.weightkg});
@@ -18,7 +18,7 @@ class NutritionSummaryCard extends StatelessWidget{
 
 
     Map<String,double> weeklytargets = NutritionValuesCalculator.calculateweeklytargets(weightkg, dateofbirthString, gender);
-    //calculate the targets based on WHO/FAO standards
+    //calculate the targets 
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -65,7 +65,7 @@ class NutritionSummaryCard extends StatelessWidget{
         height: 388,
         margin: EdgeInsets.only(top: 15.0),
         padding: EdgeInsets.all(13.0),
-        decoration: BoxDecoration(//card styling background color, borders, shadow
+        decoration: BoxDecoration(
           color:const Color(0xFFF8F9FA),
           borderRadius: BorderRadius.circular(10.0),
           border: Border.all(color: Colors.grey[400]!),   
@@ -73,7 +73,7 @@ class NutritionSummaryCard extends StatelessWidget{
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //title and click forward symbol
+           
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -84,7 +84,7 @@ class NutritionSummaryCard extends StatelessWidget{
             
             const SizedBox(height: 20,),
             
-            buildNutritionProgressBar(//calori part
+            buildNutritionProgressBar(
               label: "Calories", 
               icon: Icons.energy_savings_leaf, 
               iconcolor: Colors.orange.shade600, 
@@ -93,7 +93,7 @@ class NutritionSummaryCard extends StatelessWidget{
               unit: "kcal"),
             const SizedBox(height: 30),
             
-            buildNutritionProgressBar(//carbs part
+            buildNutritionProgressBar(
               label: "Carbs", 
               icon: Icons.bakery_dining_sharp, 
               iconcolor: Colors.amber, 
@@ -103,7 +103,7 @@ class NutritionSummaryCard extends StatelessWidget{
             
             const SizedBox(height: 30),
 
-            buildNutritionProgressBar(//protein part
+            buildNutritionProgressBar(
               label: "Protein", 
               icon: Icons.fitness_center,
               iconcolor: Colors.redAccent, 
@@ -113,7 +113,7 @@ class NutritionSummaryCard extends StatelessWidget{
             
             const SizedBox(height: 30),
 
-            buildNutritionProgressBar(//fat part
+            buildNutritionProgressBar(
               label:"Fat", 
               icon: Icons.water_drop_rounded, 
               iconcolor: Colors.green, 
@@ -130,12 +130,12 @@ class NutritionSummaryCard extends StatelessWidget{
     );
   }
 
-  Widget buildNutritionProgressBar({//helper widget--draws progress bar etc
+  Widget buildNutritionProgressBar({//draws progress bar 
     required String label, required IconData icon, required Color iconcolor, required double current, required double target,
     required String unit}){
     
-    //preparation
-    //percentage calculation- prevent dividing 0
+    
+    //percentage calculation prevent dividing 0
     double percent;
     if(target == 0){
       percent =0;
@@ -152,7 +152,7 @@ class NutritionSummaryCard extends StatelessWidget{
       percent = 0.0;
     }
 
-    //color logic->
+    //color logic
     Color progresscolor;
     if(percent <0.5){
       progresscolor = Colors.redAccent;
@@ -167,7 +167,7 @@ class NutritionSummaryCard extends StatelessWidget{
 
     return Row(
       children: [
-        //ıcon box
+        
         Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -180,12 +180,12 @@ class NutritionSummaryCard extends StatelessWidget{
         const SizedBox(width: 15),
 
 
-        //texts and progress bar
+   
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            Row(//label and number info
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
@@ -194,14 +194,14 @@ class NutritionSummaryCard extends StatelessWidget{
             ),
             const SizedBox(height: 8),
 
-            //progress barr
+            
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
                 value: percent,
                 minHeight: 20,
-                backgroundColor: Colors.grey[200], //head part color
-                color: progresscolor, //color of the filled part-dynamic
+                backgroundColor: Colors.grey[200], 
+                color: progresscolor, 
               ),
             )
 

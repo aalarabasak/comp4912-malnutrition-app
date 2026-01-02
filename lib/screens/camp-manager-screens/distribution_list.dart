@@ -12,8 +12,8 @@ class DistributionList extends StatefulWidget{
 
 class DistributionListState extends State<DistributionList>{
 
-  final searchcontroller = TextEditingController();//a controller to read and manage the text in the search textfield
-  String searchquery = "";//variable to store the current search query entered by the user
+  final searchcontroller = TextEditingController();//read the text in the search field
+  String searchquery = "";//store the current search query 
 
   @override
   void dispose(){
@@ -22,7 +22,7 @@ class DistributionListState extends State<DistributionList>{
 
   }
 
-  String formatdate(Timestamp timestamp){//timestamp ->String using intl package
+  String formatdate(Timestamp timestamp){//timestamp to string using intl package
     DateTime date = timestamp.toDate();
 
     return DateFormat('dd/MM/yyyy').format(date); 
@@ -38,12 +38,12 @@ class DistributionListState extends State<DistributionList>{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //title
+     
           const Text('Distribution History', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),),
 
           const SizedBox(height: 20),
 
-          //search bar
+         
           TextFormField(
             controller: searchcontroller,
             decoration: InputDecoration(
@@ -53,9 +53,9 @@ class DistributionListState extends State<DistributionList>{
               border: OutlineInputBorder(),
           ),
                       
-            onChanged: (value) { //tells Flutter to rebuild the screen because our search query changed.
+            onChanged: (value) { //runs when search query changed.
               setState(() {
-                searchquery = value.toLowerCase();// Store the query in lowercase for easier matching
+                searchquery = value.toLowerCase();//store the query in lowercase 
               });
             },
 
@@ -63,9 +63,9 @@ class DistributionListState extends State<DistributionList>{
 
          const SizedBox(height: 20),
 
-         const Row(//list titles (or name of the columns)
-          children: [//expanded-> it takes up the remaininng horizontal space
-           //flex-> shows how the space can be shared
+         const Row(//name of the columns
+          children: [
+
             Expanded( flex: 2,child: Text('Child', style: TextStyle(fontWeight: FontWeight.bold))),
             Expanded(flex: 3, child: Text('Item', style: TextStyle(fontWeight: FontWeight.bold))),
             Expanded(flex: 2, child: Text('Quantity', style: TextStyle(fontWeight: FontWeight.bold))),
@@ -73,7 +73,7 @@ class DistributionListState extends State<DistributionList>{
           ],
          ),
 
-         const Divider(thickness: 1, color: Colors.black87,), //horizontal line that separates titles from datas
+         const Divider(thickness: 1, color: Colors.black87,), 
 
         //child list datas
          Expanded(
@@ -115,13 +115,13 @@ class DistributionListState extends State<DistributionList>{
                   contentPadding: EdgeInsets.zero,
                   title: Row(
                     children: [
-                      //child name
+            
                       Expanded(flex: 2,child: Text(data["childName"], style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500))),
 
-                      //product name
+             
                       Expanded(flex: 3,child: Text(data["itemName"], style: const TextStyle(fontSize: 14))),
 
-                      //quantity given
+              
                       Expanded(flex: 2,child: Text(data["quantity"].toString(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)) ),
 
                       //date of issue
