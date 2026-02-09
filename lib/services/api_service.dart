@@ -6,8 +6,8 @@ import 'package:malnutrition_app/services/nutrition_datamodels.dart';
 
 class ApiService {
 
-  final String baseurl = "https://food-detection.abasak.com";
-  final String apikey = "PP4d6Kksn9HgwVoJZ8TCUuAEpYgHTtAT";
+  final String baseurl = "<url>";
+  final String apikey = "<api_key>";
 
   //used for yolo-food detection
   Future <Map<String, dynamic>?> detectFood(File imagefile) async{
